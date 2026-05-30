@@ -1,7 +1,6 @@
 /**
  * Audio Configuration Helper
- * 
- * This file helps you configure your custom audio files hosted on GitHub.
+ * * This file helps you configure your custom audio files hosted on GitHub.
  * Your audio files are organized in your GitHub repository as:
  * - audios/welcomepage/ (for welcome page audio)
  * - audios/unit{X}/words/ (for vocabulary)
@@ -32,51 +31,40 @@ export const homePageAudio = {
  * =============================================================================
  * GITHUB CONFIGURATION:
  * =============================================================================
- * 
- * GitHub Username: olonsgallery
+ * * GitHub Username: olonsgallery
  * Repository Name: fiela-repository
  * Branch: main
- * 
- * Base URL: https://raw.githubusercontent.com/olonsgallery/fiela-repository/main
- * 
- * =============================================================================
+ * * Base URL: https://raw.githubusercontent.com/olonsgallery/fiela-repository/main
+ * * =============================================================================
  * YOUR ACTUAL DIRECTORY STRUCTURE:
  * =============================================================================
- * 
- * Welcome Page: audios/welcomepage/welcomepage-2.mp3
+ * * Welcome Page: audios/welcomepage/atlas-greeting.mp3 & atlas-lets-go.mp3
  * Stories: audios/unit{X}/stories/unit{X}-scene{Y}.mp3
  * Words: audios/unit{X}/words/{word-name}.mp3
  * Examples: audios/unit{X}/examples/{word-name}-example.mp3
- * 
- * Example paths:
- * - audios/welcomepage/welcomepage-2.mp3
+ * * Example paths:
+ * - audios/welcomepage/atlas-greeting.mp3
  * - audios/unit1/stories/unit1-scene1.mp3
  * - audios/unit1/words/yawn.mp3
  * - audios/unit1/examples/yawn-example.mp3
- * 
- * =============================================================================
+ * * =============================================================================
  * CONFIGURATION INSTRUCTIONS:
  * =============================================================================
- * 
- * 1. Your MP3 files are in your GitHub repository at:
- *    - audios/welcomepage/ (for welcome page audio)
- *    - audios/unit1/words/ (for Unit 1 vocabulary)
- *    - audios/unit1/stories/ (for Unit 1 story scenes)
- *    - audios/unit1/examples/ (for Unit 1 example sentences)
- *    - audios/unit2/words/ (for Unit 2 vocabulary)
- *    - audios/unit2/stories/ (for Unit 2 story scenes)
- *    - audios/unit2/examples/ (for Unit 2 example sentences)
- *    - And so on...
- * 
- * 2. All configurations are now active and ready to use!
- * 
- * 3. Make sure the file names match exactly (case-sensitive!)
- * 
- * 4. The toGitHubUrl() function automatically converts paths to full URLs:
- *    "audios/unit1/stories/unit1-scene1.mp3" becomes:
- *    "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/audios/unit1/stories/unit1-scene1.mp3"
- * 
- * =============================================================================
+ * * 1. Your MP3 files are in your GitHub repository at:
+ * - audios/welcomepage/ (for welcome page audio)
+ * - audios/unit1/words/ (for Unit 1 vocabulary)
+ * - audios/unit1/stories/ (for Unit 1 story scenes)
+ * - audios/unit1/examples/ (for Unit 1 example sentences)
+ * - audios/unit2/words/ (for Unit 2 vocabulary)
+ * - audios/unit2/stories/ (for Unit 2 story scenes)
+ * - audios/unit2/examples/ (for Unit 2 example sentences)
+ * - And so on...
+ * * 2. All configurations are now active and ready to use!
+ * * 3. Make sure the file names match exactly (case-sensitive!)
+ * * 4. The toGitHubUrl() function automatically converts paths to full URLs:
+ * "audios/unit1/stories/unit1-scene1.mp3" becomes:
+ * "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/audios/unit1/stories/unit1-scene1.mp3"
+ * * =============================================================================
  */
 
 // GitHub Base URL for audio files
@@ -87,9 +75,12 @@ function toGitHubUrl(localPath: string): string {
   return `${GITHUB_BASE_URL}/${localPath}`;
 }
 
-// WELCOME PAGE AUDIO
+// WELCOME PAGE AUDIO (DIUPDATE UNTUK FITUR DIALOG NAMA)
 export const welcomePageAudio = {
-  audioPath: toGitHubUrl("audios/welcomepage/welcomepage-2.mp3")
+  audioPath: toGitHubUrl("audios/welcomepage/welcomepage-2.mp3"), // Fallback audio lama
+  greetingPath: toGitHubUrl("audios/welcomepage/atlas-greeting.mp3"), // Audio: "Hello! I am Atlas..."
+  letsGoPath: toGitHubUrl("audios/welcomepage/atlas-lets-go.mp3"),     // Audio: "Okay! Let's go!"
+  greetingWithNamePath: toGitHubUrl("audios/welcomepage/atlas-with-player-name.mp3") // TAMBAHAN BARU: Audio jika sudah punya nama
 };
 
 // UNIT 1: MY MORNING ROUTINE
@@ -156,7 +147,7 @@ const unit1Config: AudioFileConfig[] = [
     exampleAudioPath: toGitHubUrl("audios/unit1/examples/walk-example.mp3")
   },
   
-  // Story Scenes (Biarkan sama seperti aslinya)
+  // Story Scenes
   { unitId: 1, sceneId: 1, audioPath: toGitHubUrl("audios/unit1/stories/unit1-scene1.mp3") },
   { unitId: 1, sceneId: 2, audioPath: toGitHubUrl("audios/unit1/stories/unit1-scene2.mp3") },
   { unitId: 1, sceneId: 3, audioPath: toGitHubUrl("audios/unit1/stories/unit1-scene3.mp3") },
