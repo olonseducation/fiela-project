@@ -139,16 +139,15 @@ export function getAcceptableVariations(word: string): string[] {
  * Checks if spoken text matches the target word, including homophones
  */
 export function matchesWord(spokenText: string, targetWord: string): boolean {
-  const normalizedSpoken = spokenText.toLowerCase().trim();
+  // Bersihkan teks yang diucapkan dari tanda baca dasar yang mungkin ditangkap browser
+  const cleanSpoken = spokenText.toLowerCase().replace(/[.,!?]/g, '').trim();
   const acceptableVariations = getAcceptableVariations(targetWord);
   
-  // Check if any variation is found in the spoken text
+  // Cek apakah ada variasi yang cocok secara presisi (kata utuh)
   return acceptableVariations.some(variation => {
-    // Check for exact match or if the word is contained (for phrases)
-    return normalizedSpoken === variation || 
-           normalizedSpoken.includes(variation) ||
-           normalizedSpoken.includes(` ${variation} `) ||
-           normalizedSpoken.startsWith(`${variation} `) ||
-           normalizedSpoken.endsWith(` ${variation}`);
+    // Menggunakan \b (word boundary) memastikan kita mencari kata utuh.
+    // Contoh: mencari "red" TIDAK akan tembus di dalam kata "bored".
+    const regex = new RegExp(`\\b${variation}\\b`, 'i');
+    return regex.test(cleanSpoken);
   });
 }

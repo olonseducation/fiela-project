@@ -36,17 +36,42 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         recognitionInstance.onresult = (event: any) => {
           let interimText = '';
           let finalText = '';
+          let lowestConfidence = 1; // Default kepercayaan penuh
+
           for (let i = 0; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              finalText += transcript + ' ';
+            const result = event.results[i];
+            const alternative = result[0];
+            
+            if (result.isFinal) {
+              finalText += alternative.transcript + ' ';
+              // Ambil skor kepercayaan (0.0 sampai 1.0)
+              if (alternative.confidence < lowestConfidence) {
+                lowestConfidence = alternative.confidence;
+              }
             } else {
-              interimText += transcript;
+              interimText += alternative.transcript;
             }
           }
-          if (interimText) setTranscript(interimText + '...');
-          else if (finalText) setTranscript(finalText.trim());
-          if (finalText.trim()) finalTranscriptRef.current = finalText.trim().toLowerCase();
+          
+          if (interimText) {
+            setTranscript(interimText + '...');
+          } else if (finalText) {
+            const trimmedFinal = finalText.trim();
+            finalTranscriptRef.current = trimmedFinal.toLowerCase();
+            
+            // --- LOGIKA BARU UNTUK TAMPILAN ---
+            
+            // Ambang batas kepercayaan. 0.4 (40%) biasanya cukup aman.
+            // Jika di bawah ini, tebakan browser sering kali ngawur.
+            if (lowestConfidence < 0.4) {
+              // Browser tidak yakin, tampilkan pesan generik saja
+              // agar anak tidak melihat kata aneh yang berbeda 180 derajat.
+              setTranscript("Hmm, not quite..."); 
+            } else {
+              // Browser cukup yakin, tampilkan teks tebakannya
+              setTranscript(trimmedFinal);
+            }
+          }
         };
 
         recognitionInstance.onend = () => {
@@ -55,10 +80,21 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             clearTimeout(autoStopTimerRef.current);
             autoStopTimerRef.current = null;
           }
+          
           const finalText = finalTranscriptRef.current;
           if (finalText) {
+            // Jika ada suara, cek seperti biasa
             checkPronunciation(finalText);
             finalTranscriptRef.current = '';
+          } else {
+            // TAMBAHAN BARU: Jika anak diam sampai waktu habis
+            setFeedback('incorrect');
+            setTranscript('Oops! I didn\'t hear you.');
+            soundEffects.incorrect();
+            setTimeout(() => { 
+              setFeedback(null); 
+              setTranscript(''); 
+            }, 2500);
           }
         };
 
@@ -83,11 +119,21 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
 
   const checkPronunciation = (spokenText: string) => {
     const normalizedTarget = targetWord.toLowerCase().trim();
+    
+    // Jika hasil tangkapan BENAR (termasuk jika itu adalah homofon)
     if (matchesWord(spokenText.toLowerCase().trim(), normalizedTarget)) {
+      
+      // --- PERBAIKAN UX PENDIDIKAN ---
+      // Timpa hasil tangkapan browser (misal: "bored" atau "two")
+      // dengan kata target yang sedang dipelajari anak (misal: "board" atau "to").
+      setTranscript(targetWord);
+      
       setFeedback('correct');
       soundEffects.correctPronunciation();
       setTimeout(() => { onSuccess(); setFeedback(null); setTranscript(''); }, 1800);
     } else {
+      // Jika salah, biarkan menampilkan hasil tangkapan browser
+      // (yang sudah kita saring dengan confidence score sebelumnya)
       setFeedback('incorrect');
       soundEffects.incorrect();
       setTimeout(() => { setFeedback(null); setTranscript(''); }, 2500);
@@ -169,7 +215,15 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         {/* HASIL TRANSKRIP */}
         {transcript && (
           <div className="bg-white/60 px-4 py-1.5 md:py-2 rounded-xl border border-amber-900/10 shadow-sm text-center">
-            <p className="text-amber-900 font-[Nunito] text-sm md:text-base">You said: <span className="font-bold text-base md:text-lg">"{transcript}"</span></p>
+            <p className="text-amber-900 font-[Nunito] text-sm md:text-base">
+              {transcript === "Hmm, not quite..." || transcript === "Oops! I didn't hear you." ? (
+                <span className="font-bold text-base md:text-lg">{transcript}</span>
+              ) : (
+                <>
+                  You said: <span className="font-bold text-base md:text-lg">{transcript}</span>
+                </>
+              )}
+            </p>
           </div>
         )}
 
