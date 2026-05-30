@@ -1,17 +1,16 @@
+/* 1. Tailwind V4 WAJIB di baris paling atas! */
+@import "tailwindcss";
+
+/* 2. Panggil Font */
 @import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Coiny&family=Fredoka:wght@300..700&family=Fredoka+One&family=Frijole&family=Londrina+Solid:wght@900&family=Luckiest+Guy&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Ranchers&family=Sigmar+One&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 3. Aturan dasar */
 @layer base {
   body {
-    /* Mengecat latar paling dasar dengan gradasi khas Intro Page */
     @apply bg-gradient-to-br from-[#d4bca1] via-[#c6a782] to-[#a37e58] min-h-screen bg-fixed;
-    
-    /* Memastikan tidak ada margin/ruang putih yang tersisa */
     margin: 0;
     padding: 0;
   }
 }
-/* ... sisa kode CSS milikmu di bawahnya ... */
-@import "tailwindcss";
+
+/* ... silakan paste sisa kode CSS milikmu di bawah sini jika ada ... */
