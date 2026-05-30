@@ -1,12 +1,11 @@
 import olonseducationlogo from '../imports/olons-education-logo.png'
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // <-- useEffect SUDAH DITAMBAHKAN DI SINI
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Info, Sparkles, Map, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route } from 'lucide-react';
 import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { backgroundMusic } from '../utils/backgroundMusic';
 
-// Tambahkan interface untuk menerima penanda halaman dari App.tsx
 interface MenuDrawerProps {
   pageKey?: string | null;
 }
@@ -14,9 +13,10 @@ interface MenuDrawerProps {
 export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume] = useState(0.15);
+  const [volume] = useState(0.15); // Biarkan volume di sini
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
+  // --- KODE TOGGLE BGM YANG TADI TERHAPUS KINI KEMBALI ---
   const toggleBgm = () => {
     const newState = !isMuted;
     setIsMuted(newState);
@@ -31,6 +31,45 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
     }
     if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay();
   };
+
+  // --- USEEFFECT BARU YANG BEBAS ERROR ---
+  useEffect(() => {
+    // 1. Coba putar musik secara normal saat halaman dimuat
+    try {
+      backgroundMusic.play(0);
+    } catch (e) {
+      console.warn("BGM Start Error:", e);
+    }
+
+    // 2. Siapkan perangkap untuk klik pertama (berjaga-jaga jika diblokir browser)
+    const handleFirstInteraction = () => {
+      // Pastikan toggle UI menyesuaikan ke posisi ON
+      setIsMuted(false); 
+      
+      try {
+        backgroundMusic.play(0);
+      } catch (e) {
+        console.warn("Interaction Play Error:", e);
+      }
+      
+      // Setelah interaksi pertama, cabut perangkapnya
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    // 3. Pasang perangkap di layar
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
+
+    // 4. Petugas kebersihan saat halaman ditutup
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      // backgroundMusic.stop(); <-- Matikan jika tidak ingin musiknya bocor ke halaman lain
+    };
+  }, []);
+
+  // Sisa kodemu (return, dst) biarkan utuh di bawah ini...
 
   const closeDrawer = () => {
     setIsOpen(false);

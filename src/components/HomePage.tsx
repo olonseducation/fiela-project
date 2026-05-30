@@ -36,17 +36,31 @@ interface HomePageProps {
 }
 
 export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitScores, onSelectUnit, onReviewUnit, onPasswordUnlock, onBackToWelcome }: HomePageProps) {
-  // --- KODE YANG DIPERBAIKI ---
+  
   useEffect(() => {
-    // Mulai putar musik Homepage
-    backgroundMusic.play(0);
-    
-    // Petugas kebersihan: Matikan musik saat halaman ditutup atau dimuat ulang
-    return () => {
+    // 1. KETEGASAN HOMEPAGE: Matikan musik apa pun yang terbawa dari halaman Unit
+    try {
       backgroundMusic.stop();
+    } catch (e) {
+      console.warn("Gagal menghentikan musik sebelumnya:", e);
+    }
+
+    // 2. Putar kaset musik Homepage secara aman
+    try {
+      // Langsung panggil fungsinya tanpa perlu menangkap 'Promise'
+      backgroundMusic.play(0);
+    } catch (e) {
+      // Jika browser memblokirnya karena Autoplay Policy, error akan ditangkap di sini diam-diam
+      console.warn("BGM Homepage tertahan oleh browser:", e);
+    }
+
+    // 3. PETUGAS KEBERSIHAN: Matikan musik Homepage saat Kapten pergi ke halaman Unit lain
+    return () => {
+      try {
+        backgroundMusic.stop();
+      } catch (e) {}
     };
-  }, []); // Gunakan array kosong [] agar tidak terpanggil berulang kali
-  // -----------------------------
+  }, []);
   
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [selectedLockedUnit, setSelectedLockedUnit] = useState<number | null>(null);
