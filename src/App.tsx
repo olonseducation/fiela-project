@@ -11,6 +11,8 @@ import { MiniGamePage, type WrongAnswer } from './components/MiniGamePage';
 import { RewardPage } from './components/RewardPage';
 import { CompletionPage } from './components/CompletionPage';
 import { MenuDrawer } from './components/MenuDrawer';
+import { db } from './firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const STORAGE_KEY_COMPLETED = 'vocabulary-app-completed-units';
 const STORAGE_KEY_CURRENT_UNIT = 'vocabulary-app-current-unit';
@@ -18,6 +20,7 @@ const STORAGE_KEY_CURRENT_PAGE = 'vocabulary-app-current-page';
 const STORAGE_KEY_WELCOME_SEEN = 'vocabulary-app-welcome-seen';
 const STORAGE_KEY_PASSWORD_UNLOCKED = 'vocabulary-app-password-unlocked';
 const STORAGE_KEY_UNIT_SCORES = 'vocabulary-app-unit-scores';
+const STORAGE_KEY_DEVICE_ID = 'vocabulary-app-device-id';
 
 export interface UnitScore {
   unitId: number;
@@ -96,14 +99,38 @@ export default function App() {
     }
   }, [passwordUnlockedUnits]);
 
-  // Save unit scores to localStorage whenever it changes
+  // Save unit scores to localStorage whenever it changes AND SYNC TO FIREBASE
   useEffect(() => {
     try {
+      // 1. Simpan data di lokal HP anak terlebih dahulu
       localStorage.setItem(STORAGE_KEY_UNIT_SCORES, JSON.stringify(unitScores));
+      
+      // 2. Buatkan "KTP Pelaut" otomatis jika HP ini belum memilikinya
+      let deviceId = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
+      if (!deviceId) {
+        deviceId = 'pelaut_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(STORAGE_KEY_DEVICE_ID, deviceId);
+      }
+
+      // 3. Kirim salinan data ke awan (Firestore) secara diam-diam
+      // Syarat: Hanya kirim jika sudah ada skor (jangan kirim data kosong saat baru buka web)
+      if (Object.keys(unitScores).length > 0) {
+        const sailorRef = doc(db, "pelaut_fiela", deviceId);
+        
+        setDoc(sailorRef, {
+          id_perangkat: deviceId,
+          waktu_terakhir_main: new Date().toISOString(),
+          koleksi_skor: unitScores,
+          pulau_selesai: Array.from(completedUnits)
+        }, { merge: true }) 
+        .then(() => console.log("Data berhasil berlayar ke awan! ☁️"))
+        .catch(err => console.error("Badai! Gagal mengirim ke awan:", err));
+      }
+
     } catch (error) {
       console.error('Error saving unit scores:', error);
     }
-  }, [unitScores]);
+  }, [unitScores, completedUnits]); // Pantau juga completedUnits
 
   // Save current progress to localStorage
   useEffect(() => {
