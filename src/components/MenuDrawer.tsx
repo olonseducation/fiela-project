@@ -158,6 +158,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               <li>Practice your pronunciation and learn the meanings of important words on the <span className="font-bold">Lexicon Review</span> page.</li>
               <li>Complete the <span className="font-bold">Mini Game Quest</span> challenges to collect the highest score.</li>
               <li>Open the <span className="font-bold">Treasure Vault</span> to admire the golden badges and artifacts you've successfully unlocked!</li>
+              <li>Collect <span className="font-bold">Atlas Coins</span> to unlock the next expedition.</li>
             </ol>
           </div>
         );
@@ -166,10 +167,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
           <div className="font-[Nunito] text-amber-950">
             <ul className="list-disc pl-5 space-y-4 leading-relaxed marker:text-amber-700">
               <li className="pl-1">
-                For the finest experience with speech features, allow access to your speaking device when prompted!
+                <span className="font-bold">Allow Microphone Access:</span> For the finest experience with speech features, allow access to your speaking device when prompted!
               </li>
               <li className="pl-1">
-                <span className="font-bold">Speak Clearly into the Magic Compass:</span> For the best voice recognition experience, try to speak closely to your device's microphone or wear a <span className="font-bold">headset/IEM</span>. This helps the atlas capture your magnificent pronunciation perfectly! 🎧
+                <span className="font-bold">Speak Clearly into the Magic Compass:</span> For the best voice recognition experience, try to speak closely to your device's microphone or wear a <span className="font-bold">headset/earphone/additional microphone</span>. This helps the atlas capture your magnificent pronunciation perfectly!
               </li>
             </ul>
           </div>

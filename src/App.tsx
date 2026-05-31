@@ -185,17 +185,34 @@ export default function App() {
       newCompleted.add(currentUnit);
       setCompletedUnits(newCompleted);
 
-      // Save the unit score beserta pronunciationScore-nya
-      const newScores = { ...unitScores };
+      // Hitung persentase kuis baru
       const percentage = gameResults.total > 0 ? (gameResults.score / gameResults.total) * 100 : 0;
-      newScores[currentUnit] = {
-        unitId: currentUnit,
-        score: gameResults.score,
-        total: gameResults.total,
-        percentage: percentage,
-        pronunciationScore: gameResults.pronunciationScore
-      };
-      setUnitScores(newScores);
+      
+      // Gunakan callback prevScores agar selalu membaca data paling mutakhir
+      setUnitScores(prevScores => {
+        const oldScoreData = prevScores[currentUnit];
+        
+        // Totalkan nilai kombo (Kuis + Pelafalan) dari sesi baru dan sesi lama
+        const newTotalValue = percentage + (gameResults.pronunciationScore || 0);
+        const oldTotalValue = oldScoreData ? (oldScoreData.percentage || 0) + (oldScoreData.pronunciationScore || 0) : -1;
+
+        // SISTEM REKOR TERTINGGI: Hanya timpa jika skor baru BENAR-BENAR lebih tinggi
+        if (newTotalValue > oldTotalValue) {
+          return {
+            ...prevScores,
+            [currentUnit]: {
+              unitId: currentUnit,
+              score: gameResults.score,
+              total: gameResults.total,
+              percentage: percentage,
+              pronunciationScore: gameResults.pronunciationScore
+            }
+          };
+        }
+        
+        // Jika skor baru lebih rendah atau sama, ABAIKAN (Pertahankan rekor lama)
+        return prevScores;
+      });
 
       // Check if all units are completed
       if (newCompleted.size === units.length) {
