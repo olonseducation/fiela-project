@@ -24,6 +24,7 @@ export interface UnitScore {
   score: number;
   total: number;
   percentage: number;
+  pronunciationScore?: number; // TAMBAHAN: Menyimpan skor pelafalan permanen
 }
 
 export default function App() {
@@ -34,16 +35,18 @@ export default function App() {
   const [passwordUnlockedUnits, setPasswordUnlockedUnits] = useState<Set<number>>(new Set());
   const [showCompletion, setShowCompletion] = useState(false);
   const [unitScores, setUnitScores] = useState<Record<number, UnitScore>>({});
-  const [gameResults, setGameResults] = useState<{ wrongAnswers: WrongAnswer[], score: number, total: number }>({
+  
+  // TAMBAHAN: Menambahkan pronunciationScore ke memori sementara gameResults
+  const [gameResults, setGameResults] = useState<{ wrongAnswers: WrongAnswer[], score: number, total: number, pronunciationScore: number }>({
     wrongAnswers: [],
     score: 0,
-    total: 0
+    total: 0,
+    pronunciationScore: 0
   });
 
   // Load progress from localStorage on mount
   useEffect(() => {
     try {
-      // Check if welcome page has been seen
       const welcomeSeen = localStorage.getItem(STORAGE_KEY_WELCOME_SEEN);
       if (welcomeSeen === 'true') {
         setShowWelcome(false);
@@ -129,12 +132,13 @@ export default function App() {
   const handleReviewUnit = (unitId: number, page: PageType) => {
     setCurrentUnit(unitId);
 
-    // If navigating to reward page, load the saved score
+    // If navigating to reward page, load the saved score (termasuk pronunciation)
     if (page === 'reward' && unitScores[unitId]) {
       setGameResults({
         wrongAnswers: [],
         score: unitScores[unitId].score,
-        total: unitScores[unitId].total
+        total: unitScores[unitId].total,
+        pronunciationScore: unitScores[unitId].pronunciationScore || 0
       });
     }
 
@@ -155,18 +159,22 @@ export default function App() {
     setCurrentPage('review');
   };
 
-  const handleReviewComplete = () => {
+  // UBAH: Sekarang menerima skor pelafalan dari ReviewPage dan menyimpannya!
+  const handleReviewComplete = (pronunciationScore: number = 0) => {
+    setGameResults(prev => ({ ...prev, pronunciationScore }));
     setCurrentPage('game');
   };
 
+  // UBAH: Menggunakan "prev" agar pronunciationScore yang disimpan sebelumnya tidak hilang
   const handleGameComplete = (wrongAnswers: WrongAnswer[]) => {
     const unit = currentUnit ? units.find(u => u.id === currentUnit) : null;
     if (unit) {
-      setGameResults({
+      setGameResults(prev => ({
+        ...prev, 
         wrongAnswers,
         score: unit.vocabulary.length - wrongAnswers.length,
         total: unit.vocabulary.length
-      });
+      }));
     }
     setCurrentPage('reward');
   };
@@ -177,14 +185,15 @@ export default function App() {
       newCompleted.add(currentUnit);
       setCompletedUnits(newCompleted);
 
-      // Save the unit score
+      // Save the unit score beserta pronunciationScore-nya
       const newScores = { ...unitScores };
       const percentage = gameResults.total > 0 ? (gameResults.score / gameResults.total) * 100 : 0;
       newScores[currentUnit] = {
         unitId: currentUnit,
         score: gameResults.score,
         total: gameResults.total,
-        percentage: percentage
+        percentage: percentage,
+        pronunciationScore: gameResults.pronunciationScore
       };
       setUnitScores(newScores);
 
@@ -215,59 +224,30 @@ export default function App() {
 
   const unit = currentUnit ? units.find(u => u.id === currentUnit) : null;
 
-  // =========================================================================
-  // RENDER UTAMA DENGAN ANIMATEPRESENCE TUNGGAL (SANG WASIT)
-  // Ini memastikan transisi antar halaman (Welcome -> Home -> Game) 
-  // berjalan sangat mulus dan menyilang (cross-fade) tanpa layar kosong.
-  // =========================================================================
   return (
     <div className="relative min-h-screen">
-      
-      {/* === GARIS JEJAK ATLAS GLOBAL === 
-          Garis ini akan diam tak bergerak di latar belakang berkat 'fixed',
-          dan tidak akan menghalangi tombol berkat 'pointer-events-none'.
-      */}
       <svg 
         className="fixed inset-0 w-full h-full pointer-events-none opacity-[0.15] z-0" 
         viewBox="0 0 1440 900" 
         preserveAspectRatio="xMidYMid slice" 
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Jejak Ekspedisi Atas */}
         <path d="M-100 200 Q 300 400, 720 200 T 1540 300" fill="transparent" stroke="#451a03" strokeWidth="4" strokeDasharray="12 16" />
-        {/* Jejak Ekspedisi Bawah */}
         <path d="M1540 700 Q 1100 500, 720 800 T -100 600" fill="transparent" stroke="#451a03" strokeWidth="4" strokeDasharray="12 16" />
       </svg>
 
-      {/* DRAWER GLOBAL: Aktif di semua halaman kecuali halaman Welcome & Completion */}
       {!showWelcome && !showCompletion && <MenuDrawer pageKey={currentPage || 'home'} />}
       
       <AnimatePresence mode="wait">
       
-      {/* 1. COMPLETION PAGE */}
       {showCompletion && (
-        <motion.div
-          key="completion"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div key="completion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           <CompletionPage onRestart={handleRestart} />
         </motion.div>
       )}
 
-      {/* 2. WELCOME PAGE */}
       {!showCompletion && showWelcome && (
-        <motion.div
-          key="welcome"
-          initial={{ scale: 1, opacity: 1 }}
-          exit={{ 
-            scale: 1.1, 
-            opacity: 0,
-            transition: { duration: 0.4, ease: "easeOut" }
-          }}
-        >
+        <motion.div key="welcome" initial={{ scale: 1, opacity: 1 }} exit={{ scale: 1.1, opacity: 0, transition: { duration: 0.4, ease: "easeOut" } }}>
           <WelcomePage 
             onStart={() => {
               setShowWelcome(false);
@@ -281,24 +261,8 @@ export default function App() {
         </motion.div>
       )}
 
-      {/* 3. HOME PAGE (Peta Atlas Utama) */}
       {!showCompletion && !showWelcome && (!currentUnit || !currentPage || !unit) && (
-        <motion.div
-          key="homepage"
-          // Muncul dari belakang (scale 0.95) saat Welcome hilang
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 1,
-            transition: { duration: 0.4, ease: "easeOut" }
-          }}
-          // Mundur sedikit (scale 0.95) saat pindah ke halaman mini game/cerita
-          exit={{ 
-            scale: 0.95, 
-            opacity: 0,
-            transition: { duration: 0.3 }
-          }}
-        >
+        <motion.div key="homepage" initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } }} exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.3 } }}>
           <HomePage
             units={units}
             completedUnits={completedUnits}
@@ -312,17 +276,8 @@ export default function App() {
         </motion.div>
       )}
 
-      {/* 4. ISI EKSPEDISI (Intro, Story, Game, dll) */}
       {!showCompletion && !showWelcome && currentUnit && currentPage && unit && (
-        <motion.div
-          key={`expedition-${currentPage}`}
-          // Muncul meluncur dari bawah saat dipilih dari Peta
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4 }}
-          className="min-h-screen" // Pastikan tidak ada latar putih di belakangnya
-        >
+        <motion.div key={`expedition-${currentPage}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="min-h-screen">
           {currentPage === 'intro' && (
             <IntroPage unit={unit} onStart={handleStartUnit} onGoHome={handleGoHome} />
           )}
@@ -362,6 +317,7 @@ export default function App() {
               wrongAnswers={gameResults.wrongAnswers}
               score={gameResults.score}
               totalQuestions={gameResults.total}
+              pronunciationScore={gameResults.pronunciationScore} // KINI MENGALIR DENGAN SEMPURNA!
               onGoHome={handleGoHome}
             />
           )}

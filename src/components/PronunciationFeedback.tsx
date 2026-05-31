@@ -7,7 +7,8 @@ import { matchesWord } from '../utils/homophones';
 
 interface PronunciationFeedbackProps {
   targetWord: string;
-  onSuccess: () => void;
+  // UBAH: onSuccess sekarang wajib menerima angka skor
+  onSuccess: (confidenceScore: number) => void;
 }
 
 export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFeedbackProps) {
@@ -21,6 +22,8 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
 
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalTranscriptRef = useRef<string>('');
+  // BRANKAS BARU: Untuk menyimpan nilai confidence sementara
+  const confidenceRef = useRef<number>(1);
 
   useEffect(() => {
     let recognitionInstance: any = null;
@@ -59,16 +62,13 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             const trimmedFinal = finalText.trim();
             finalTranscriptRef.current = trimmedFinal.toLowerCase();
             
-            // --- LOGIKA BARU UNTUK TAMPILAN ---
+            // SIMPAN SKOR: Simpan lowestConfidence ke brankas
+            confidenceRef.current = lowestConfidence;
             
             // Ambang batas kepercayaan. 0.4 (40%) biasanya cukup aman.
-            // Jika di bawah ini, tebakan browser sering kali ngawur.
             if (lowestConfidence < 0.4) {
-              // Browser tidak yakin, tampilkan pesan generik saja
-              // agar anak tidak melihat kata aneh yang berbeda 180 derajat.
               setTranscript("Hmm, not quite..."); 
             } else {
-              // Browser cukup yakin, tampilkan teks tebakannya
               setTranscript(trimmedFinal);
             }
           }
@@ -82,12 +82,14 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           }
           
           const finalText = finalTranscriptRef.current;
+          const finalConfidence = confidenceRef.current; // AMBIL SKOR DARI BRANKAS
+          
           if (finalText) {
-            // Jika ada suara, cek seperti biasa
-            checkPronunciation(finalText);
+            // Kirim teks DAN skor ke fungsi pengecekan
+            checkPronunciation(finalText, finalConfidence);
             finalTranscriptRef.current = '';
+            confidenceRef.current = 1; // Reset brankas
           } else {
-            // TAMBAHAN BARU: Jika anak diam sampai waktu habis
             setFeedback('incorrect');
             setTranscript('Oops! I didn\'t hear you.');
             soundEffects.incorrect();
@@ -117,23 +119,22 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     };
   }, []);
 
-  const checkPronunciation = (spokenText: string) => {
+  // UBAH: Fungsi ini sekarang menerima confidenceScore
+  const checkPronunciation = (spokenText: string, confidenceScore: number) => {
     const normalizedTarget = targetWord.toLowerCase().trim();
     
-    // Jika hasil tangkapan BENAR (termasuk jika itu adalah homofon)
     if (matchesWord(spokenText.toLowerCase().trim(), normalizedTarget)) {
-      
-      // --- PERBAIKAN UX PENDIDIKAN ---
-      // Timpa hasil tangkapan browser (misal: "bored" atau "two")
-      // dengan kata target yang sedang dipelajari anak (misal: "board" atau "to").
       setTranscript(targetWord);
-      
       setFeedback('correct');
       soundEffects.correctPronunciation();
-      setTimeout(() => { onSuccess(); setFeedback(null); setTranscript(''); }, 1800);
+      
+      // KIRIM SKOR: Saat sukses, kirimkan skor ke ReviewPage!
+      setTimeout(() => { 
+        onSuccess(confidenceScore); 
+        setFeedback(null); 
+        setTranscript(''); 
+      }, 1800);
     } else {
-      // Jika salah, biarkan menampilkan hasil tangkapan browser
-      // (yang sudah kita saring dengan confidence score sebelumnya)
       setFeedback('incorrect');
       soundEffects.incorrect();
       setTimeout(() => { setFeedback(null); setTranscript(''); }, 2500);
@@ -146,6 +147,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       setTranscript('');
       setFeedback(null);
       finalTranscriptRef.current = '';
+      confidenceRef.current = 1; // Reset skor saat mulai ulang
       recognition.start();
       setIsListening(true);
       autoStopTimerRef.current = setTimeout(() => { if (recognition) recognition.stop(); }, 5000);
@@ -180,10 +182,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         </motion.div>
       </div>
 
-      {/* --- RUANG RESERVASI ANTI-LOMPAT --- */}
       <div className="h-24 flex flex-col items-center justify-start gap-2 w-full pt-1">
-        
-        {/* TEXT PETUNJUK: Muncul saat IDLE (belum klik, tidak error, dan tidak ada transkrip) */}
         {!isListening && !transcript && !feedback && !error && (
           <motion.p 
             initial={{ opacity: 0, y: -5 }}
@@ -194,14 +193,12 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </motion.p>
         )}
 
-        {/* PESAN ERROR MIKROFON */}
         {error && !isListening && (
            <p className="text-red-600 font-[Nunito] font-bold text-sm bg-red-50 px-3 py-1 rounded-full border border-red-200 flex items-center gap-1.5">
              <AlertCircle className="h-4 w-4" /> {error}
            </p>
         )}
 
-        {/* ANIMASI LISTENING */}
         {isListening && (
           <motion.p 
             animate={{ opacity: [1, 0.5, 1] }} 
@@ -212,7 +209,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </motion.p>
         )}
         
-        {/* HASIL TRANSKRIP */}
         {transcript && (
           <div className="bg-white/60 px-4 py-1.5 md:py-2 rounded-xl border border-amber-900/10 shadow-sm text-center">
             <p className="text-amber-900 font-[Nunito] text-sm md:text-base">
@@ -227,7 +223,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </div>
         )}
 
-        {/* FEEDBACK BENAR/SALAH */}
         {feedback === 'correct' && (
           <motion.div 
             animate={{ scale: [0.5, 1.2, 1], rotate: [0, -5, 5, 0] }}
