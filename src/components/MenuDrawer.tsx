@@ -1,7 +1,8 @@
 import olonseducationlogo from '../imports/olons-education-logo.png'
 import { useState, useEffect } from 'react'; // <-- useEffect SUDAH DITAMBAHKAN DI SINI
+import { PrivacyModal } from './PrivacyModal';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Info, Sparkles, Map, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route } from 'lucide-react';
+import { Menu, X, Info, Sparkles, Map, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route, ShieldCheck } from 'lucide-react';
 import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { backgroundMusic } from '../utils/backgroundMusic';
@@ -15,6 +16,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [volume] = useState(0.15); // Biarkan volume di sini
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // --- KODE TOGGLE BGM YANG TADI TERHAPUS KINI KEMBALI ---
   const toggleBgm = () => {
@@ -362,6 +364,20 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         </Button>
                       ))}
 
+                      {/* --- TOMBOL PRIVACY POLICY PINDAH KE SINI --- */}
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-left font-[Nunito] font-bold text-base py-6 px-4 hover:bg-amber-100 text-amber-950 border-2 border-transparent hover:border-amber-200/40 rounded-xl bg-white/60 shadow-sm"
+                        onClick={() => { 
+                          if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay(); 
+                          setIsPrivacyOpen(true); 
+                        }}
+                      >
+                        <ShieldCheck className="mr-3 h-5 w-5 text-amber-700 shrink-0" />
+                        Privacy Policy
+                      </Button>
+                      {/* ------------------------------------------- */}
+
                       {/* Single Music Control (Without SFX) */}
                       <div className="bg-amber-100/60 p-4 rounded-xl border-2 border-amber-200/60 shadow-inner mt-6">
                         <div className="flex items-center justify-between">
@@ -378,6 +394,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                           </Button>
                         </div>
                       </div>
+
                     </motion.div>
                   ) : (
                     <motion.div
@@ -398,6 +415,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
           </>
         )}
       </AnimatePresence>
+
+      {/* --- KOMPONEN GULUNGAN PERKAMEN DILETAKKAN DI SINI --- */}
+      <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+
     </>
   );
 }
