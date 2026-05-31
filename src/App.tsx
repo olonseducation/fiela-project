@@ -105,25 +105,32 @@ export default function App() {
       // 1. Simpan data di lokal HP anak terlebih dahulu
       localStorage.setItem(STORAGE_KEY_UNIT_SCORES, JSON.stringify(unitScores));
       
-      // 2. Buatkan "KTP Pelaut" otomatis jika HP ini belum memilikinya
-      let deviceId = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
-      if (!deviceId) {
-        deviceId = 'pelaut_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem(STORAGE_KEY_DEVICE_ID, deviceId);
+      // 2. AMBIL NAMA DARI DIALOG WELCOME PAGE
+      const namaPelaut = localStorage.getItem('fiela_player_name') || 'Pelaut_Anonim';
+      
+      // 3. Buatkan kode unik pendek jika belum ada (agar nama yang sama tidak saling menimpa data)
+      let shortId = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
+      if (!shortId) {
+        shortId = Math.random().toString(36).substr(2, 5); // Hanya ambil 5 huruf/angka acak
+        localStorage.setItem(STORAGE_KEY_DEVICE_ID, shortId);
       }
 
-      // 3. Kirim salinan data ke awan (Firestore) secara diam-diam
-      // Syarat: Hanya kirim jika sudah ada skor (jangan kirim data kosong saat baru buka web)
+      // Gabungkan nama dan kode unik (Contoh hasil: Widi_x7y9a)
+      const safeName = namaPelaut.trim().replace(/[^a-zA-Z0-9]/g, '_'); // Hilangkan spasi/simbol aneh
+      const documentId = `${safeName}_${shortId}`;
+
+      // 4. Kirim salinan data ke awan (Firestore)
       if (Object.keys(unitScores).length > 0) {
-        const sailorRef = doc(db, "pelaut_fiela", deviceId);
+        const sailorRef = doc(db, "pelaut_fiela", documentId);
         
         setDoc(sailorRef, {
-          id_perangkat: deviceId,
+          nama_pelaut: namaPelaut, // Nama asli tersimpan jelas di dalam data
+          id_perangkat: documentId,
           waktu_terakhir_main: new Date().toISOString(),
           koleksi_skor: unitScores,
           pulau_selesai: Array.from(completedUnits)
         }, { merge: true }) 
-        .then(() => console.log("Data berhasil berlayar ke awan! ☁️"))
+        .then(() => console.log(`Data Kapten ${namaPelaut} berhasil berlayar ke awan! ☁️`))
         .catch(err => console.error("Badai! Gagal mengirim ke awan:", err));
       }
 
