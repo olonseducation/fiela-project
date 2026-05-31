@@ -276,7 +276,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 const positions = ['md:ml-[10%]', 'md:ml-[68%]', 'md:ml-[12%]', 'md:ml-[65%]', 'md:ml-[15%]'];
                 const ornaments = ['⛵', '⛵', '⛵', '⛵', '⛵'];
                 const boatStyles = ['rotate-[330deg]', '-scale-x-100 -rotate-[340deg]', 'rotate-[343deg]', '-scale-x-100 -rotate-[340deg]', 'rotate-[340deg]'];
-                const boatPositions = ['left-[40%] md:left-[35%] -top-4 md:-top-8', 'left-[65%] md:left-[60%] -top-2 md:top-16', 'left-[40%] md:left-[42%] -top-2 md:top-10', 'left-[55%] md:left-[50%] -top-6 md:top-16', 'left-[45%] md:left-[35%] -top-2 md:-top-8'];
+                const boatPositions = ['left-[20%] md:left-[35%] -top-12 md:-top-8', 'left-[65%] md:left-[60%] -top-2 md:top-16', 'left-[12%] md:left-[42%] -top-2 md:top-10', 'left-[60%] md:left-[50%] -top-5 md:top-16', 'left-[12%] md:left-[35%] -top-2 md:-top-8'];
 
                 const isPasswordUnlocked = passwordUnlockedUnits.has(unit.id);
                 
