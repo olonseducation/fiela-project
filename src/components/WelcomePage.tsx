@@ -121,22 +121,21 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
     setShowNameDialog(false);
 
     // 2. Mainkan Audio 2 ("Okay! Let's Go!")
-    // Ganti dengan path audio let's go-mu (misal: '/sounds/atlas-lets-go.mp3')
     const letsGoAudio = welcomePageAudio.letsGoPath || '/sounds/atlas-lets-go.mp3';
     
-    customAudioManager.playAudio(letsGoAudio).then(() => {
-      // 3. Jika tadi anak lewat jalur "Start", setelah audio 2 selesai, langsung pindah halaman
-      if (isImpatientStart) {
+    // Putar audio dan berikan "Silent Catch" (Peredam Eror) jika gagal
+    customAudioManager.playAudio(letsGoAudio).catch(() => {});
+    
+    // 3. Jika tadi anak lewat jalur "Start", tahan dulu sebelum pindah halaman
+    if (isImpatientStart) {
+      // SUTRADARA MEMBERIKAN JEDA 2.5 DETIK
+      // (Silakan ubah angka 2500 ini jika durasi audio "Okay! Let's Go!" milikmu lebih cepat/lama)
+      setTimeout(() => {
         executeStartTransition();
-      }
-    }).catch(() => {
-      // Jaga-jaga jika audio gagal diputar, tetap izinkan pindah halaman jika lewat jalur Start
-      if (isImpatientStart) {
-        executeStartTransition();
-      }
-    });
+      }, 2500); 
+    }
   };
-
+  
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#d4b896] via-[#c9a97a] to-[#a18260] flex flex-col items-center justify-center p-4 sm:p-6 lg:py-12 overflow-hidden relative">
       {/* Texture & Grid Lines */}
