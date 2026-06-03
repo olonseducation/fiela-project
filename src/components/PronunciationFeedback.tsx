@@ -34,43 +34,58 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         recognitionInstance.continuous = false;
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = 'en-US';
-        recognitionInstance.maxAlternatives = 1;
+        recognitionInstance.maxAlternatives = 3; // 1. UBAH KE 3 ALTERNATIF TEBAKAN
 
         recognitionInstance.onresult = (event: any) => {
           let interimText = '';
           let finalText = '';
-          let lowestConfidence = 1; // Default kepercayaan penuh
+          let finalConf = 1;
+          let isMatchFound = false;
+
+          const normalizedTarget = targetWord.toLowerCase().trim();
 
           for (let i = 0; i < event.results.length; i++) {
             const result = event.results[i];
-            const alternative = result[0];
             
             if (result.isFinal) {
-              finalText += alternative.transcript + ' ';
-              // Ambil skor kepercayaan (0.0 sampai 1.0)
-              if (alternative.confidence < lowestConfidence) {
-                lowestConfidence = alternative.confidence;
+              // 2. PERIKSA KETIGA ALTERNATIF TEBAKAN!
+              for (let j = 0; j < result.length; j++) {
+                const altText = result[j].transcript.toLowerCase().trim();
+                const altConf = result[j].confidence;
+
+                // Jika di antara 3 tebakan itu ada yang cocok dengan target / homophone-nya
+                if (matchesWord(altText, normalizedTarget)) {
+                  finalText = altText; // Gunakan teks tebakan yang benar
+                  finalConf = altConf; // Ambil skor dari tebakan yang benar
+                  isMatchFound = true;
+                  break; // Langsung hentikan perulangan, anak tersebut LULUS!
+                }
               }
+
+              // 3. Jika dari 3 alternatif benar-benar tidak ada yang cocok
+              // Barulah kita ambil paksa tebakan nomor 1 untuk ditampilkan
+              if (!isMatchFound) {
+                finalText = result[0].transcript.toLowerCase().trim();
+                finalConf = result[0].confidence;
+              }
+
             } else {
-              interimText += alternative.transcript;
+              interimText += result[0].transcript;
             }
           }
           
           if (interimText) {
             setTranscript(interimText + '...');
           } else if (finalText) {
-            const trimmedFinal = finalText.trim();
-            finalTranscriptRef.current = trimmedFinal.toLowerCase();
+            finalTranscriptRef.current = finalText;
             
-            // SIMPAN SKOR: Simpan lowestConfidence ke brankas
-            confidenceRef.current = lowestConfidence;
+            // iOS Safari sering memberikan confidence 0 meski teks benar.
+            // Kita beri perlindungan jaring pengaman ke 0.8 agar aplikasi tidak error
+            confidenceRef.current = finalConf > 0 ? finalConf : 0.8; 
             
-            // Ambang batas kepercayaan. 0.4 (40%) biasanya cukup aman.
-            if (lowestConfidence < 0.4) {
-              setTranscript("Hmm, not quite..."); 
-            } else {
-              setTranscript(trimmedFinal);
-            }
+            // 4. HAPUS PEMBLOKIR 0.4! Tampilkan saja teks aslinya
+            // Biarkan fungsi checkPronunciation() yang memutuskan benar/salah murni dari teks
+            setTranscript(finalText);
           }
         };
 
