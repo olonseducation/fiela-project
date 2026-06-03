@@ -19,6 +19,9 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
   const [isSupported, setIsSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  
+  // BRANKAS RADAR: Untuk memunculkan log alternatif teks langsung di layar HP
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalTranscriptRef = useRef<string>('');
@@ -48,10 +51,17 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             const result = event.results[i];
             
             if (result.isFinal) {
+              let radarText = `Target Word: "${targetWord}"\n`;
+
               // 2. PERIKSA KETIGA ALTERNATIF TEBAKAN!
               for (let j = 0; j < result.length; j++) {
                 const altText = result[j].transcript.toLowerCase().trim();
                 const altConf = result[j].confidence;
+
+                // Kumpulkan teks alternatif untuk dicetak ke layar HP
+                radarText += `Tebakan ${j + 1}: "${altText}" (Skor: ${altConf.toFixed(2)})\n`;
+
+                console.log(`Target: ${targetWord} | Tebakan ke-${j + 1}: "${altText}" (Skor: ${altConf})`);
 
                 // Jika di antara 3 tebakan itu ada yang cocok dengan target / homophone-nya
                 if (matchesWord(altText, normalizedTarget)) {
@@ -61,6 +71,9 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
                   break; // Langsung hentikan perulangan, anak tersebut LULUS!
                 }
               }
+
+              // Kirim rangkuman tebakan mesin ke layar HP
+              setDebugInfo(radarText);
 
               // 3. Jika dari 3 alternatif benar-benar tidak ada yang cocok
               // Barulah kita ambil paksa tebakan nomor 1 untuk ditampilkan
@@ -120,7 +133,12 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           setError(event.error === 'not-allowed' ? 'Izin mikrofon ditolak.' : 'Terjadi kesalahan suara.');
         };
 
-        recognitionInstance.onstart = () => setError(null);
+        // Reset error dan radar info setiap kali mikrofon mulai aktif mendengarkan
+        recognitionInstance.onstart = () => {
+          setError(null);
+          setDebugInfo('');
+        };
+
         setRecognition(recognitionInstance);
         setIsReady(true);
       } catch (err) {
@@ -132,7 +150,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     return () => {
       if (recognitionInstance) try { recognitionInstance.stop(); } catch (e) {}
     };
-  }, []);
+  }, [targetWord]);
 
   // UBAH: Fungsi ini sekarang menerima confidenceScore
   const checkPronunciation = (spokenText: string, confidenceScore: number) => {
@@ -161,6 +179,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     try {
       setTranscript('');
       setFeedback(null);
+      setDebugInfo(''); // Reset kotak info di layar
       finalTranscriptRef.current = '';
       confidenceRef.current = 1; // Reset skor saat mulai ulang
       recognition.start();
@@ -260,6 +279,14 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </motion.div>
         )}
       </div>
+
+      {/* KOTAK RADAR DETEKSI UNTUK HP (AKAN MUNCUL DI LAYAR SAAT BERKATA) */}
+      {debugInfo && (
+        <div className="w-full mt-2 p-3 bg-gray-900 text-green-400 text-xs font-mono rounded-xl shadow-lg whitespace-pre-wrap text-left border border-green-500/30 z-50">
+          <p className="text-white border-b border-gray-700 pb-1 mb-1 font-bold text-center tracking-wide">📡 RADAR DEBUGLOG ASR</p>
+          {debugInfo}
+        </div>
+      )}
     </div>
   );
 }
