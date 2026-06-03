@@ -174,7 +174,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <span className="font-bold">Allow Microphone Access:</span> For the finest experience with speech features, allow access to your speaking device when prompted!
               </li>
               <li className="pl-1">
-                <span className="font-bold">Speak Clearly into the Magic Compass:</span> For the best voice recognition experience, try to speak closely to your device's microphone or wear a <span className="font-bold">headset/earphone/additional microphone</span>. This helps the atlas capture your magnificent pronunciation perfectly!
+                <span className="font-bold">Speak Clearly into the Magic Compass:</span> For the best voice recognition experience, try to speak closely to your device's microphone or wear a headset/earphone/additional microphone (recommended for mobile device user). This helps the atlas capture your magnificent pronunciation perfectly!
               </li>
             </ul>
           </div>
