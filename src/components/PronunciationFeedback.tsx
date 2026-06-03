@@ -7,25 +7,23 @@ import { matchesWord } from '../utils/homophones';
 
 interface PronunciationFeedbackProps {
   targetWord: string;
-  // UBAH: onSuccess sekarang wajib menerima angka skor
   onSuccess: (confidenceScore: number) => void;
 }
 
 export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFeedbackProps) {
-  const [isListening, setIsListening] = useState(false);
+  const [isListening, setIsListening] = useState(false); // Tombol sedang ditekan
+  const [isRecording, setIsRecording] = useState(false); // Mesin BENAR-BENAR siap mendengarkan
+  const [isCooldown, setIsCooldown] = useState(false);   // Jeda anti-spam klik
+  
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [recognition, setRecognition] = useState<any>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
-  
-  // BRANKAS RADAR: Untuk memunculkan log alternatif teks langsung di layar HP
-  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalTranscriptRef = useRef<string>('');
-  // BRANKAS BARU: Untuk menyimpan nilai confidence sementara
   const confidenceRef = useRef<number>(1);
 
   useEffect(() => {
@@ -37,7 +35,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         recognitionInstance.continuous = false;
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = 'en-US';
-        recognitionInstance.maxAlternatives = 3; // 1. UBAH KE 3 ALTERNATIF TEBAKAN
+        recognitionInstance.maxAlternatives = 3; 
 
         recognitionInstance.onresult = (event: any) => {
           let interimText = '';
@@ -51,32 +49,18 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             const result = event.results[i];
             
             if (result.isFinal) {
-              let radarText = `Target Word: "${targetWord}"\n`;
-
-              // 2. PERIKSA KETIGA ALTERNATIF TEBAKAN!
               for (let j = 0; j < result.length; j++) {
                 const altText = result[j].transcript.toLowerCase().trim();
                 const altConf = result[j].confidence;
 
-                // Kumpulkan teks alternatif untuk dicetak ke layar HP
-                radarText += `Tebakan ${j + 1}: "${altText}" (Skor: ${altConf.toFixed(2)})\n`;
-
-                console.log(`Target: ${targetWord} | Tebakan ke-${j + 1}: "${altText}" (Skor: ${altConf})`);
-
-                // Jika di antara 3 tebakan itu ada yang cocok dengan target / homophone-nya
                 if (matchesWord(altText, normalizedTarget)) {
-                  finalText = altText; // Gunakan teks tebakan yang benar
-                  finalConf = altConf; // Ambil skor dari tebakan yang benar
+                  finalText = altText; 
+                  finalConf = altConf; 
                   isMatchFound = true;
-                  break; // Langsung hentikan perulangan, anak tersebut LULUS!
+                  break; 
                 }
               }
 
-              // Kirim rangkuman tebakan mesin ke layar HP
-              setDebugInfo(radarText);
-
-              // 3. Jika dari 3 alternatif benar-benar tidak ada yang cocok
-              // Barulah kita ambil paksa tebakan nomor 1 untuk ditampilkan
               if (!isMatchFound) {
                 finalText = result[0].transcript.toLowerCase().trim();
                 finalConf = result[0].confidence;
@@ -91,32 +75,28 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             setTranscript(interimText + '...');
           } else if (finalText) {
             finalTranscriptRef.current = finalText;
-            
-            // iOS Safari sering memberikan confidence 0 meski teks benar.
-            // Kita beri perlindungan jaring pengaman ke 0.8 agar aplikasi tidak error
             confidenceRef.current = finalConf > 0 ? finalConf : 0.8; 
-            
-            // 4. HAPUS PEMBLOKIR 0.4! Tampilkan saja teks aslinya
-            // Biarkan fungsi checkPronunciation() yang memutuskan benar/salah murni dari teks
             setTranscript(finalText);
           }
         };
 
         recognitionInstance.onend = () => {
           setIsListening(false);
+          setIsRecording(false);
+          triggerCooldown(); // 🛡️ Nyalakan pelindung anti-spam klik
+
           if (autoStopTimerRef.current) {
             clearTimeout(autoStopTimerRef.current);
             autoStopTimerRef.current = null;
           }
           
           const finalText = finalTranscriptRef.current;
-          const finalConfidence = confidenceRef.current; // AMBIL SKOR DARI BRANKAS
+          const finalConfidence = confidenceRef.current; 
           
           if (finalText) {
-            // Kirim teks DAN skor ke fungsi pengecekan
             checkPronunciation(finalText, finalConfidence);
             finalTranscriptRef.current = '';
-            confidenceRef.current = 1; // Reset brankas
+            confidenceRef.current = 1; 
           } else {
             setFeedback('incorrect');
             setTranscript('Oops! I didn\'t hear you.');
@@ -130,13 +110,17 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
 
         recognitionInstance.onerror = (event: any) => {
           setIsListening(false);
+          setIsRecording(false);
+          triggerCooldown(); // 🛡️ Nyalakan pelindung anti-spam klik
           setError(event.error === 'not-allowed' ? 'Izin mikrofon ditolak.' : 'Terjadi kesalahan suara.');
         };
 
-        // Reset error dan radar info setiap kali mikrofon mulai aktif mendengarkan
         recognitionInstance.onstart = () => {
           setError(null);
-          setDebugInfo('');
+          // 🚦 LAMPU HIJAU! Mesin sudah siap
+          setIsRecording(true); 
+          // 🔔 Mainkan suara TING di sini untuk memberi aba-aba bicara!
+          soundEffects.buttonPlay(); 
         };
 
         setRecognition(recognitionInstance);
@@ -147,12 +131,23 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     } else {
       setIsSupported(false);
     }
+    
+    // Pembersihan paksa untuk membunuh mikrofon zombi saat layar berpindah
     return () => {
-      if (recognitionInstance) try { recognitionInstance.stop(); } catch (e) {}
+      if (recognitionInstance) {
+        try { recognitionInstance.abort(); } catch (e) {} 
+      }
     };
   }, [targetWord]);
 
-  // UBAH: Fungsi ini sekarang menerima confidenceScore
+  // Fungsi waktu jeda tombol (1.5 Detik)
+  const triggerCooldown = () => {
+    setIsCooldown(true);
+    setTimeout(() => {
+      setIsCooldown(false);
+    }, 1500);
+  };
+
   const checkPronunciation = (spokenText: string, confidenceScore: number) => {
     const normalizedTarget = targetWord.toLowerCase().trim();
     
@@ -161,7 +156,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       setFeedback('correct');
       soundEffects.correctPronunciation();
       
-      // KIRIM SKOR: Saat sukses, kirimkan skor ke ReviewPage!
       setTimeout(() => { 
         onSuccess(confidenceScore); 
         setFeedback(null); 
@@ -175,25 +169,46 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
   };
 
   const startListening = async () => {
-    if (!recognition) return;
+    if (!recognition || isCooldown) return; // Kunci tombol jika cooldown
     try {
       setTranscript('');
       setFeedback(null);
-      setDebugInfo(''); // Reset kotak info di layar
       finalTranscriptRef.current = '';
-      confidenceRef.current = 1; // Reset skor saat mulai ulang
-      recognition.start();
+      confidenceRef.current = 1; 
+      
       setIsListening(true);
+      setIsRecording(false); // Status kuning (tunggu)
+      
+      recognition.start();
       autoStopTimerRef.current = setTimeout(() => { if (recognition) recognition.stop(); }, 5000);
-    } catch (err) { setIsListening(false); }
+    } catch (err) { 
+      setIsListening(false);
+      setIsRecording(false);
+      triggerCooldown();
+    }
+  };
+
+  const stopListeningManually = () => {
+    if (recognition) {
+      try { recognition.stop(); } catch(e) {}
+    }
   };
 
   if (!isSupported) return <p className="text-center text-amber-900 font-[Nunito]">Browser tidak didukung.</p>;
 
+  // Variabel Penampilan Tombol
+  const isButtonDisabled = !isReady || isCooldown;
+  const buttonBackground = isCooldown 
+    ? 'bg-gray-400 cursor-not-allowed' 
+    : isListening 
+      ? 'bg-rose-500 hover:bg-rose-600' 
+      : 'bg-sky-500 hover:bg-sky-600';
+
   return (
     <div className="flex flex-col items-center gap-3 w-full">
       <div className="relative">
-        {isListening && (
+        {/* Animasi sonar hanya muncul saat mesin SUDAH SIAP merekam */}
+        {isRecording && (
           <motion.div
             className="absolute inset-0 rounded-full bg-rose-400"
             animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
@@ -201,15 +216,15 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           />
         )}
         <motion.div 
-          whileHover={{ scale: 1.08 }} 
-          whileTap={{ scale: 0.9 }} 
+          whileHover={!isButtonDisabled ? { scale: 1.08 } : {}} 
+          whileTap={!isButtonDisabled ? { scale: 0.9 } : {}} 
           className="rounded-full flex items-center justify-center h-16 w-16 md:h-20 md:w-20 relative cursor-pointer"
         >
-          <div className={`absolute inset-0 rounded-full border-4 shadow-xl z-0 transition-colors ${isListening ? 'border-rose-900/20' : 'border-sky-900/20'}`} />
+          <div className={`absolute inset-0 rounded-full border-4 shadow-xl z-0 transition-colors ${isListening ? 'border-rose-900/20' : isCooldown ? 'border-gray-900/10' : 'border-sky-900/20'}`} />
           <Button
-            onClick={() => { soundEffects.buttonPlay(); isListening ? recognition.stop() : startListening(); }}
-            disabled={!isReady}
-            className={`h-full w-full rounded-full relative z-10 p-0 transition-colors duration-300 ${isListening ? 'bg-rose-500 hover:bg-rose-600' : 'bg-sky-500 hover:bg-sky-600'}`}
+            onClick={() => { isListening ? stopListeningManually() : startListening(); }}
+            disabled={isButtonDisabled}
+            className={`h-full w-full rounded-full relative z-10 p-0 transition-colors duration-300 ${buttonBackground}`}
           >
             {isListening ? <MicOff className="h-7 w-7 md:h-8 md:w-8 text-white" /> : <Mic className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-md" />}
           </Button>
@@ -221,9 +236,9 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           <motion.p 
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sky-800 font-[Nunito] font-bold text-sm md:text-base bg-sky-50 px-3 py-1 rounded-full border border-sky-200/60 shadow-sm"
+            className={`font-[Nunito] font-bold text-sm md:text-base px-3 py-1 rounded-full border shadow-sm ${isCooldown ? 'text-gray-500 bg-gray-50 border-gray-200' : 'text-sky-800 bg-sky-50 border-sky-200/60'}`}
           >
-            Press to speak the word!
+            {isCooldown ? 'Tunggu sebentar...' : 'Press to speak the word!'}
           </motion.p>
         )}
 
@@ -233,13 +248,25 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
            </p>
         )}
 
-        {isListening && (
+        {/* LAMPU MERAH: Tombol ditekan, tapi mesin belum siap */}
+        {isListening && !isRecording && (
           <motion.p 
             animate={{ opacity: [1, 0.5, 1] }} 
             transition={{ repeat: Infinity, duration: 1 }}
+            className="text-amber-600 font-[Fredoka] font-bold text-base md:text-lg"
+          >
+            ⏳ Wait a second...
+          </motion.p>
+        )}
+
+        {/* LAMPU HIJAU: Mesin siap, anak boleh bicara */}
+        {isRecording && (
+          <motion.p 
+            animate={{ scale: [1, 1.1, 1] }} 
+            transition={{ repeat: Infinity, duration: 1 }}
             className="text-rose-600 font-[Fredoka] font-bold text-base md:text-lg"
           >
-            🎤 Listening...
+            🎤 Speak now!
           </motion.p>
         )}
         
@@ -279,14 +306,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </motion.div>
         )}
       </div>
-
-      {/* KOTAK RADAR DETEKSI UNTUK HP (AKAN MUNCUL DI LAYAR SAAT BERKATA) */}
-      {debugInfo && (
-        <div className="w-full mt-2 p-3 bg-gray-900 text-green-400 text-xs font-mono rounded-xl shadow-lg whitespace-pre-wrap text-left border border-green-500/30 z-50">
-          <p className="text-white border-b border-gray-700 pb-1 mb-1 font-bold text-center tracking-wide">📡 RADAR DEBUGLOG ASR</p>
-          {debugInfo}
-        </div>
-      )}
     </div>
   );
 }
