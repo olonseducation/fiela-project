@@ -1,5 +1,5 @@
 import olonseducationlogo from '../imports/olons-education-logo.png'
-import { useState, useEffect } from 'react'; // <-- useEffect SUDAH DITAMBAHKAN DI SINI
+import { useState, useEffect } from 'react';
 import { PrivacyModal } from './PrivacyModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Info, Sparkles, Map, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route, ShieldCheck } from 'lucide-react';
@@ -14,11 +14,11 @@ interface MenuDrawerProps {
 export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume] = useState(0.15); // Biarkan volume di sini
+  const [volume] = useState(0.15); 
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-
-  // --- KODE TOGGLE BGM YANG TADI TERHAPUS KINI KEMBALI ---
+  
+  // --- KODE TOGGLE BGM ---
   const toggleBgm = () => {
     const newState = !isMuted;
     setIsMuted(newState);
@@ -34,51 +34,54 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
     if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay();
   };
 
-  // --- USEEFFECT BARU YANG BEBAS ERROR ---
+  // --- USEEFFECT PINTAR MEMAKAI 'pageKey' BAWAAN KAPTEN ---
   useEffect(() => {
-    // 1. Coba putar musik secara normal saat halaman dimuat
-    try {
-      backgroundMusic.play(0);
-    } catch (e) {
-      console.warn("BGM Start Error:", e);
-    }
+    // 🧭 Gunakan prop pageKey milik Kapten untuk mengecek halaman!
+    const isHomepage = pageKey === 'home';
 
-    // 2. Siapkan perangkap untuk klik pertama (berjaga-jaga jika diblokir browser)
-    const handleFirstInteraction = () => {
-      // Pastikan toggle UI menyesuaikan ke posisi ON
-      setIsMuted(false); 
-      
+    if (isHomepage) {
+      // 1. Jika di Homepage, coba putar musik
       try {
         backgroundMusic.play(0);
+        setIsMuted(false); 
       } catch (e) {
-        console.warn("Interaction Play Error:", e);
+        console.warn("BGM Start Error:", e);
       }
+
+      const handleFirstInteraction = () => {
+        setIsMuted(false); 
+        try {
+          backgroundMusic.play(0);
+        } catch (e) {
+          console.warn("Interaction Play Error:", e);
+        }
+        document.removeEventListener('click', handleFirstInteraction);
+        document.removeEventListener('touchstart', handleFirstInteraction);
+      };
+
+      document.addEventListener('click', handleFirstInteraction);
+      document.addEventListener('touchstart', handleFirstInteraction);
+
+      return () => {
+        document.removeEventListener('click', handleFirstInteraction);
+        document.removeEventListener('touchstart', handleFirstInteraction);
+      };
       
-      // Setelah interaksi pertama, cabut perangkapnya
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
-    };
-
-    // 3. Pasang perangkap di layar
-    document.addEventListener('click', handleFirstInteraction);
-    document.addEventListener('touchstart', handleFirstInteraction);
-
-    // 4. Petugas kebersihan saat halaman ditutup
-    return () => {
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
-      // backgroundMusic.stop(); <-- Matikan jika tidak ingin musiknya bocor ke halaman lain
-    };
-  }, []);
-
-  // Sisa kodemu (return, dst) biarkan utuh di bawah ini...
+    } else {
+      // 2. JIKA BUKAN DI HOMEPAGE (Misal: pageKey bernilai 'review')
+      try {
+        backgroundMusic.stop();
+      } catch (e) {}
+      setIsMuted(true);
+    }
+  }, [pageKey]); // <-- Pantau perubahan pageKey setiap saat!
 
   const closeDrawer = () => {
     setIsOpen(false);
     setActiveSection(null);
   };
 
-  // Static Content translated to English
+  // Static Content
   const renderSectionContent = () => {
     switch (activeSection) {
       case "About This Atlas":
@@ -92,7 +95,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
       case "Features":
         return (
           <div className="space-y-3 font-[Nunito] pb-2">
-            
              {/* AUDIO GUIDANCE */}
             <div className="bg-[#fffdf8] rounded-2xl p-4 border-2 border-amber-100 shadow-sm flex items-start gap-4 transition-transform hover:-translate-y-1">
               <div className="bg-amber-100 p-3 rounded-2xl shrink-0">
@@ -180,7 +182,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
       case "Developer Contact":
         return (
           <div className="space-y-4 font-[Nunito] text-amber-950 text-center py-4">
-            {/* Bagian Logo */}
             <div className="flex justify-center mb-2">
               <img 
                 src={olonseducationlogo}
@@ -193,12 +194,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
             <p className="text-sm">Developed as an interactive learning media based on Edutechnopreneurship for primary education.</p>
             
             <div className="pt-5 mt-4 border-t-2 border-amber-200/60 space-y-3">
-              {/* Email tetap normal agar mudah dibaca */}
               <p className="text-xs text-amber-950">
                 Email: <span className="font-bold">olonseducation@gmail.com</span>
               </p>
               
-              {/* Copyright diubah menjadi uppercase, lebih kecil, dan sedikit diredupkan */}
               <p className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50 leading-relaxed">
                 © {new Date().getFullYear()} OLONS Education.<br />All Rights Reserved.
               </p>
@@ -220,11 +219,9 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
 
   return (
     <>
-      {/* GLOBAL TRIGGER BUTTON DENGAN ANIMASI PERGANTIAN HALAMAN */}
-      {/* Absolute positioning prevents it from scrolling, top-4 right-4 untuk simetris dengan Home */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={pageKey} // Memaksa animasi ulang saat halaman berganti
+          key={pageKey} 
           initial={{ opacity: 0, scale: 0.5, rotate: 0 }} 
           animate={{ opacity: 1, scale: 1, rotate: 0 }} 
           exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
@@ -237,7 +234,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
             animate="normal"
             whileHover="diHover" 
             whileTap="diKlik"
-            
             variants={{
               normal: { 
                 backgroundColor: '#faf6f1', 
@@ -252,59 +248,41 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 color: '#FAF6F1',
                 borderColor: '#7B3306',
                 borderRadius: '12px',
-                // KUNCI SNAPPY 1: Stiffness dinaikkan drastis ke 400 agar sangat cepat melesat
                 transition: { type: "spring", stiffness: 400, damping: 15 }
               },
               diKlik: { 
                 scale: 0.9 
               }
             }}
-            className="rounded-full shadow-lg border-2 bg-[#faf6f1]/95 border-amber-700/30 text-amber-900 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden p-2 sm:p-3 w-11 h-11 sm:w-15 sm:h-15 hover:h-14 hover:w-11 sm:hover:w-16 sm:hover:h-18 transition-all duration-75" // Durasi CSS dipercepat ke 75ms
+            className="rounded-full shadow-lg border-2 bg-[#faf6f1]/95 border-amber-700/30 text-amber-900 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden p-2 sm:p-3 w-11 h-11 sm:w-15 sm:h-15 hover:h-14 hover:w-11 sm:hover:w-16 sm:hover:h-18 transition-all duration-75"
           >
-            {/* 1. Ikon Menu */}
             <motion.span
               className="flex items-center justify-center"
               variants={{
                 normal: { y: 0, scale: 1 },
-                diHover: { 
-                  y: -2, 
-                  scale: 0.9 
-                }
+                diHover: { y: -2, scale: 0.9 }
               }}
-              // KUNCI SNAPPY 2: Ikon ikut melompat dengan kecepatan tinggi tanpa jeda lambat
               transition={{ type: "spring", stiffness: 500, damping: 20 }}
             >
               <Menu className="h-5 w-5 sm:h-7 sm:w-7" />
             </motion.span>
         
-            {/* 2. Teks 'Menu' */}
             <motion.span
               className="text-[8px] sm:text-[10px] font-bold tracking-wide uppercase pointer-events-none mt-0.5"
               variants={{
-                normal: { 
-                  opacity: 0, 
-                  y: 6, 
-                  height: 0 
-                },
-                diHover: { 
-                  opacity: 1, 
-                  y: 0, 
-                  height: "auto",
-                  // KUNCI SNAPPY 3: Menghapus jeda (delay) agar teks langsung muncul instan bersama ikon
-                  transition: { type: "tween", ease: "easeOut", duration: 0.1 } 
-                }
+                normal: { opacity: 0, y: 6, height: 0 },
+                diHover: { opacity: 1, y: 0, height: "auto", transition: { type: "tween", ease: "easeOut", duration: 0.1 } }
               }}
             >
               Menu
             </motion.span>
-        </motion.button>
+          </motion.button>
         </motion.div>
       </AnimatePresence>
 
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Dark Overlay Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -313,7 +291,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
             />
             
-            {/* Drawer Container */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -323,7 +300,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
             >
               <div className="p-6">
                 
-                {/* Dynamic Header */}
                 <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-amber-200">
                   {activeSection ? (
                     <Button 
@@ -342,7 +318,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                   </Button>
                 </div>
 
-                {/* MAIN CONTENT AREA / SUB-VIEW */}
                 <AnimatePresence mode="wait">
                   {!activeSection ? (
                     <motion.div
@@ -364,7 +339,6 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         </Button>
                       ))}
 
-                      {/* --- TOMBOL PRIVACY POLICY PINDAH KE SINI --- */}
                       <Button 
                         variant="ghost" 
                         className="w-full justify-start text-left font-[Nunito] font-bold text-base py-6 px-4 hover:bg-amber-100 text-amber-950 border-2 border-transparent hover:border-amber-200/40 rounded-xl bg-white/60 shadow-sm"
@@ -376,9 +350,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         <ShieldCheck className="mr-3 h-5 w-5 text-amber-700 shrink-0" />
                         Privacy Policy
                       </Button>
-                      {/* ------------------------------------------- */}
 
-                      {/* Single Music Control (Without SFX) */}
                       <div className="bg-amber-100/60 p-4 rounded-xl border-2 border-amber-200/60 shadow-inner mt-6">
                         <div className="flex items-center justify-between">
                           <span className="font-[Nunito] font-bold text-amber-950 text-sm flex items-center gap-2">
@@ -416,9 +388,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
         )}
       </AnimatePresence>
 
-      {/* --- KOMPONEN GULUNGAN PERKAMEN DILETAKKAN DI SINI --- */}
       <PrivacyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
-
     </>
   );
 }
