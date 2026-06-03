@@ -9,13 +9,13 @@ export const homophoneMap: Record<string, string[]> = {
   // === EXPEDITION 1: MORNING ROUTINE ===
   "wake up": ["makeup", "way cup", "wait up", "weigh cup", "we cup", "week up", "backup"],
   "stretch": ["straight", "stress", "threads", "threats", "stray", "scratch", "shreds", "street"],
-  "yawn": ["young", "yon", "yond", "yuan", "john", "yarn", "you on", "yol", "yo", "down"],
+  "yawn": ["on", "o", "young", "yon", "yond", "yuan", "john", "yarn", "you on", "yol", "yo", "down"],
   "brush": ["brass", "bras", "blush", "bra", "bros", "brash", "bus", "blast"],
   "wash": ["was", "wass", "watch", "ways", "worse", "wall"],
   "get": ["gate", "cat", "gut", "that", "gab", "gap"],
   "dressed": ["dress", "rest", "press", "tress", "trace", "dash"],
   "get dressed": ["get dress", "cat dress", "gate rest", "get rest"], // Tambahan jaga-jaga
-  "pack": ["back", "peck", "peg", "bag", "pact", "pet", "park"],
+  "pack": ["act", "ack", "fuck", "back", "peck", "peg", "bag", "pact", "pet", "park"],
   "breakfast": ["break fast", "break first", "big fast", "black fast", "bed fast"],
   "uniform": ["unicorn", "uni form", "you need form", "in a form"],
   "walk": ["work", "wok", "woke", "wall", "wolf", "war"],
@@ -30,15 +30,15 @@ export const homophoneMap: Record<string, string[]> = {
   "room": ["rum", "run", "roam", "boom", "broom", "zoom"],
   "living room": ["leaving room", "leafing rum", "living run"], // Tambahan jaga-jaga
   "kitchen": ["chicken", "catch in", "catching", "kitten", "teach in"],
-  "help": ["held", "hell", "half", "hope", "health", "how", "have", "alp", "hoop", "halp", "elf"],
-  "play": ["clay", "pray", "place", "plane", "pay", "fly"],
+  "help": ["el", "held", "hell", "half", "hope", "health", "how", "have", "alp", "hoop", "halp", "elf"],
+  "play": ["lay", "clay", "pray", "place", "plane", "pay", "fly"],
   "photo": ["poto", "potato", "auto", "moto", "vote", "foto"],
 
   // === EXPEDITION 3: CLASSROOM ===
   "book": ["bug", "buck", "bog", "pook", "box", "boat", "boo"],
-  "pencil": ["cancel", "pan seal", "pen seal", "basal", "pen still"],
+  "pencil": ["ensel", "ensil", "cancel", "pan seal", "pen seal", "basal", "pen still"],
   "eraser": ["razor", "a razor", "iriser", "laser", "race her", "erase her"],
-  "desk": ["disc", "disk", "dash", "test", "text", "days", "dance", "this"],
+  "desk": ["des", "disc", "disk", "dash", "test", "text", "days", "dance", "this"],
   "chair": ["share", "cheer", "care", "tear", "there", "cherry"],
   "board": ["bored", "boat", "bird", "bot", "bold", "bought", "boy"],
   "marker": ["maker", "market", "mark her", "macaw", "macaque"],
@@ -52,22 +52,22 @@ export const homophoneMap: Record<string, string[]> = {
   "vegetables": ["vegetable", "tables", "festival", "page table", "fake table"],
   "egg": ["a", "eight", "ed", "edge", "act", "ache", "ig", "ech", "at", "x", "age"],
   "soup": ["shop", "soap", "sub", "shoe", "show", "sup"],
-  "fruit": ["fluid", "food", "flute", "flood", "root", "foot"],
+  "fruit": ["froo", "frut", "fluid", "food", "flute", "flood", "root", "foot"],
   "delicious": ["deletions", "the licious", "delish", "the dishes"],
-  "cook": ["cock", "coke", "clock", "look", "good", "cup", "book"],
+  "cook": ["kuk", "uuk", "cock", "coke", "clock", "look", "good", "cup", "book"],
   "spicy": ["spacey", "species", "pie sea", "spy see", "icy"],
   "sweet": ["sweat", "suite", "swish", "swede", "weed", "swim"],
 
   // === EXPEDITION 5: OUTDOORS ===
   "yard": ["yet", "yart", "yacht", "hard", "yarn", "art", "guard"],
   "playground": ["play ground", "play crown", "background", "play around"],
-  "slide": ["light", "slight", "slice", "fly", "sleigh", "flight"],
+  "slide": ["lide", "lied", "light", "slight", "slice", "fly", "sleigh", "flight"],
   "swing": ["swim", "sweet", "swink", "wing", "sing", "string"],
   "ball": ["bowl", "bold", "bull", "bow", "boy", "fall", "wall", "call"],
   "run": ["ram", "ran", "rum", "wrong", "rang", "round"],
   "jump": ["jam", "dump", "champ", "trump", "chum", "job", "dumb"],
   "throw": ["through", "draw", "true", "grow", "row", "slow", "trough"],
-  "catch": ["cat", "cash", "cut", "cats", "ketch", "sketch", "kept"],
+  "catch": ["atch", "cat", "cash", "cut", "cats", "ketch", "sketch", "kept"],
   "wind": ["win", "weed", "wing", "went", "when", "wimp", "wait"]
 
 };
