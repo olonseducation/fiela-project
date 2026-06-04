@@ -28,7 +28,7 @@ interface RewardPageProps {
 export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = [], score = 0, totalQuestions = 0, pronunciationScore = 0, onGoHome }: RewardPageProps) {
   const [showReview, setShowReview] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 1000, height: 800 });
-  const hasPlayedInitAudio = useRef(false); // 🔒 Pengaman Audio Strict Mode
+  const hasPlayedInitAudio = useRef(false);
 
   const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
   
@@ -36,13 +36,13 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   const quizScore = Math.round(percentage);
   const voiceScore = Math.round(pronunciationScore);
 
-  // 1. Hitung Bintang KKTP (Kurikulum)
+  // 1. Hitung Bintang KKTP
   let earnedStars = 0;
   if (quizScore >= 70 && voiceScore >= 60) earnedStars = 1;
   if (quizScore >= 85 && voiceScore >= 80) earnedStars = 2;
   if (quizScore === 100 && voiceScore >= 95) earnedStars = 3;
 
-  // 2. Hitung Atlas Coins (Ekonomi)
+  // 2. Hitung Atlas Coins
   let calculatedCoins = quizScore + voiceScore;
   if (quizScore > 0 || voiceScore > 0) calculatedCoins += 20;
   if (quizScore === 100) calculatedCoins += 50;
@@ -55,7 +55,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   const totalCoinsEarned = calculatedCoins;
 
   // 🪙 STATE ANIMASI
-  const [isPageReady, setIsPageReady] = useState(false); // Kunci penahan pasukan animasi
+  const [isPageReady, setIsPageReady] = useState(false); 
   const [displayedCoins, setDisplayedCoins] = useState(0);
   const [revealedTreasuresCount, setRevealedTreasuresCount] = useState(0);
   const [revealedStarsCount, setRevealedStarsCount] = useState(0); 
@@ -73,17 +73,15 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
 
   const earnedTreasures = getNewlyUnlockedTreasures();
 
-  // 🌟 ORKESTRASI ANIMASI SEKUENSAL (Menunggu isPageReady)
+  // 🌟 ORKESTRASI ANIMASI SEKUENSAL
   useEffect(() => {
     if (!isPageReady) return; 
 
-    // Tahap 1: Audio Pembuka
     if (!hasPlayedInitAudio.current) {
-      soundEffects.success();
+      //soundEffects.success();
       hasPlayedInitAudio.current = true;
     }
 
-    // Tahap 2: Luncurkan 3 Bintang KKTP berurutan
     let currentStarIndex = 0;
     const totalStarsToReveal = 3;
     
@@ -97,7 +95,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
       } else {
         clearInterval(starInterval);
         
-        // Tahap 3: Harta Karun
         setTimeout(() => {
           if (earnedTreasures.length > 0) {
             let currentTreasureIndex = 0;
@@ -108,16 +105,15 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                 currentTreasureIndex++;
               } else {
                 clearInterval(treasureInterval);
-                // Tahap 4: Koin Emas
                 setTimeout(() => triggerCoinRolling(), 300);
               }
-            }, 400); // Dipercepat sedikit
+            }, 400); 
           } else {
             triggerCoinRolling();
           }
         }, 200);
       }
-    }, 300); // Letupan bintang lebih ritmis
+    }, 300); 
 
     return () => clearInterval(starInterval);
   }, [isPageReady]);
@@ -209,54 +205,58 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         </motion.button>
       </motion.div>
 
-      {/* Main Container - Dimensi Diperkecil Sedikit agar Presisi */}
+      {/* Main Container */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8, y: 30 }} 
         animate={{ opacity: 1, scale: 1, y: 0 }} 
         transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
         onAnimationComplete={() => setIsPageReady(true)} 
-        className="max-w-4xl w-full bg-[#fffcf2] rounded-3xl p-5 sm:p-6 md:p-8 lg:p-10 relative z-10 border-4 border-amber-300 shadow-2xl" 
+        className="max-w-5xl w-full bg-[#fffcf2] rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 relative z-10 border-4 border-amber-300 shadow-2xl overflow-hidden" 
         style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(251,191,36,0.1), 0 0 30px rgba(251,191,36,0.3)' }}
       >
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-3xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 relative z-10">
+        {/* 🪄 GARIS PEMISAH VERTIKAL ELEGAN DI TENGAH */}
+        <div className="hidden lg:block absolute left-1/2 top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-amber-200 to-transparent -translate-x-1/2 z-0 opacity-70" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 relative z-10">
           
           {/* SISI KIRI: GELAR & NAVIGATION */}
           <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left h-full">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring', stiffness: 200 }} className="mb-4 sm:mb-5">
-              <motion.div animate={{ y: [-4, 4, -4], rotate: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="relative bg-gradient-to-b from-white to-amber-50 p-3 sm:p-4 rounded-full shadow-[0_10px_25px_rgba(217,119,6,0.3)] border-2 border-amber-200 inline-block">
-                {percentage === 100 ? <Trophy className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-500 drop-shadow-lg" /> 
-                : percentage >= 80 ? <Star className="h-16 w-16 sm:h-20 sm:w-20 text-blue-500 drop-shadow-lg" /> 
-                : percentage >= 60 ? <Award className="h-16 w-16 sm:h-20 sm:w-20 text-green-500 drop-shadow-lg" /> 
-                : <Sparkles className="h-16 w-16 sm:h-20 sm:w-20 text-purple-500 drop-shadow-lg" />}
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring', stiffness: 200 }} className="mb-4 sm:mb-6">
+              <motion.div animate={{ y: [-4, 4, -4], rotate: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="relative bg-gradient-to-b from-white to-amber-50 p-4 sm:p-5 rounded-full shadow-[0_10px_25px_rgba(217,119,6,0.3)] border-2 border-amber-200 inline-block">
+                {percentage === 100 ? <Trophy className="h-20 w-20 sm:h-24 sm:w-24 text-yellow-500 drop-shadow-lg" /> 
+                : percentage >= 80 ? <Star className="h-20 w-20 sm:h-24 sm:w-24 text-blue-500 drop-shadow-lg" /> 
+                : percentage >= 60 ? <Award className="h-20 w-20 sm:h-24 sm:w-24 text-green-500 drop-shadow-lg" /> 
+                : <Sparkles className="h-20 w-20 sm:h-24 sm:w-24 text-purple-500 drop-shadow-lg" />}
               </motion.div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="w-full flex flex-col h-full">
-              <h1 className="text-amber-950 mb-2.5 font-[Fredoka] text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide drop-shadow-sm">
+              <h1 className="text-amber-950 mb-3 font-[Fredoka] text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide drop-shadow-sm">
                 {headingInfo.emoji} {headingInfo.title}
               </h1>
               <div>
-                <div className="inline-block bg-gradient-to-r from-amber-100 to-amber-200 px-4 sm:px-5 py-1.5 rounded-full mb-3 border-2 border-amber-400/50 shadow-sm">
-                  <p className="text-amber-900 font-bold font-[Fredoka] tracking-wider text-xs sm:text-sm">✨ {headingInfo.rank} ✨</p>
+                <div className="inline-block bg-gradient-to-r from-amber-100 to-amber-200 px-4 sm:px-6 py-2 rounded-full mb-4 border-2 border-amber-400/50 shadow-sm">
+                  <p className="text-amber-900 font-bold font-[Fredoka] tracking-wider text-sm sm:text-base">✨ {headingInfo.rank} ✨</p>
                 </div>
               </div>
-              <p className="text-lg sm:text-xl text-amber-950 mb-1 font-[Nunito] font-extrabold">You completed Expedition {unitNumber}!</p>
-              <p className="text-amber-800 mb-6 font-[Nunito] font-bold text-sm sm:text-base">{headingInfo.subtitle}</p>
+              <p className="text-xl sm:text-2xl text-amber-950 mb-1 font-[Nunito] font-extrabold">You completed Expedition {unitNumber}!</p>
+              <p className="text-amber-800 mb-8 font-[Nunito] font-bold text-base sm:text-lg">{headingInfo.subtitle}</p>
 
               <div className="w-full space-y-3 mt-auto">
                 {wrongAnswers.length > 0 && (
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button onClick={() => setShowReview(true)} variant="outline" className="w-full bg-white border-2 border-amber-300 text-amber-900 hover:bg-amber-50 py-4 sm:py-5 rounded-xl cursor-pointer font-[Fredoka] font-bold text-sm sm:text-base shadow-sm transition-all">
-                      <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-amber-700" />
+                    {/* 🔊 BERI SUARA: buttonReview() dipasang di sini */}
+                    <Button onClick={() => { soundEffects.buttonReview(); setShowReview(true); }} variant="outline" className="w-full bg-white border-2 border-amber-300 text-amber-900 hover:bg-amber-50 py-5 sm:py-6 rounded-xl cursor-pointer font-[Fredoka] font-bold text-sm sm:text-base shadow-sm transition-all">
+                      <BookOpen className="h-5 w-5 mr-2 text-amber-700" />
                       Review Missed Answers ({wrongAnswers.length})
                     </Button>
                   </motion.div>
                 )}
 
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button onClick={() => { soundEffects.buttonSuccess(); onContinue(); }} className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-5 sm:py-6 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-sm sm:text-lg">
+                  <Button onClick={() => { soundEffects.buttonSuccess(); onContinue(); }} className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-6 sm:py-8 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-base sm:text-xl">
                     {isLastUnit ? '🎊 Complete the Atlas!' : 'Continue the Journey ➡️'}
                   </Button>
                 </motion.div>
@@ -264,37 +264,37 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
             </motion.div>
           </div>
 
-          {/* SISI KANAN: STATISTIK & KOIN EMAS (COMPACT LAYOUT) */}
-          <div className="flex flex-col justify-center gap-4 sm:gap-5">
+          {/* SISI KANAN: STATISTIK & KOIN EMAS */}
+          <div className="flex flex-col justify-center h-full gap-5 sm:gap-6">
             
             {/* 🗺️ JOURNEY STATS - 3 PODS HORIZONTAL */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="w-full">
-              <div className="bg-lime-100/50 rounded-2xl p-4 sm:p-5 border-2 border-lime-200 shadow-sm relative z-10">
+              <div className="bg-lime-100/50 rounded-2xl p-5 border-2 border-lime-200 shadow-sm relative z-10">
                 
-                <div className="flex flex-row items-center justify-between border-b-2 border-lime-200/60 pb-2 mb-3">
-                  <p className="text-amber-900 font-[Fredoka] font-bold text-base sm:text-lg tracking-wide">🗺️ Journey Stats</p>
+                <div className="flex flex-row items-center justify-between border-b-2 border-lime-200/60 pb-3 mb-4">
+                  <p className="text-amber-900 font-[Fredoka] font-bold text-lg sm:text-xl tracking-wide">🗺️ Journey Stats</p>
                   
                   <motion.div 
                     animate={displayedCoins === totalCoinsEarned ? { scale: [1, 1.1, 1] } : {}}
                     transition={{ duration: 0.4 }}
-                    className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 text-amber-950 font-[Fredoka] font-bold px-2.5 py-1 rounded-full border-2 border-white shadow-sm text-xs sm:text-sm"
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 text-amber-950 font-[Fredoka] font-bold px-3 py-1.5 rounded-full border-2 border-white shadow-sm text-xs sm:text-sm"
                   >
-                    <CoinIcon className="w-4 h-4 sm:w-5 sm:h-5 animate-spin-slow drop-shadow-md" />
+                    <CoinIcon className="w-5 h-5 animate-spin-slow drop-shadow-md" />
                     <span className="tracking-wide">+{displayedCoins}</span>
                   </motion.div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   
                   {/* 1. STARS POD */}
-                  <div className="bg-white p-2 sm:p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-[10px] sm:text-xs mb-1.5 text-center leading-none">Stars</span>
+                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-2 text-center leading-none">Stars</span>
                     <div className="flex gap-0.5">
                       {[1, 2, 3].map(starIndex => {
                         const isVisible = starIndex <= revealedStarsCount;
                         const isEarned = starIndex <= earnedStars;
                         return (
-                          <div key={starIndex} className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                          <div key={starIndex} className="w-5 h-5 flex items-center justify-center">
                             <AnimatePresence>
                               {isVisible && (
                                 <motion.div
@@ -303,7 +303,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                                   transition={{ type: "spring", stiffness: 350, damping: 14 }}
                                 >
                                   <Star 
-                                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
+                                    className={`w-5 h-5 transition-all duration-300 ${
                                       isEarned 
                                         ? 'text-yellow-400 fill-yellow-400 drop-shadow-sm' 
                                         : 'text-gray-300 fill-gray-100 opacity-50'
@@ -319,50 +319,60 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                   </div>
 
                   {/* 2. QUEST SCORE POD */}
-                  <div className="bg-white p-2 sm:p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-[10px] sm:text-xs mb-0.5 text-center leading-none">Quest</span>
-                    <span className={`font-bold font-[Fredoka] text-sm sm:text-base ${quizScore === 100 ? 'text-yellow-600' : quizScore >= 80 ? 'text-blue-600' : 'text-red-600'}`}>
+                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Quest</span>
+                    <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${quizScore === 100 ? 'text-yellow-600' : quizScore >= 80 ? 'text-blue-600' : 'text-red-600'}`}>
                       {score}/{totalQuestions}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-900/50 leading-none mt-0.5">({quizScore}%)</span>
+                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">({quizScore}%)</span>
                   </div>
 
                   {/* 3. VOICE SCORE POD */}
-                  <div className="bg-white p-2 sm:p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-[10px] sm:text-xs mb-0.5 text-center leading-none">Voice</span>
-                    <span className={`font-bold font-[Fredoka] text-sm sm:text-base ${voiceScore >= 80 ? 'text-green-600' : voiceScore >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Voice</span>
+                    <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${voiceScore >= 80 ? 'text-green-600' : voiceScore >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
                       {voiceScore}%
                     </span>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-900/50 leading-none mt-0.5">Accuracy</span>
+                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">Accuracy</span>
                   </div>
 
                 </div>
               </div>
             </motion.div>
 
-            {/* 🎁 TREASURES UNLOCKED - COMPACT VERTICAL LIST */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full mt-1 sm:mt-2">
-              <p className="text-amber-900 mb-2 sm:mb-3 font-[Fredoka] font-bold text-sm sm:text-base bg-amber-100/80 inline-block px-3 py-1.5 rounded-lg border border-amber-300 w-full text-center">🎁 Treasures Unlocked</p>
+            {/* 🎁 TREASURES UNLOCKED */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full mt-1">
+              <p className="text-amber-900 mb-3 font-[Fredoka] font-bold text-base bg-amber-100/80 inline-block px-4 py-2 rounded-xl border border-amber-300 w-full text-center">🎁 Treasures Unlocked</p>
               
-              <div className="flex flex-col gap-2 max-h-[160px] sm:max-h-[200px] overflow-y-auto pr-1 pb-1">
+              <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-1 pb-1">
                 {earnedTreasures.map((badge, index) => {
                   const isVisible = index < revealedTreasuresCount;
                   return (
                     <AnimatePresence key={index}>
                       {isVisible && (
                         <motion.div 
-                          initial={{ opacity: 0, x: -20 }} 
-                          animate={{ opacity: 1, x: 0 }} 
-                          whileHover={{ scale: 1.02, x: 2 }} 
+                          initial={{ opacity: 0, scale: 0.7, y: 10 }} 
+                          animate={{ opacity: 1, scale: 1, y: 0 }} 
+                          whileHover={{ scale: 1.04, y: -3 }} 
                           transition={{ type: "spring", stiffness: 260, damping: 15 }} 
-                          className={`bg-gradient-to-r ${badge.bgColor} rounded-xl p-2.5 sm:p-3 shadow-sm border border-white relative z-10 flex items-center gap-3`} 
+                          className={`bg-gradient-to-br ${badge.bgColor} rounded-2xl p-3 sm:p-4 shadow-md border-2 border-white relative z-10 flex flex-col items-center justify-center text-center gap-2.5 min-h-[110px]`} 
+                          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
                         >
-                          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2, delay: index * 0.2 }} className="shrink-0 bg-white/50 p-1.5 sm:p-2 rounded-lg">
-                            <badge.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${badge.color} drop-shadow-sm`} />
+                          <motion.div 
+                            animate={{ scale: [1, 1.06, 1] }} 
+                            transition={{ repeat: Infinity, duration: 2.5, delay: index * 0.2 }} 
+                            className="bg-white/60 p-2 rounded-xl shadow-inner flex items-center justify-center shrink-0 border border-white"
+                          >
+                            <badge.icon className={`h-6 w-6 ${badge.color} drop-shadow-sm`} />
                           </motion.div>
-                          <div className="flex flex-col text-left justify-center">
-                            <p className="text-xs sm:text-sm font-bold text-amber-950 font-[Fredoka] tracking-wide leading-tight">{badge.label}</p>
-                            <p className="text-[9px] sm:text-[10px] font-bold text-amber-900/60 font-[Nunito] leading-tight mt-0.5">{badge.requirement}</p>
+                          
+                          <div className="flex flex-col items-center justify-center overflow-hidden w-full">
+                            <p className="text-xs sm:text-sm font-bold text-amber-950 font-[Fredoka] tracking-wide leading-tight break-words max-w-full">
+                              {badge.label}
+                            </p>
+                            <p className="text-[9px] sm:text-[10px] font-bold text-amber-900/50 font-[Nunito] leading-tight mt-1 max-w-full">
+                              {badge.requirement}
+                            </p>
                           </div>
                         </motion.div>
                       )}
@@ -411,7 +421,8 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                 ))}
               </div>
               <div className="px-5 sm:px-6 py-4 border-t-2 border-amber-200 bg-[#fffcf2] shrink-0 z-10">
-                <Button onClick={() => setShowReview(false)} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 py-5 sm:py-6 rounded-xl font-[Fredoka] font-bold text-base shadow-md active:scale-95 transition-transform">
+                {/* 🔊 BERI SUARA: buttonNavigation() dipasang di sini */}
+                <Button onClick={() => { soundEffects.buttonNavigation(); setShowReview(false); }} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 py-5 sm:py-6 rounded-xl font-[Fredoka] font-bold text-base shadow-md active:scale-95 transition-transform">
                   Understood! 🚀
                 </Button>
               </div>
