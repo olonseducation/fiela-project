@@ -9,7 +9,13 @@ class SoundEffects {
   private levelUpSound: HTMLAudioElement | null = null;
   private correctPronunciationSound: HTMLAudioElement | null = null;
   private correctAnswerSound: HTMLAudioElement | null = null;
-  private incorrectSound: HTMLAudioElement | null = null; // Tambahan untuk suara salah
+  private incorrectSound: HTMLAudioElement | null = null;
+  
+  // 🪙 PERSENJATAAN AUDIO PERAYAAN (LENGKAP)
+  private starPopSound: HTMLAudioElement | null = null;
+  private treasurePopSound: HTMLAudioElement | null = null; // Amunisi baru Kapten
+  private coinTallySound: HTMLAudioElement | null = null;
+  private coinFinishSound: HTMLAudioElement | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -38,9 +44,23 @@ class SoundEffects {
       this.correctAnswerSound = new Audio(`${baseUrl}/correct-answer.mp3`);
       this.correctAnswerSound.volume = 0.3;
 
-      // Audio baru untuk Jawaban Salah (Kuis / Pengucapan)
+      // Audio untuk Jawaban Salah
       this.incorrectSound = new Audio(`${baseUrl}/incorrect-sound.mp3`);
-      this.incorrectSound.volume = 0.5; // Diatur agak lembut agar tidak mengagetkan anak-anak
+      this.incorrectSound.volume = 0.5;
+
+      // 🚀 INISIALISASI AUDIO PERAYAAN TERBARU KAPTEN
+      this.starPopSound = new Audio(`${baseUrl}/star-pop.mp3`);
+      this.starPopSound.volume = 0.4;
+
+      this.treasurePopSound = new Audio(`${baseUrl}/treasure-pop.mp3`);
+      this.treasurePopSound.volume = 0.4;
+
+      this.coinTallySound = new Audio(`${baseUrl}/coin-tally.mp3`);
+      this.coinTallySound.volume = 0.35;
+      this.coinTallySound.loop = true; // Dibuat berputar terus selama angka menghitung naik
+
+      this.coinFinishSound = new Audio(`${baseUrl}/coin-finish.mp3`);
+      this.coinFinishSound.volume = 0.5;
     }
   }
 
@@ -66,7 +86,7 @@ class SoundEffects {
   private playMp3(audioElement: HTMLAudioElement | null) {
     if (audioElement) {
       audioElement.currentTime = 0;
-      audioElement.play().catch(e => console.warn('Figma/Browser memblokir audio:', e));
+      audioElement.play().catch(e => console.warn('Browser memblokir audio:', e));
     }
   }
 
@@ -75,17 +95,43 @@ class SoundEffects {
     this.playMp3(this.levelUpSound);
   }
 
-  // KUIS BENAR (MiniGame): Putar suara jawaban benar
+  // MANTRA PEMANGGIL AUDIO BARU DI REWARD PAGE
+  playStarPop() {
+    this.playMp3(this.starPopSound);
+  }
+
+  playTreasurePop() {
+    this.playMp3(this.treasurePopSound);
+  }
+
+  startCoinTally() {
+    this.playMp3(this.coinTallySound);
+  }
+
+  stopCoinTally() {
+    if (this.coinTallySound) {
+      try {
+        this.coinTallySound.pause();
+        this.coinTallySound.currentTime = 0;
+      } catch (e) {}
+    }
+  }
+
+  playCoinFinish() {
+    this.playMp3(this.coinFinishSound);
+  }
+
+  // KUIS BENAR (MiniGame)
   correct() {
     this.playMp3(this.correctAnswerSound);
   }
 
-  // PENGUCAPAN BENAR (Review Page): Putar suara khusus pronunciation
+  // PENGUCAPAN BENAR (Review Page)
   correctPronunciation() {
     this.playMp3(this.correctPronunciationSound);
   }
 
-  // KUIS/PENGUCAPAN SALAH: Sekarang memutar MP3 murni dari repositori kamu
+  // KUIS/PENGUCAPAN SALAH
   incorrect() {
     this.playMp3(this.incorrectSound);
   }
@@ -147,7 +193,6 @@ class SoundEffects {
     this.playTone(1000, 0.03, 'sine', 0.1);
   }
 
-  // COMPLETION PAGE: Trumpet + Sorakan anak-anak
   celebration() {
     this.playMp3(this.victoryTrumpet);
     setTimeout(() => {
