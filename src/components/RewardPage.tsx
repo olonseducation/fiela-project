@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { Trophy, Star, Sparkles, BookOpen, X, Home, Crown, Target, Medal, Flame, Brain, Zap, Gem, CheckCircle, Award, Mic } from 'lucide-react';
@@ -28,7 +28,6 @@ interface RewardPageProps {
 export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = [], score = 0, totalQuestions = 0, pronunciationScore = 0, onGoHome }: RewardPageProps) {
   const [showReview, setShowReview] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 1000, height: 800 });
-  const hasPlayedInitAudio = useRef(false); // 🔒 Pengaman Audio Strict Mode
 
   const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
   
@@ -55,19 +54,15 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   const totalCoinsEarned = calculatedCoins;
 
   // 🪙 STATE ANIMASI
+  const [isPageReady, setIsPageReady] = useState(false); // <--- KUNCI PENAHAN PASUKAN ANIMASI
   const [displayedCoins, setDisplayedCoins] = useState(0);
   const [revealedTreasuresCount, setRevealedTreasuresCount] = useState(0);
-  const [revealedStarsCount, setRevealedStarsCount] = useState(0); // State Animasi Bintang
+  const [revealedStarsCount, setRevealedStarsCount] = useState(0); 
 
   useEffect(() => {
     setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     const handleResize = () => setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener('resize', handleResize);
-
-    if (!hasPlayedInitAudio.current) {
-      soundEffects.success();
-      hasPlayedInitAudio.current = true;
-    }
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -77,23 +72,28 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
 
   const earnedTreasures = getNewlyUnlockedTreasures();
 
-  // 🌟 ORKESTRASI ANIMASI SEKUENSAL (Bintang -> Harta Karun -> Koin)
+  // 🌟 ORKESTRASI ANIMASI SEKUENSAL (Hanya berjalan saat transisi masuk page selesai total!)
   useEffect(() => {
-    // 1. Luncurkan Bintang KKTP terlebih dahulu
+    if (!isPageReady) return; // Tahan jika halaman belum mendarat sempurna!
+
+    // Tahap 1: Mainkan audio level up (Sudah digembok aman di soundEffects.ts)
+    soundEffects.success();
+
+    // Tahap 2: Luncurkan 3 Bintang KKTP berurutan
     let currentStarIndex = 0;
-    const totalStarsToReveal = 3; // Selalu tampilkan 3 slot, tapi yang nyala sesuai earnedStars
+    const totalStarsToReveal = 3;
     
     const starInterval = setInterval(() => {
       if (currentStarIndex < totalStarsToReveal) {
         setRevealedStarsCount(currentStarIndex + 1);
         if (currentStarIndex < earnedStars) {
-          soundEffects.playStarPop(); // Bunyikan HANYA untuk bintang yang menyala
+          soundEffects.playStarPop(); 
         }
         currentStarIndex++;
       } else {
         clearInterval(starInterval);
         
-        // 2. Setelah bintang selesai, luncurkan Lencana Harta Karun (jika ada)
+        // Tahap 3: Setelah bintang selesai meledak, luncurkan Lencana Harta Karun (jika ada)
         setTimeout(() => {
           if (earnedTreasures.length > 0) {
             let currentTreasureIndex = 0;
@@ -104,20 +104,19 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                 currentTreasureIndex++;
               } else {
                 clearInterval(treasureInterval);
-                // 3. Terakhir, luncurkan koin
+                // Tahap 4: Terakhir, gulung koin emas
                 setTimeout(() => triggerCoinRolling(), 300);
               }
             }, 500);
           } else {
-            // Jika tidak ada harta karun, langsung luncurkan koin
             triggerCoinRolling();
           }
         }, 300);
       }
-    }, 400); // Kecepatan letupan bintang
+    }, 400); 
 
     return () => clearInterval(starInterval);
-  }, []);
+  }, [isPageReady]); // Berjalan murni mengekor status Kesiapan Halaman
 
   const triggerCoinRolling = () => {
     soundEffects.startCoinTally(); 
@@ -207,7 +206,14 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
       </motion.div>
 
       {/* Main Container */}
-      <motion.div initial={{ opacity: 0, scale: 0.8, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }} className="max-w-5xl w-full bg-[#fffcf2] rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 relative z-10 border-4 border-amber-300 shadow-2xl" style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(251,191,36,0.1), 0 0 30px rgba(251,191,36,0.3)' }}>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8, y: 30 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
+        transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
+        onAnimationComplete={() => setIsPageReady(true)} // 🎯 KUNCI UTAMA: Aktifkan keriangan setelah kartu mendarat total!
+        className="max-w-5xl w-full bg-[#fffcf2] rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 relative z-10 border-4 border-amber-300 shadow-2xl" 
+        style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(251,191,36,0.1), 0 0 30px rgba(251,191,36,0.3)' }}
+      >
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-3xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
@@ -273,32 +279,35 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
 
                 <div className="space-y-3 sm:space-y-4">
                   
-                  {/* PANEL BINTANG EKSPEDISI KKTP */}
+                  {/* PANEL BINTANG EKSPEDISI KKTP (Terikat Pada revealedStarsCount Berurutan) */}
                   <div className="flex justify-between items-center bg-white px-4 py-3 rounded-xl border border-amber-200 shadow-sm">
                     <span className="text-amber-800 font-[Nunito] font-bold text-sm sm:text-base">Expedition Stars:</span>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1.5 h-7 items-center">
                       {[1, 2, 3].map(starIndex => {
                         const isVisible = starIndex <= revealedStarsCount;
                         const isEarned = starIndex <= earnedStars;
                         
                         return (
-                          <AnimatePresence key={starIndex}>
-                            {isVisible && (
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0, rotate: -45 }}
-                                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                              >
-                                <Star 
-                                  className={`w-6 h-6 sm:w-7 sm:h-7 transition-all duration-300 ${
-                                    isEarned 
-                                      ? 'text-yellow-400 fill-yellow-400 drop-shadow-[0_2px_5px_rgba(250,204,21,0.5)]' 
-                                      : 'text-gray-300 fill-gray-100 opacity-60'
-                                  }`} 
-                                />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+                          <div key={starIndex} className="w-7 h-7 flex items-center justify-center">
+                            <AnimatePresence>
+                              {isVisible && (
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0, rotate: -45 }}
+                                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                  exit={{ opacity: 0, scale: 0 }}
+                                  transition={{ type: "spring", stiffness: 350, damping: 14 }}
+                                >
+                                  <Star 
+                                    className={`w-6 h-6 sm:w-7 sm:h-7 transition-all duration-300 ${
+                                      isEarned 
+                                        ? 'text-yellow-400 fill-yellow-400 drop-shadow-[0_2px_6px_rgba(250,204,21,0.6)]' 
+                                        : 'text-gray-300 fill-gray-100 opacity-40'
+                                    }`} 
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
                         );
                       })}
                     </div>
@@ -313,7 +322,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                       </span>
                     </div>
                     <div className="w-full h-4 sm:h-5 bg-amber-100 rounded-full overflow-hidden border border-amber-200 shadow-inner">
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${quizScore}%` }} transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }} className={`h-full relative ${quizScore === 100 ? 'bg-gradient-to-r from-yellow-400 to-amber-500' : quizScore >= 80 ? 'bg-gradient-to-r from-blue-400 to-indigo-500' : 'bg-gradient-to-r from-red-400 to-rose-500'}`}>
+                      <motion.div initial={{ width: 0 }} animate={isPageReady ? { width: `${quizScore}%` } : { width: 0 }} transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }} className={`h-full relative ${quizScore === 100 ? 'bg-gradient-to-r from-yellow-400 to-amber-500' : quizScore >= 80 ? 'bg-gradient-to-r from-blue-400 to-indigo-500' : 'bg-gradient-to-r from-red-400 to-rose-500'}`}>
                         <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent" />
                       </motion.div>
                     </div>
@@ -328,7 +337,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                       </span>
                     </div>
                     <div className="w-full h-4 sm:h-5 bg-amber-100 rounded-full overflow-hidden border border-amber-200 shadow-inner">
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${voiceScore}%` }} transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }} className={`h-full relative ${voiceScore >= 80 ? 'bg-gradient-to-r from-green-400 to-emerald-500' : voiceScore >= 60 ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-rose-400 to-red-500'}`}>
+                      <motion.div initial={{ width: 0 }} animate={isPageReady ? { width: `${voiceScore}%` } : { width: 0 }} transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }} className={`h-full relative ${voiceScore >= 80 ? 'bg-gradient-to-r from-green-400 to-emerald-500' : voiceScore >= 60 ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-rose-400 to-red-500'}`}>
                         <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent" />
                       </motion.div>
                     </div>
@@ -416,11 +425,12 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         )}
       </AnimatePresence>
 
+      {/* CONFETTI BACKGROUND */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {[...Array(percentage >= 60 ? 25 : 12)].map((_, i) => {
           const colors = ['bg-yellow-300', 'bg-amber-200', 'bg-white', 'bg-indigo-300'];
           return (
-            <motion.div key={i} initial={{ y: -50, x: Math.random() * windowDimensions.width, opacity: 0 }} animate={{ y: windowDimensions.height + 50, x: Math.random() * windowDimensions.width, rotate: Math.random() * 360, opacity: [0, 1, 1, 0] }} transition={{ duration: Math.random() * 5 + 5, repeat: Infinity, delay: Math.random() * 5, ease: "linear" }} className={`absolute w-2 h-2 sm:w-3 sm:h-3 ${colors[i % 4]} rounded-full blur-[1px]`} style={{ boxShadow: '0 0 8px rgba(253, 224, 71, 0.8)' }} />
+            <motion.div key={i} initial={{ y: -50, x: Math.random() * windowDimensions.width, opacity: 0 }} animate={isPageReady ? { y: windowDimensions.height + 50, x: Math.random() * windowDimensions.width, rotate: Math.random() * 360, opacity: [0, 1, 1, 0] } : {}} transition={{ duration: Math.random() * 5 + 5, repeat: Infinity, delay: Math.random() * 5, ease: "linear" }} className={`absolute w-2 h-2 sm:w-3 sm:h-3 ${colors[i % 4]} rounded-full blur-[1px]`} style={{ boxShadow: '0 0 8px rgba(253, 224, 71, 0.8)' }} />
           );
         })}
       </div>

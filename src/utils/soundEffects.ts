@@ -17,6 +17,9 @@ class SoundEffects {
   private coinTallySound: HTMLAudioElement | null = null;
   private coinFinishSound: HTMLAudioElement | null = null;
 
+  // 🔒 GEMBOK PENGAMAN GLOBAL DARI SERANGAN REMOUNT/STRICT MODE
+  private lastSuccessTime = 0;
+
   constructor() {
     if (typeof window !== 'undefined') {
       if ('AudioContext' in window) {
@@ -90,8 +93,11 @@ class SoundEffects {
     }
   }
 
-  // REWARD PAGE: Hanya putar MP3 Level Up
+  // 🛡️ REWARD PAGE: Proteksi Anti-Spam (Abaikan jika dipanggil beruntun kurang dari 1 detik)
   success() {
+    const now = Date.now();
+    if (now - this.lastSuccessTime < 1000) return; 
+    this.lastSuccessTime = now;
     this.playMp3(this.levelUpSound);
   }
 
