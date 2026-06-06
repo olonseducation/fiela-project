@@ -81,8 +81,8 @@ export const units: Unit[] = [
     story: [
       {
         id: 1,
-        text: "The alarm clock rings loudly. Ring! Ring! Ring! Fiela slowly opens her eyes. She stretches her arms and lets out a big yawn. Her room is quiet and pretty cold. It is still very early in the morning.",
-        translation: "Jam beker berdering nyaring. Kring! Kring! Kring! Fiela perlahan membuka matanya. Dia merentangkan tangannya dan menguap lebar. Kamarnya sunyi dan terasa cukup dingin. Hari masih sangat pagi.",
+        text: "The alarm clock rings loudly. Ring! Ring! Ring! Fiela slowly opens her eyes. She stretches her arms and lets out a big yawn. She prays quietly in her bed. Her room is still and pretty cold. It is still very early in the morning.",
+        translation: "Jam beker berdering nyaring. Kring! Kring! Kring! Fiela perlahan membuka matanya. Dia merentangkan tangannya dan menguap lebar. Dia berdoa dengan tenang di tempat tidurnya. Kamarnya hening dan terasa cukup dingin. Hari masih sangat pagi.",
         dialogue: [
             { speaker: "Fiela", text: "“Good morning…”", translation: "“Selamat pagi…”" },
             { speaker: "Mom", text: "“Fiela, wake up! It's time for school!”", translation: "“Fiela, bangun! Waktunya berangkat sekolah!”" },

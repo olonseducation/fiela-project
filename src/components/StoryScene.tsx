@@ -379,30 +379,48 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="text-base sm:text-xl md:text-xl lg:text-2xl text-amber-950 leading-relaxed text-center font-[Nunito] font-bold"
+              // 🔮 LAYOUT: Atas-bawah di HP, Kiri-Kanan di Desktop
+              className="flex flex-col md:flex-row gap-6 sm:gap-8 w-full items-start"
             >
-              {/* Tampilkan Teks Berdasarkan Mode */}
-              <p>{renderTextWithHighlights(showTranslation ? scene.translation! : scene.text)}</p>
+              {/* KOLOM KIRI: NARASI UTAMA (60%) */}
+              <div className={`text-lg sm:text-xl lg:text-2xl text-amber-950 leading-relaxed font-[Nunito] font-bold ${
+                scene.dialogue && scene.dialogue.length > 0 ? 'md:w-[60%] text-left' : 'w-full text-center'
+              }`}>
+                <p>{renderTextWithHighlights(showTranslation ? scene.translation! : scene.text)}</p>
+              </div>
               
-              {/* Render Dialog (Jika Ada) */}
+              {/* KOLOM KANAN: REAL BUBBLE CHAT (40%) */}
               {scene.dialogue && scene.dialogue.length > 0 && (
-                <div className="mt-4 flex flex-col gap-2 sm:gap-3 items-center">
-                  {scene.dialogue.map((speech, index) => (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 * index }}
-                      key={index} 
-                      className="bg-white/60 border border-amber-900/10 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl w-fit max-w-full text-left flex flex-col sm:flex-row gap-1 sm:gap-3 items-start sm:items-baseline shadow-md"
-                    >
-                      <span className="font-[Balsamiq_Sans] text-base sm:text-xl text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-lg shrink-0">
-                        {speech.speaker}:
-                      </span>
-                      <span className="text-amber-950 text-sm sm:text-lg lg:text-xl italic">
-                        {showTranslation && speech.translation ? speech.translation : speech.text}
-                      </span>
-                    </motion.div>
-                  ))}
+                <div className="w-full md:w-[40%] flex flex-col gap-3 max-h-[180px] md:max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                  {scene.dialogue.map((speech, index) => {
+                    const isFiela = speech.speaker.toLowerCase() === "fiela"; 
+                    
+                    return (
+                      <motion.div 
+                        initial={{ opacity: 0, x: isFiela ? 15 : -15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                        key={index} 
+                        // Fiela di kanan, yang lain di kiri
+                        className={`flex flex-col w-full ${isFiela ? 'items-end' : 'items-start'}`}
+                      >
+                        {/* 🔮 TAG NAMA DIPERBESAR */}
+                        <span className="font-[Coiny] text-xs sm:text-sm text-amber-700/80 mb-0.5 px-2">
+                          {speech.speaker}
+                        </span>
+                        
+                        <div className={`px-4 py-2 sm:px-5 sm:py-2.5 max-w-[90%] sm:max-w-[85%] shadow-md ${
+                          isFiela 
+                          ? 'bg-amber-200 border border-amber-300 rounded-3xl rounded-tr-sm text-amber-950' 
+                          : 'bg-white border border-gray-200 rounded-3xl rounded-tl-sm text-gray-800'        
+                        }`}>
+                          <span className="text-sm sm:text-base italic font-[Nunito] font-bold leading-snug inline-block">
+                            {renderTextWithHighlights(showTranslation && speech.translation ? speech.translation : speech.text)}
+                          </span>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
