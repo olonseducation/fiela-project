@@ -451,9 +451,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
           transition={{ delay: 0.4 }}
           className="text-center mt-4 sm:mt-5 md:flex items-center justify-center gap-3 text-amber-900/80 font-[Nunito] italic font-bold text-sm sm:text-base lg:text-lg px-4"
         >
-          <div className="h-px w-6 sm:w-10 bg-amber-900/20" />
           <span>📖 Click the highlighted words or EN/ID button to discover magic!</span>
-          <div className="h-px w-6 sm:w-10 bg-amber-900/20" />
         </motion.div>
       </div>
 
