@@ -2,7 +2,7 @@ import { useState, useEffect, type JSX } from 'react';
 import type { StoryScene as StorySceneType, VocabularyWord } from '../types';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Volume2, Pause, Home, Flag, Languages } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Volume2, Pause, Home, Flag } from 'lucide-react';
 import { DictionaryPopup } from './DictionaryPopup';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { soundEffects } from '../utils/soundEffects';
@@ -346,19 +346,28 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
           
           {/* 🔍 TOMBOL KACAMATA SIHIR (TRANSLATION TOGGLE) */}
           {scene.translation && (
-            <div className="absolute top-0 right-4 sm:right-6 -translate-y-1/2">
+            <div className="absolute top-0 right-4 sm:right-6 -translate-y-1/2 z-50">
                <motion.button
                 onClick={toggleTranslation}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border-2 shadow-md transition-colors font-[Fredoka] font-bold text-xs sm:text-sm ${
-                  showTranslation 
-                  ? 'bg-amber-100 text-amber-900 border-amber-400' 
-                  : 'bg-white text-indigo-900 border-indigo-200 hover:bg-indigo-50'
-                }`}
-              >
-                <Languages className="w-4 h-4 sm:w-5 sm:h-5" />
-                {showTranslation ? 'ID' : 'EN'}
+                className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border-2 shadow-md bg-white border-indigo-200 hover:bg-indigo-50 transition-colors font-[Fredoka] font-bold text-xs sm:text-sm"
+            >
+              <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-full border border-gray-200">
+                {/* Sesuaikan URL di bawah ini dengan path di GitHub-mu */}
+                <img 
+                  src={showTranslation 
+                    ? "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/id.png"
+                    : "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/en.png"
+                  }
+                  alt="Language Flag"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Teks label tetap kita sembunyikan di HP agar tidak terlalu lebar, tapi tampil di desktop */}
+              <span className="text-indigo-900 hidden sm:inline">
+                {showTranslation ? "ID" : "EN"}
+              </span>
               </motion.button>
             </div>
           )}
