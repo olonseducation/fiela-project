@@ -6,16 +6,6 @@ export interface VocabularyWord {
   image?: string;
 }
 
-export interface Unit {
-  id: number;
-  title: string;
-  theme: string;
-  description: string;
-  vocabulary: VocabularyWord[];
-  story: StoryScene[];
-  miniGame: MiniGameType;
-}
-
 export interface StoryScene {
   id: number;
   text: string;
@@ -23,6 +13,9 @@ export interface StoryScene {
   theme: string;
   description: string;
   highlightWords: string[];
+  // 🔮 Izin resmi untuk Kacamata Sihir Dwibahasa:
+  translation?: string;
+  dialogue?: { speaker: string; text: string; translation?: string }[];
 }
 
 export type MiniGameType = 'matching' | 'fillBlank' | 'wordSearch' | 'quiz';
@@ -34,6 +27,9 @@ export interface Unit {
   title: string;
   theme: string;
   description: string;
+  vocabulary: VocabularyWord[];
+  story: StoryScene[];
+  miniGame: MiniGameType;
 }
 
 export type UnitScore = Record<number, number>;

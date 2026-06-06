@@ -2,7 +2,7 @@ import { useState, useEffect, type JSX } from 'react';
 import type { StoryScene as StorySceneType, VocabularyWord } from '../types';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Volume2, Pause, Home, Flag } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Volume2, Pause, Home, Flag, Languages } from 'lucide-react';
 import { DictionaryPopup } from './DictionaryPopup';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { soundEffects } from '../utils/soundEffects';
@@ -23,6 +23,9 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
   const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  
+  // 🔮 SAKELAR KACAMATA SIHIR TERJEMAHAN
+  const [showTranslation, setShowTranslation] = useState(false);
 
   const scene = scenes[currentScene];
 
@@ -34,6 +37,11 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
     }, 100);
     return () => clearInterval(interval);
   }, [scene.text, unitId, scene.id]);
+
+  // 🧹 Reset terjemahan saat pindah scene
+  useEffect(() => {
+    setShowTranslation(false);
+  }, [currentScene]);
 
   const stopAllAudio = () => {
     voiceSettings.pause();
@@ -63,6 +71,9 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
     setIsPlaying(true);
     setIsPaused(false);
     
+    // Matikan mode terjemahan jika menyalakan suara
+    if(showTranslation) setShowTranslation(false);
+    
     if (unitId && scene.id) {
       const customAudioPath = customAudioManager.findSceneAudio(unitId, scene.id);
       if (customAudioPath) {
@@ -88,6 +99,9 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
   };
 
   const renderTextWithHighlights = (text: string) => {
+    // Jika tidak ada kata yang harus disorot (misalnya mode terjemahan Indonesia), kembalikan teks biasa
+    if (!scene.highlightWords || scene.highlightWords.length === 0 || showTranslation) return text;
+
     let parts: (string | JSX.Element)[] = [text];
     scene.highlightWords.forEach(word => {
       parts = parts.flatMap(part => {
@@ -101,7 +115,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
                 key={`${word}-${index}`}
                 whileHover={{ scale: 1.1, rotate: [-1, 1, 0], y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-block cursor-pointer px-2 py-0.5 mx-0.5 rounded-lg bg-amber-200/60 text-amber-900 font-bold border-b-4 border-amber-400/40 transition-colors hover:bg-amber-300 shadow-sm relative z-20"
+                className="inline-block cursor-pointer px-2 py-0.5 mx-0.5 rounded-lg bg-emerald-200/60 text-emerald-900 font-bold border-b-4 border-emerald-400/40 transition-colors hover:bg-amber-300 shadow-sm relative z-20"
                 onClick={() => {soundEffects.buttonReview(); handleWordClick(segment)}}
               >
                 {segment}
@@ -113,6 +127,12 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
       });
     });
     return parts;
+  };
+
+  const toggleTranslation = () => {
+    soundEffects.buttonClick();
+    if(isPlaying) stopAllAudio();
+    setShowTranslation(!showTranslation);
   };
 
   const nextScene = () => {
@@ -159,63 +179,24 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
           animate="normal"
           whileHover="diHover" 
           whileTap="diKlik"
-          
           variants={{
-            normal: { 
-              backgroundColor: '#faf6f1', 
-              color: '#015A84', 
-              borderColor: '#83bad2', 
-              borderRadius: '50%',
-              scale: 1,
-            },
-            diHover: { 
-              scale: 1.15, 
-              backgroundColor: '#83bad2', 
-              color: '#FAF6F1',
-              borderColor: '#015A84',
-              borderRadius: '12px',
-              // KUNCI SNAPPY 1: Stiffness dinaikkan drastis ke 400 agar sangat cepat melesat
-              transition: { type: "spring", stiffness: 400, damping: 15 }
-            },
-            diKlik: { 
-              scale: 0.9 
-            }
+            normal: { backgroundColor: '#faf6f1', color: '#015A84', borderColor: '#83bad2', borderRadius: '50%', scale: 1 },
+            diHover: { scale: 1.15, backgroundColor: '#83bad2', color: '#FAF6F1', borderColor: '#015A84', borderRadius: '12px', transition: { type: "spring", stiffness: 400, damping: 15 } },
+            diKlik: { scale: 0.9 }
           }}
-          className="rounded-full shadow-lg border-2 bg-[#faf6f1]/95 border-amber-700/30 text-#015A84 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden p-2 sm:p-3 w-11 h-11 sm:w-15 sm:h-15 hover:h-14 hover:w-11 sm:hover:w-16 sm:hover:h-18 transition-all duration-75" // Durasi CSS dipercepat ke 75ms
+          className="rounded-full shadow-lg border-2 bg-[#faf6f1]/95 border-amber-700/30 text-#015A84 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden p-2 sm:p-3 w-11 h-11 sm:w-15 sm:h-15 hover:h-14 hover:w-11 sm:hover:w-16 sm:hover:h-18 transition-all duration-75"
         >
-          {/* 1. Ikon Home */}
           <motion.span
             className="flex items-center justify-center"
-            variants={{
-              normal: { y: 0, scale: 1 },
-              diHover: { 
-                y: -2, 
-                scale: 0.9 
-              }
-            }}
-            // KUNCI SNAPPY 2: Ikon ikut melompat dengan kecepatan tinggi tanpa jeda lambat
+            variants={{ normal: { y: 0, scale: 1 }, diHover: { y: -2, scale: 0.9 } }}
             transition={{ type: "spring", stiffness: 500, damping: 20 }}
           >
             <Home className="h-5 w-5 sm:h-7 sm:w-7" />
           </motion.span>
       
-          {/* 2. Teks 'Home' */}
           <motion.span
             className="text-[8px] sm:text-[10px] font-bold tracking-wide uppercase pointer-events-none mt-0.5"
-            variants={{
-              normal: { 
-                opacity: 0, 
-                y: 6, 
-                height: 0 
-              },
-              diHover: { 
-                opacity: 1, 
-                y: 0, 
-                height: "auto",
-                // KUNCI SNAPPY 3: Menghapus jeda (delay) agar teks langsung muncul instan bersama ikon
-                transition: { type: "tween", ease: "easeOut", duration: 0.1 } 
-              }
-            }}
+            variants={{ normal: { opacity: 0, y: 6, height: 0 }, diHover: { opacity: 1, y: 0, height: "auto", transition: { type: "tween", ease: "easeOut", duration: 0.1 } } }}
           >
             Home
           </motion.span>
@@ -289,7 +270,8 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
               </motion.div>
             </AnimatePresence>
             
-            <div className="absolute top-4 right-4 z-20">
+            {/* KONTROL AUDIO (Hanya Tampil Jika Mode Inggris) */}
+            <div className={`absolute top-4 right-4 z-20 transition-opacity duration-300 ${showTranslation ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
               <div className="relative">
                 {isPlaying && (
                   <>
@@ -359,19 +341,61 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
 
         </div>
 
-        {/* BAGIAN BAWAH: PANEL TEKS (Lebar & Terpisah, Anti-Shift) */}
-        <div className="w-full max-w-6xl mx-auto mt-4 sm:mt-6 lg:mt-5 bg-[#faf6f1] rounded-2xl sm:rounded-3xl border-4 border-white shadow-xl px-4 sm:px-8 py-5 lg:py-6 relative z-20 flex flex-col justify-center min-h-[120px]">
+        {/* BAGIAN BAWAH: PANEL TEKS */}
+        <div className="w-full max-w-6xl mx-auto mt-4 sm:mt-6 lg:mt-5 bg-[#faf6f1] rounded-2xl sm:rounded-3xl border-4 border-white shadow-xl px-4 sm:px-8 pt-8 pb-5 lg:pb-6 relative z-20 flex flex-col justify-center min-h-[120px]">
           
+          {/* 🔍 TOMBOL KACAMATA SIHIR (TRANSLATION TOGGLE) */}
+          {scene.translation && (
+            <div className="absolute top-0 right-4 sm:right-6 -translate-y-1/2">
+               <motion.button
+                onClick={toggleTranslation}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border-2 shadow-md transition-colors font-[Fredoka] font-bold text-xs sm:text-sm ${
+                  showTranslation 
+                  ? 'bg-amber-100 text-amber-900 border-amber-400' 
+                  : 'bg-white text-indigo-900 border-indigo-200 hover:bg-indigo-50'
+                }`}
+              >
+                <Languages className="w-4 h-4 sm:w-5 sm:h-5" />
+                {showTranslation ? 'ID' : 'EN'}
+              </motion.button>
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentScene}
+              key={`${currentScene}-${showTranslation ? 'id' : 'en'}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
               className="text-base sm:text-xl md:text-xl lg:text-2xl text-amber-950 leading-relaxed text-center font-[Nunito] font-bold"
             >
-              {renderTextWithHighlights(scene.text)}
+              {/* Tampilkan Teks Berdasarkan Mode */}
+              <p>{renderTextWithHighlights(showTranslation ? scene.translation! : scene.text)}</p>
+              
+              {/* Render Dialog (Jika Ada) */}
+              {scene.dialogue && scene.dialogue.length > 0 && (
+                <div className="mt-4 flex flex-col gap-2 sm:gap-3 items-center">
+                  {scene.dialogue.map((speech, index) => (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * index }}
+                      key={index} 
+                      className="bg-white/60 border border-amber-900/10 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl w-fit max-w-full text-left flex flex-col sm:flex-row gap-1 sm:gap-3 items-start sm:items-baseline shadow-md"
+                    >
+                      <span className="font-[Balsamiq_Sans] text-base sm:text-xl text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-lg shrink-0">
+                        {speech.speaker}:
+                      </span>
+                      <span className="text-amber-950 text-sm sm:text-lg lg:text-xl italic">
+                        {showTranslation && speech.translation ? speech.translation : speech.text}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
@@ -419,7 +443,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
           className="text-center mt-4 sm:mt-5 hidden md:flex items-center justify-center gap-3 text-amber-900/80 font-[Nunito] italic font-bold text-sm sm:text-base lg:text-lg px-4"
         >
           <div className="h-px w-6 sm:w-10 bg-amber-900/20" />
-          <span>📖 Click the highlighted words to discover magic!</span>
+          <span>📖 Click the highlighted words or EN/ID button to discover magic!</span>
           <div className="h-px w-6 sm:w-10 bg-amber-900/20" />
         </motion.div>
       </div>
