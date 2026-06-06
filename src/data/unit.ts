@@ -726,31 +726,31 @@ export const units: Unit[] = [
         word: "yard",
         pronunciation: "jɑːrd",
         definition: "An outdoor area next to a house",
-        example: "Fiela plays in the yard."
+        example: "Fiela and friends play a ball game in the yard."
       },
       {
         word: "playground",
         pronunciation: "ˈpleɪɡraʊnd",
         definition: "An outdoor area where children play",
-        example: "They move to the playground."
+        example: "The children move to the playground."
       },
       {
         word: "slide",
         pronunciation: "slaɪd",
         definition: "A smooth surface for sliding down",
-        example: "Fiela slides down fast."
+        example: "Fiela climbs up the slide ladder."
       },
       {
         word: "swing",
         pronunciation: "swɪŋ",
         definition: "A seat hanging from ropes or chains",
-        example: "Her friends take turns on the swing."
+        example: "Fiela's friends take turns on the swing."
       },
       {
         word: "ball",
         pronunciation: "bɔːl",
         definition: "A round object used in games",
-        example: "Fiela throws the ball to Dira."
+        example: "The children start with a simple ball game."
       },
       {
         word: "run",
