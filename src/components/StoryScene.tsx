@@ -89,9 +89,31 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
   };
 
   const handleWordClick = (word: string) => {
-    const vocabWord = vocabulary.find(v => 
-      v.word.toLowerCase() === word.toLowerCase()
-    );
+    // Bersihkan kata dari tanda baca yang mungkin menempel
+    const cleanWord = word.toLowerCase().replace(/[^a-z\s]/g, '');
+    
+    const vocabWord = vocabulary.find(v => {
+      const base = v.word.toLowerCase();
+      
+      // 1. Cocok 100% (contoh: "yawn" === "yawn")
+      if (cleanWord === base) return true;
+      
+      // 2. Cocok dengan akhiran -s, -es, -ed (contoh: "packs" berakar dari "pack", "stretches" dari "stretch")
+      if (cleanWord.startsWith(base) && cleanWord.length <= base.length + 4) return true;
+      
+      // 3. Khusus Phrasal Verbs 2 kata (contoh: "wakes up" berakar dari "wake up")
+      const baseParts = base.split(' ');
+      const clickedParts = cleanWord.split(' ');
+      
+      if (baseParts.length > 1 && clickedParts.length > 1) {
+        if (clickedParts[0].startsWith(baseParts[0]) && clickedParts[1] === baseParts[1]) {
+          return true;
+        }
+      }
+      
+      return false;
+    });
+
     if (vocabWord) {
       setSelectedWord(vocabWord);
       setIsDictionaryOpen(true);
@@ -115,7 +137,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
                 key={`${word}-${index}`}
                 whileHover={{ scale: 1.1, rotate: [-1, 1, 0], y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-block cursor-pointer px-2 py-0.5 mx-0.5 rounded-lg bg-emerald-200/60 text-emerald-900 font-bold border-b-4 border-emerald-400/40 transition-colors hover:bg-amber-300 shadow-sm relative z-20"
+                className="inline-block cursor-pointer px-1.5 py-0 mx-0.5 rounded-md bg-emerald-200/60 text-emerald-900 font-bold border-b-2 border-emerald-400/40 transition-colors hover:bg-amber-300 shadow-sm relative z-20 leading-tight"
                 onClick={() => {soundEffects.buttonReview(); handleWordClick(segment)}}
               >
                 {segment}
@@ -391,7 +413,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
               
               {/* KOLOM KANAN: REAL BUBBLE CHAT (40%) */}
               {scene.dialogue && scene.dialogue.length > 0 && (
-                <div className="w-full md:w-[40%] flex flex-col gap-3 max-h-[180px] md:max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="w-full md:w-[40%] flex flex-col gap-3 max-h-[180px] md:max-h-[220px] overflow-y-auto pr-2 pb-4 pl-1 custom-scrollbar">
                   {scene.dialogue.map((speech, index) => {
                     const isFiela = speech.speaker.toLowerCase() === "fiela"; 
                     

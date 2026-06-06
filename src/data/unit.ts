@@ -89,7 +89,7 @@ export const units: Unit[] = [
             { speaker: "Fiela", text: "“Okay, Mom… I'm waking up.”", translation: "“Oke, Ibu... Fiela bangun.”" }
         ],
         image: "figma:asset/3c7025d3f2afa5d3da6e8a1df4d1fc22ef0ba6a5.png",
-        highlightWords: ["wake up", "stretch", "yawn"],
+        highlightWords: ["wake up", "stretches", "yawn"],
         theme: '',
         description: ''
       },
@@ -102,7 +102,7 @@ export const units: Unit[] = [
             { speaker: "Mom", text: "“Don't forget your ears!”", translation: "“Jangan lupa bersihkan telingamu!”" }
         ],
         image: "https://images.unsplash.com/photo-1693692282136-2eeb24c11856?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZCUyMDJydXNoaW5nJTIwdGVldGglMjBiYXRocm9vbXxlbnwxfHx8fDE3NzI0NjgzODd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["brush", "wash"],
+        highlightWords: ["brush", "washes"],
         theme: '',
         description: ''
       },
@@ -120,14 +120,14 @@ export const units: Unit[] = [
       },
       {
         id: 4,
-        text: "Fiela opens her wardrobe. She sees her school uniform neatly folded. She puts on her shirt, her skirt, and her white socks. Then she wears her red tie.",
-        translation: "Fiela membuka lemarinya. Dia melihat seragam sekolahnya terlipat rapi. Dia memakai kemejanya, roknya, dan kaus kaki putihnya. Kemudian dia memakai dasi merahnya.",
+        text: "Fiela opens her wardrobe. She sees her school uniform neatly folded. She gets dressed quickly. She puts on her shirt, her skirt, and her white socks. Then she wears her red tie.",
+        translation: "Fiela membuka lemarinya. Dia melihat seragam sekolahnya terlipat rapi. Dia segera berpakaian. Dia memakai kemejanya, roknya, dan kaus kaki putihnya. Kemudian dia memakai dasi merahnya.",
         dialogue: [
             { speaker: "Fiela", text: "“I'm almost ready!”", translation: "“Aku hampir siap!”" },
             { speaker: "Mom", text: "“Good job! Don't forget your shoes.”", translation: "“Bagus! Jangan lupakan sepatumu.”" }
         ],
         image: "https://images.unsplash.com/photo-1576673196028-cd681592bd61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZCUyMHNjaG9vbCUyMHVuaWZvcm0lMjBkcmVzc2luZ3xlbnwxfHx8fDE3NzI0NjgzODd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["uniform", "get dressed"],
+        highlightWords: ["uniform", "gets dressed"],
         theme: '',
         description: ''
       },
@@ -153,7 +153,7 @@ export const units: Unit[] = [
             { speaker: "Mom", text: "“Great! Let's go.”", translation: "“Hebat! Ayo berangkat.”" }
         ],
         image: "https://images.unsplash.com/photo-1622560482357-789dc8a50923?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZCUyMHBhY2tpbmclMjBzY2hvb2wlMjBiYWNrcGFja3xlbnwxfHx8fDE3NzI0NjgzODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["pack"],
+        highlightWords: ["packs"],
         theme: '',
         description: ''
       },
@@ -166,7 +166,7 @@ export const units: Unit[] = [
             { speaker: "Fiela", text: "“Good morning! Let's walk together.”", translation: "“Selamat pagi! Ayo jalan bersama.”" }
         ],
         image: "https://images.unsplash.com/photo-1701302550962-d807b97100fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHdhbGtpbmclMjBzY2hvb2wlMjB0b2dldGhlcnxlbnwxfHx8fDE3NzI0NjgzODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["walk"],
+        highlightWords: ["walks", "walk"],
         theme: '',
         description: ''
       },
@@ -179,7 +179,7 @@ export const units: Unit[] = [
             { speaker: "Fiela", text: "“Thank you, Mom!”", translation: "“Terima kasih, Ibu!”" }
         ],
         image: "https://images.unsplash.com/photo-1770996870183-97b943ab7e8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBnYXRlJTIwZW50cmFuY2UlMjBjaGlsZHJlbnxlbnwxfHx8fDE3NzI0NjgzODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["walk"],
+        highlightWords: ["walks"],
         theme: '',
         description: ''
       }
@@ -303,7 +303,7 @@ export const units: Unit[] = [
             { speaker: "Fiela", text: "“Okay! Let's share the blocks.”", translation: "“Oke! Ayo kita bagi balok-baloknya.”" }
         ],
         image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHBsYXlpbmclMjBibG9ja3MlMjB0b3lzfGVufDF8fHx8MTc3MjQ2ODM5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["sister", "play"],
+        highlightWords: ["sister", "play", "helps"],
         theme: '',
         description: ''
       },
@@ -335,7 +335,7 @@ export const units: Unit[] = [
       },
       {
         id: 7,
-        text: "Mother takes out her phone. \"Let's take a family photo!\" she says. Everyone gathers in the living room. They smile brightly—click!—a beautiful picture is taken.",
+        text: "Mother takes out her phone. “Let's take a family photo!“ she says. Everyone gathers in the living room. They smile brightly—click!—a beautiful picture is taken.",
         translation: "Ibu mengeluarkan ponselnya. “Ayo kita foto keluarga!” ucapnya. Semua orang berkumpul di ruang tamu. Mereka tersenyum cerah (klik!) dan sebuah foto indah pun terabadikan.",
         dialogue: [
             { speaker: "Father", text: "“One more! Say cheese!”", translation: "“Satu kali lagi! Katakan cheese!”" },
@@ -348,7 +348,7 @@ export const units: Unit[] = [
       },
       {
         id: 8,
-        text: "In the evening, the family sits together once again. They laugh, talk, and enjoy the quiet night. Fiela looks at everyone and feels warm inside. \"This is my family,\" she thinks. \"I love them so much.",
+        text: "In the evening, the family sits together once again. They laugh, talk, and enjoy the quiet night. Fiela looks at everyone and feels warm inside. “This is my family,” she thinks. “I love them so much.”",
         translation: "Pada malam harinya, keluarga itu duduk bersama lagi. Mereka tertawa, mengobrol, dan menikmati malam yang tenang. Fiela memandangi semua orang dan hatinya terasa hangat. “Ini keluargaku,” pikirnya. “Aku sangat menyayangi mereka.”",
         dialogue: [
             { speaker: "Mother", text: "“Did you have a good day?”", translation: "“Apakah harimu menyenangkan?”" },
@@ -439,20 +439,20 @@ export const units: Unit[] = [
             { speaker: "Students", text: "“Good morning, Teacher!”", translation: "“Selamat pagi, Guru!”" }
         ],
         image: "https://images.unsplash.com/photo-1761208662734-fb46f1398551?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjbGFzc3Jvb20lMjBjaGlsZHJlbiUyMGRlc2slMjBzY2hvb2x8ZW58MXx8fHwxNzcyNDY4MzkxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["desk", "chair", "book"],
+        highlightWords: ["desk", "chair", "books"],
         theme: '',
         description: ''
       },
       {
         id: 2,
-        text: "Ms. Rani walks to the board. She picks up a blue marker. She writes the topic of the day: \"My Favorite Things\". The students listen quietly.",
+        text: "Ms. Rani walks to the board. She picks up a blue marker. She writes the topic of the day: “My Favorite Things”. The students listen quietly.",
         translation: "Ibu Rani berjalan ke papan tulis. Dia mengambil spidol biru. Dia menuliskan topik hari ini: “Benda-benda Kesukaanku”. Murid-murid mendengarkan dengan tenang.",
         dialogue: [
             { speaker: "Ms. Rani", text: "“Today, we learn new words. Please listen carefully.”", translation: "“Hari ini, kita akan belajar kata-kata baru. Tolong dengarkan baik-baik.”" },
             { speaker: "Fiela", text: "“I like the blue marker!”", translation: "“Aku suka spidol biru itu!”" }
         ],
         image: "https://images.unsplash.com/photo-1758685845902-acd5db1b532b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWFjaGVyJTIwd3JpdGluZyUyMHdoaXRlYm9hcmQlMjBjbGFzc3Jvb218ZW58MXx8fHwxNzcyNDY4MzkxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["board", "marker", "write", "listen"],
+        highlightWords: ["board", "marker", "writes", "listen"],
         theme: '',
         description: ''
       },
@@ -515,7 +515,7 @@ export const units: Unit[] = [
       },
       {
         id: 7,
-        text: "It's activity time! Ms. Rani announces: \"Find three things in the classroom!\" The students walk around excitedly.",
+        text: "It's activity time! Ms. Rani announces: “Find three things in the classroom!” The students walk around excitedly.",
         translation: "Waktunya permainan! Ibu Rani berkata: “Temukan tiga benda di dalam kelas!” Murid-murid berkeliling kelas dengan penuh semangat.",
         dialogue: [
             { speaker: "Fiela", text: "“I found the clock!”", translation: "“Aku menemukan jam dinding!”" },
@@ -619,7 +619,7 @@ export const units: Unit[] = [
             { speaker: "Mother", text: "“Come and see!”", translation: "“Kemarilah dan lihat sendiri!”" }
         ],
         image: "https://images.unsplash.com/photo-1661715483461-a4cba9697e58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraXRjaGVuJTIwZm9vZCUyMGNvb2tpbmclMjBkZWxpY2lvdXN8ZW58MXx8fHwxNzcyNDY4Mzk3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["delicious", "cook"],
+        highlightWords: ["delicious", "cooking"],
         theme: '',
         description: ''
       },
@@ -632,7 +632,7 @@ export const units: Unit[] = [
             { speaker: "Mother", text: "“Yes, please wash the tomatoes.”", translation: "“Boleh, tolong cucikan tomat-tomat ini ya.”" }
         ],
         image: "https://images.unsplash.com/photo-1627424496969-8d2489ef1e5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2ZWdldGFibGVzJTIwY2hpY2tlbiUyMGVnZ3MlMjBpbmdyZWRpZW50c3xlbnwxfHx8fDE3NzI0NjgzOTd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["vegetables", "chicken", "egg"],
+        highlightWords: ["vegetables", "chicken", "eggs"],
         theme: '',
         description: ''
       },
@@ -677,14 +677,14 @@ export const units: Unit[] = [
       },
       {
         id: 6,
-        text: "Next to the rice, there is a small spoon of chili sauce. Fiela looks at it curiously. Fiela touches a tiny bit with her finger. Her eyes widen. \"It's spicy!\" she laughs.",
+        text: "Next to the rice, there is a small spoon of chili sauce. Fiela looks at it curiously. Fiela touches a tiny bit with her finger. Her eyes widen. “It's spicy!” she laughs.",
         translation: "Di sebelah nasi, ada sesendok kecil sambal. Fiela menatapnya dengan rasa ingin tahu. Fiela menyentuhnya sedikit dengan jarinya. Matanya terbelalak. “Pedas!” dia tertawa.",
         dialogue: [
             { speaker: "Fiela", text: "“Can I try this?”", translation: "“Bolehkah aku coba yang ini?”" },
             { speaker: "Mother", text: "“Just a little. It's spicy!”", translation: "“Sedikit saja ya. Itu pedas!”" }
         ],
         image: "https://images.unsplash.com/photo-1764312194474-5996b4c1a4ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGljeSUyMGNoaWxpJTIwc2F1Y2UlMjByZWR8ZW58MXx8fHwxNzcyNDY4Mzk5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["spicy"],
+        highlightWords: ["spicy", "rice"],
         theme: '',
         description: ''
       },
@@ -703,7 +703,7 @@ export const units: Unit[] = [
       },
       {
         id: 8,
-        text: "In the afternoon, Fiela writes about her favorite food for tomorrow's class presentation. She draws a plate of chicken and rice. At the top of the card, she writes: \"My favorite food is chicken.",
+        text: "In the afternoon, Fiela writes about her favorite food for tomorrow's class presentation. She draws a plate of chicken and rice. At the top of the card, she writes: “My favorite food is chicken.”",
         translation: "Pada sore harinya, Fiela menulis tentang makanan favoritnya untuk presentasi kelas besok. Dia menggambar sepiring ayam dan nasi. Di bagian atas kertasnya, dia menulis: “Makanan favoritku adalah ayam.”",
         dialogue: [
             { speaker: "Fiela", text: "“I love chicken. It always makes me happy.”", translation: "“Aku suka ayam. Makanan ini selalu membuatku bahagia.”" }
@@ -820,7 +820,7 @@ export const units: Unit[] = [
             { speaker: "Dira", text: "“I got it!”", translation: "“Aku dapat!”" }
         ],
         image: "https://images.unsplash.com/photo-1608803238528-16ca3cf5c0c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHBsYXlpbmclMjBiYWxsJTIwdGhyb3dpbmd8ZW58MXx8fHwxNzcyNDY4NDAwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["ball", "throw", "catch", "run"],
+        highlightWords: ["ball", "throws", "catch", "cathes", "runs"],
         theme: '',
         description: ''
       },
@@ -833,7 +833,7 @@ export const units: Unit[] = [
             { speaker: "Friend", text: "“My turn next!”", translation: "“Giliran aku selanjutnya!”" }
         ],
         image: "https://images.unsplash.com/photo-1746010531890-9b4efb2475a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHBsYXlncm91bmQlMjBzbGlkZSUyMHN3aW5nfGVufDF8fHx8MTc3MjQ2ODQwMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["playground", "slide", "swing"],
+        highlightWords: ["playground", "slides", "swing"],
         theme: '',
         description: ''
       },
@@ -872,7 +872,7 @@ export const units: Unit[] = [
             { speaker: "Dira", text: "“Here, have some water.”", translation: "“Ini, minumlah sedikit air.”" }
         ],
         image: "https://images.unsplash.com/photo-1766942361035-4f3e2348bac4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHJlc3RpbmclMjB0cmVlJTIwc2hhZGV8ZW58MXx8fHwxNzcyNDY4NDAyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-        highlightWords: ["run"],
+        highlightWords: ["running"],
         theme: '',
         description: ''
       },
