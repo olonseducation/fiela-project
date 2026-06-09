@@ -199,6 +199,13 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               <li className="pl-1">
                 <span className="font-bold">{showTranslation ? "Bicaralah Jelas ke Kompas Ajaib:" : "Speak Clearly into the Magic Compass:"}</span> {showTranslation ? "Agar suara pengucapanmu terekam dengan baik, bicaralah dekat dengan mikrofon perangkatmu atau gunakan headset/mikrofon tambahan. Itu akan membantu atlas menangkap pelafalanmu dengan sempurna!" : "For the best voice recognition experience, try to speak closely to your device's microphone or wear a headset/earphone/additional microphone (recommended for mobile device user). This helps the atlas capture your magnificent pronunciation perfectly!"}
               </li>
+              <li className="pl-1">
+                <span className="font-bold">{showTranslation ? "Gunakan Kapal Penjelajah (Peramban) Terbaik:" : "Use the Best Explorer Ships (Browsers):"}</span> 
+                {' '}
+                {showTranslation 
+                  ? "Agar keajaiban fitur suara dapat bekerja tanpa hambatan, kami sangat menyarankan untuk berlayar menggunakan Google Chrome, Microsoft Edge, atau Safari (untuk perangkat Apple)." 
+                  : "To ensure the magic voice features work flawlessly, we highly recommend setting sail using Google Chrome, Microsoft Edge, or Safari (for Apple devices)."}
+              </li>
             </ul>
           </div>
         );
