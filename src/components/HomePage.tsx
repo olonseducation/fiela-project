@@ -529,7 +529,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
         <DialogContent className="max-w-md bg-[#faf6f1] border-2 border-amber-900/40 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-amber-900 flex items-center gap-2 font-[Coiny] text-2xl"><Star className="h-6 w-6 fill-amber-600 text-amber-600" /> Revisit Expedition {selectedReviewUnit}</DialogTitle>
+            <DialogTitle className="text-amber-900 flex items-center gap-2 font-[Fredoka] text-2xl font-bold"><Star className="h-6 w-6 fill-amber-600 text-amber-600" /> Revisit Expedition {selectedReviewUnit}</DialogTitle>
             <DialogDescription className="font-[Nunito] font-medium text-amber-800/80 text-base mt-1">Choose your path to review this expedition</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 mt-2">
@@ -537,7 +537,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
             <Button onClick={() => handleReviewOption('review')} className="w-full bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-blue-950/20 shadow-sm transition-transform active:scale-95"><GraduationCap className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">Study the Lexicon</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Review discovered vocabulary</div></div></Button>
             <Button onClick={() => handleReviewOption('game')} className="w-full bg-gradient-to-r from-green-700 to-emerald-900 hover:from-green-800 hover:to-emerald-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-emerald-950/20 shadow-sm transition-transform active:scale-95"><Gamepad2 className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">Test Your Knowledge</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Challenge yourself once more</div></div></Button>
             <Button onClick={() => handleReviewOption('reward')} className="w-full bg-gradient-to-r from-yellow-700 to-orange-800 hover:from-yellow-800 hover:to-orange-900 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-orange-950/20 shadow-sm transition-transform active:scale-95"><Trophy className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">View Treasures</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Admire your achievements</div></div></Button>
-            <Button onClick={() => setReviewDialogOpen(false)} variant="outline" className="w-full border-2 border-amber-700/40 hover:bg-amber-100 rounded-xl py-6 font-[Fredoka] text-lg text-amber-900">Cancel</Button>
+            <Button onClick={() => setReviewDialogOpen(false)} variant="outline" className="w-full border-2 border-amber-700/40 hover:bg-amber-100 rounded-xl py-6 font-[Fredoka] text-lg text-amber-900 font-bold">Cancel</Button>
           </div>
         </DialogContent>
       </Dialog>

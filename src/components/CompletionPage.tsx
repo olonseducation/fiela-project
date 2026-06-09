@@ -209,7 +209,7 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
                   soundEffects.buttonPlay();
                   onRestart();
                 }}
-                className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:via-yellow-400 hover:to-amber-500 text-[#2a1205] px-8 py-7 sm:py-8 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.4)] font-[Coiny] text-xl sm:text-2xl border-none transition-transform active:scale-95 tracking-wide flex items-center justify-center gap-3"
+                className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:via-yellow-400 hover:to-amber-500 text-[#2a1205] px-8 py-7 sm:py-8 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.4)] font-[Coiny] text-lg sm:text-2xl border-none transition-transform active:scale-95 tracking-wide flex items-center justify-center gap-3"
               >
                 <Compass className="h-6 w-6 sm:h-7 sm:w-7" /> Embark on a New Journey
               </Button>
