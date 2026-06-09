@@ -240,7 +240,7 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
             ))}
           </div>
           <span className="text-amber-900 text-sm sm:text-base font-bold bg-white/40 px-4 py-1 rounded-full border border-amber-900/10 shadow-sm font-[Coiny]">
-            EXPEDITION {unitId} - Chapter {currentScene + 1}
+            EXPEDITION {unitId} - Page {currentScene + 1}
           </span>
         </div>
 

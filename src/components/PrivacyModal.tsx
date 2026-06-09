@@ -93,7 +93,7 @@ export function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
             {/* Footer / Tombol Tutup */}
             <div className="p-4 bg-amber-100 border-t-2 border-amber-200 flex justify-center shrink-0">
               <Button onClick={onClose} className="bg-amber-700 hover:bg-amber-800 text-white font-[Coiny] px-8 py-6 rounded-xl text-lg shadow-md transition-transform active:scale-95">
-                Close
+                Tutup / Close
               </Button>
             </div>
           </motion.div>

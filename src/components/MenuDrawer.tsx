@@ -1,8 +1,9 @@
+import fielaLogo from '../imports/mascot_fiela_logo_transparant.png'
 import olonseducationlogo from '../imports/olons-education-logo.png'
 import { useState, useEffect } from 'react';
 import { PrivacyModal } from './PrivacyModal';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Info, Sparkles, Map, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route, ShieldCheck } from 'lucide-react';
+import { Menu, X, Info, Sparkles, BookOpen, Mail, Music, Volume2, VolumeX, ArrowLeft, Mic, Gamepad2, Award, Route, ShieldCheck } from 'lucide-react';
 import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { backgroundMusic } from '../utils/backgroundMusic';
@@ -18,6 +19,9 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   
+  // 🔮 SAKELAR BILINGUAL
+  const [showTranslation, setShowTranslation] = useState(false);
+
   // --- KODE TOGGLE BGM ---
   const toggleBgm = () => {
     const newState = !isMuted;
@@ -34,13 +38,15 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
     if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay();
   };
 
-  // --- USEEFFECT PINTAR MEMAKAI 'pageKey' BAWAAN KAPTEN ---
+  const toggleTranslation = () => {
+    if (typeof soundEffects.buttonClick === 'function') soundEffects.buttonClick();
+    setShowTranslation(!showTranslation);
+  };
+
   useEffect(() => {
-    // 🧭 Gunakan prop pageKey milik Kapten untuk mengecek halaman!
     const isHomepage = pageKey === 'home';
 
     if (isHomepage) {
-      // 1. Jika di Homepage, coba putar musik
       try {
         backgroundMusic.play(0);
         setIsMuted(false); 
@@ -68,13 +74,12 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
       };
       
     } else {
-      // 2. JIKA BUKAN DI HOMEPAGE (Misal: pageKey bernilai 'review')
       try {
         backgroundMusic.stop();
       } catch (e) {}
       setIsMuted(true);
     }
-  }, [pageKey]); // <-- Pantau perubahan pageKey setiap saat!
+  }, [pageKey]); 
 
   const closeDrawer = () => {
     setIsOpen(false);
@@ -84,15 +89,23 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   // Static Content
   const renderSectionContent = () => {
     switch (activeSection) {
-      case "About This Atlas":
+      case "about":
         return (
           <div className="space-y-4 font-[Nunito] text-amber-950">
-            <p className="font-bold text-lg">What is FIELA?</p>
-            <p className="leading-relaxed">FIELA (Fun & Interactive English Learning Atlas) is an interactive digital learning platform specially designed to help children explore the world of English vocabulary in a fun and engaging way.</p>
-            <p className="leading-relaxed">Through an ocean adventure atlas approach, young explorers are invited to set sail from one expedition island to another while completing educational literacy missions.</p>
+            <p className="font-bold text-lg">{showTranslation ? "Apa itu FIELA?" : "What is FIELA?"}</p>
+            <p className="leading-relaxed">
+              {showTranslation 
+                ? "FIELA (Fun & Interactive English Learning Atlas) adalah platform pembelajaran digital interaktif yang dirancang khusus untuk membantu anak-anak menjelajahi dunia kosakata bahasa Inggris dengan cara yang menyenangkan dan menarik." 
+                : "FIELA (Fun & Interactive English Learning Atlas) is an interactive digital learning platform specially designed to help children explore the world of English vocabulary in a fun and engaging way."}
+            </p>
+            <p className="leading-relaxed">
+              {showTranslation 
+                ? "Melalui pendekatan atlas petualangan samudra, penjelajah cilik diundang untuk berlayar dari satu pulau ekspedisi ke pulau lainnya sambil menyelesaikan misi literasi yang edukatif." 
+                : "Through an ocean adventure atlas approach, young explorers are invited to set sail from one expedition island to another while completing educational literacy missions."}
+            </p>
           </div>
         );
-      case "Features":
+      case "features":
         return (
           <div className="space-y-3 font-[Nunito] pb-2">
              {/* AUDIO GUIDANCE */}
@@ -101,8 +114,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <Volume2 className="h-6 w-6 text-amber-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">Audio Guidance</h4>
-                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">Click the speaker icon to hear words and passages spoken aloud.</p>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Panduan Audio" : "Audio Guidance"}</h4>
+                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
+                  {showTranslation ? "Klik ikon pengeras suara untuk mendengar kata dan kalimat yang diucapkan dengan lantang." : "Click the speaker icon to hear words and passages spoken aloud."}
+                </p>
               </div>
             </div>
             
@@ -112,8 +127,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <BookOpen className="h-6 w-6 text-emerald-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">Interactive Lexicon</h4>
-                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">Click on marked words in stories to see definitions and examples.</p>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Leksikon Interaktif" : "Interactive Lexicon"}</h4>
+                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
+                  {showTranslation ? "Klik pada kata yang ditandai dalam cerita untuk melihat definisi dan contoh." : "Click on marked words in stories to see definitions and examples."}
+                </p>
               </div>
             </div>
             
@@ -123,8 +140,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <Mic className="h-6 w-6 text-blue-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">Speech Practice</h4>
-                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">Use your voice to practice pronunciation. Receive instant guidance!</p>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Latihan Berbicara" : "Speech Practice"}</h4>
+                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
+                  {showTranslation ? "Gunakan suaramu untuk melatih pelafalan. Dapatkan panduan instan!" : "Use your voice to practice pronunciation. Receive instant guidance!"}
+                </p>
               </div>
             </div>
 
@@ -134,8 +153,10 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <Gamepad2 className="h-6 w-6 text-yellow-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">Challenge Quests</h4>
-                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">Test your knowledge with matching challenges and word puzzles!</p>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Misi Tantangan" : "Challenge Quests"}</h4>
+                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
+                  {showTranslation ? "Uji pengetahuanmu dengan tantangan mencocokkan dan teka-teki kata!" : "Test your knowledge with matching challenges and word puzzles!"}
+                </p>
               </div>
             </div>
 
@@ -145,41 +166,43 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                 <Award className="h-6 w-6 text-orange-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">Treasures & Honors</h4>
-                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">Earn treasures and track your discoveries as you complete expeditions.</p>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Harta & Kehormatan" : "Treasures & Honors"}</h4>
+                <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
+                  {showTranslation ? "Dapatkan harta karun dan lacak penemuanmu saat kamu menyelesaikan ekspedisi." : "Earn treasures and track your discoveries as you complete expeditions."}
+                </p>
               </div>
             </div>
 
           </div>
         );
-      case "Journey Path":
+      case "path":
         return (
           <div className="space-y-4 font-[Nunito] text-amber-950">
-            <p className="font-bold text-lg">How to Play & Learn:</p>
+            <p className="font-bold text-lg">{showTranslation ? "Cara Bermain & Belajar:" : "How to Play & Learn:"}</p>
             <ol className="list-decimal pl-5 space-y-3">
-              <li>Select an active expedition island on the main ocean map.</li>
-              <li>Listen to and read the fun & meaningful story in the <span className="font-bold">Story Scene</span>.</li>
-              <li>Practice your pronunciation and learn the meanings of important words on the <span className="font-bold">Lexicon Review</span> page.</li>
-              <li>Complete the <span className="font-bold">Mini Game Quest</span> challenges to collect the highest score.</li>
-              <li>Open the <span className="font-bold">Treasure Vault</span> to admire the golden badges and artifacts you've successfully unlocked!</li>
-              <li>Collect <span className="font-bold">Atlas Coins</span> to unlock the next expedition.</li>
+              <li>{showTranslation ? "Pilih pulau ekspedisi yang aktif di peta samudra utama." : "Select an active expedition island on the main ocean map."}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Dengarkan dan baca cerita di halaman <span class='font-bold'>Story Scene</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Listen to and read the fun & meaningful story in the <span class='font-bold'>Story Scene</span>."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Latih pelafalanmu dan pelajari lagi arti kosakata di halaman <span class='font-bold'>Lexicon Review</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Practice your pronunciation and learn the meanings of important words on the <span class='font-bold'>Lexicon Review</span> page."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Selesaikan tantangan <span class='font-bold'>Mini Game Quest</span> untuk mendapat skor tertinggi."}} /> : <span dangerouslySetInnerHTML={{__html: "Complete the <span class='font-bold'>Mini Game Quest</span> challenges to collect the highest score."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Buka <span class='font-bold'>Treasure Vault</span> untuk melihat lencana emasmu!"}} /> : <span dangerouslySetInnerHTML={{__html: "Open the <span class='font-bold'>Treasure Vault</span> to admire the golden badges and artifacts you've successfully unlocked!"}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Kumpulkan <span class='font-bold'>Atlas Coins</span> untuk membuka pulau ekspedisi berikutnya."}} /> : <span dangerouslySetInnerHTML={{__html: "Collect <span class='font-bold'>Atlas Coins</span> to unlock the next expedition."}} />}</li>
             </ol>
           </div>
         );
-      case "Explorer's Notes":
+      case "notes":
         return (
           <div className="font-[Nunito] text-amber-950">
             <ul className="list-disc pl-5 space-y-4 leading-relaxed marker:text-amber-700">
               <li className="pl-1">
-                <span className="font-bold">Allow Microphone Access:</span> For the finest experience with speech features, allow access to your speaking device when prompted!
+                <span className="font-bold">{showTranslation ? "Izinkan Akses Mikrofon:" : "Allow Microphone Access:"}</span> {showTranslation ? "Untuk pengalaman latihan pengucapan yang terbaik, izinkan akses mikrofon di perangkatmu saat diminta!" : "For the finest experience with speech features, allow access to your speaking device when prompted!"}
               </li>
               <li className="pl-1">
-                <span className="font-bold">Speak Clearly into the Magic Compass:</span> For the best voice recognition experience, try to speak closely to your device's microphone or wear a headset/earphone/additional microphone (recommended for mobile device user). This helps the atlas capture your magnificent pronunciation perfectly!
+                <span className="font-bold">{showTranslation ? "Bicaralah Jelas ke Kompas Ajaib:" : "Speak Clearly into the Magic Compass:"}</span> {showTranslation ? "Agar suara pengucapanmu terekam dengan baik, bicaralah dekat dengan mikrofon perangkatmu atau gunakan headset/mikrofon tambahan. Itu akan membantu atlas menangkap pelafalanmu dengan sempurna!" : "For the best voice recognition experience, try to speak closely to your device's microphone or wear a headset/earphone/additional microphone (recommended for mobile device user). This helps the atlas capture your magnificent pronunciation perfectly!"}
               </li>
             </ul>
           </div>
         );
-      case "Developer Contact":
+      case "contact":
         return (
           <div className="space-y-4 font-[Nunito] text-amber-950 text-center py-4">
             <div className="flex justify-center mb-2">
@@ -190,8 +213,37 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               />
             </div>
             
-            <p className="font-bold text-xl font-[Coiny] text-amber-900">OLONS Education</p>
-            <p className="text-sm">Developed as an interactive learning media based on Edutechnopreneurship for primary education.</p>
+            <div className="mb-4">
+              <p className="font-bold text-xl font-[Coiny] text-amber-900 leading-none">OLONS Education</p>
+              
+              <div className="flex flex-col items-center mt-2.5">
+                {/* 🔮 Container menggunakan w-fit agar sejajar panjang teks */}
+                <div className="relative w-fit pb-2">
+                  <p className="text-sm sm:text-base font-bold text-amber-800/95 tracking-wide whitespace-nowrap">
+                    {showTranslation ? "Pengembang Utama: Musyakkir" : "Lead Developer: Musyakkir"}
+                  </p>
+                  
+                  {/* 🔮 GARIS SVG LANCIP (TAPERED) */}
+                  <div className="absolute left-0 bottom-0 w-full h-1 flex items-center">
+                    <svg 
+                      viewBox="0 0 100 4" 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="w-full h-full fill-amber-200/90" 
+                      preserveAspectRatio="none"
+                    >
+                      {/* Gambar bentuk belah ketupat pipih: Kiri(0,2) -> TengahAtas(50,0) -> Kanan(100,2) -> TengahBawah(50,3) */}
+                      <path d="M0,2 L50,0 L100,2 L50,3 Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-sm">
+              {showTranslation 
+                ? "Dikembangkan sebagai media pembelajaran interaktif berbasis Edutechnopreneurship untuk pendidikan dasar." 
+                : "Developed as an interactive learning media based on Edutechnopreneurship for primary education."}
+            </p>
             
             <div className="pt-5 mt-4 border-t-2 border-amber-200/60 space-y-3">
               <p className="text-xs text-amber-950">
@@ -199,22 +251,23 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               </p>
               
               <p className="text-[10px] uppercase tracking-widest font-bold text-amber-900/50 leading-relaxed">
-                © {new Date().getFullYear()} OLONS Education.<br />All Rights Reserved.
+                © {new Date().getFullYear()} OLONS Education.<br />{showTranslation ? "Hak Cipta Dilindungi Undang-Undang." : "All Rights Reserved."}
               </p>
             </div>
           </div>
         );
+
       default:
         return null;
     }
   };
 
   const menuItems = [
-    { icon: Info, label: "About This Atlas" },
-    { icon: Sparkles, label: "Features" },
-    { icon: Route, label: "Journey Path" },
-    { icon: BookOpen, label: "Explorer's Notes" },
-    { icon: Mail, label: "Developer Contact" },
+    { id: "about", icon: Info, enLabel: "About This App", idLabel: "Tentang Aplikasi Ini" },
+    { id: "features", icon: Sparkles, enLabel: "Features", idLabel: "Fitur" },
+    { id: "path", icon: Route, enLabel: "Journey Path", idLabel: "Jalur Perjalanan" },
+    { id: "notes", icon: BookOpen, enLabel: "Explorer's Notes", idLabel: "Catatan Penjelajah" },
+    { id: "contact", icon: Mail, enLabel: "Developer Contact", idLabel: "Kontak Pengembang" },
   ];
 
   return (
@@ -306,14 +359,37 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                       onClick={() => { if (typeof soundEffects.buttonNavigation === 'function') soundEffects.buttonNavigation(); setActiveSection(null); }}
                       variant="ghost" className="font-[Coiny] text-lg text-amber-800 p-0 hover:bg-transparent flex items-center gap-2"
                     >
-                      <ArrowLeft className="h-5 w-5" /> Back to Menu
+                      <ArrowLeft className="h-5 w-5" /> {showTranslation ? "Kembali ke Menu" : "Back to Menu"}
                     </Button>
                   ) : (
-                    <h2 className="font-[Coiny] text-2xl text-amber-900 flex items-center gap-2">
-                      <Map className="h-6 w-6 text-amber-600" /> FIELA Menu
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="font-[Coiny] text-2xl text-amber-900 flex items-center gap-2">
+                        <img 
+                          src={fielaLogo} 
+                          alt="Logo FIELA" 
+                          className="h-8 w-auto object-contain drop-shadow-sm" 
+                        /> 
+                        FIELA Menu
+                      </h2>
+                      {/* 🔍 TOMBOL DWITBAHASA */}
+                      <motion.button
+                        onClick={toggleTranslation}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center justify-center w-7 h-7 rounded-full border border-amber-200 shadow-sm bg-white overflow-hidden transition-colors hover:bg-amber-50 shrink-0"
+                      >
+                        <img 
+                          src={showTranslation 
+                            ? "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/id.png" 
+                            : "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/en.png"
+                          }
+                          alt="Language Toggle"
+                          className="w-full h-full object-cover"
+                        />
+                      </motion.button>
+                    </div>
                   )}
-                  <Button onClick={closeDrawer} variant="ghost" className="rounded-full p-2 h-10 w-10 text-amber-900 hover:bg-amber-200/50">
+                  <Button onClick={closeDrawer} variant="ghost" className="rounded-full p-2 h-10 w-10 text-amber-900 hover:bg-amber-200/50 shrink-0">
                     <X className="h-6 w-6" />
                   </Button>
                 </div>
@@ -327,15 +403,15 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                       exit={{ opacity: 0, x: 10 }}
                       className="space-y-2.5"
                     >
-                      {menuItems.map((item, idx) => (
+                      {menuItems.map((item) => (
                         <Button 
-                          key={idx} 
+                          key={item.id} 
                           variant="ghost" 
                           className="w-full justify-start text-left font-[Nunito] font-bold text-base py-6 px-4 hover:bg-amber-100 text-amber-950 border-2 border-transparent hover:border-amber-200/40 rounded-xl bg-white/60 shadow-sm"
-                          onClick={() => { if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay(); setActiveSection(item.label); }}
+                          onClick={() => { if (typeof soundEffects.buttonPlay === 'function') soundEffects.buttonPlay(); setActiveSection(item.id); }}
                         >
                           <item.icon className="mr-3 h-5 w-5 text-amber-700 shrink-0" />
-                          {item.label}
+                          {showTranslation ? item.idLabel : item.enLabel}
                         </Button>
                       ))}
 
@@ -348,13 +424,13 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         }}
                       >
                         <ShieldCheck className="mr-3 h-5 w-5 text-amber-700 shrink-0" />
-                        Privacy Policy
+                        {showTranslation ? "Kebijakan Privasi" : "Privacy Policy"}
                       </Button>
 
                       <div className="bg-amber-100/60 p-4 rounded-xl border-2 border-amber-200/60 shadow-inner mt-6">
                         <div className="flex items-center justify-between">
                           <span className="font-[Nunito] font-bold text-amber-950 text-sm flex items-center gap-2">
-                            <Music className="h-4 w-4 text-amber-700" /> Ocean Background Music
+                            <Music className="h-4 w-4 text-amber-700" /> {showTranslation ? "Musik Latar Samudra" : "Ocean Background Music"}
                           </span>
                           <Button 
                             onClick={toggleBgm} 
@@ -362,7 +438,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                             className={`rounded-full px-5 h-9 font-[Coiny] text-xs transition-colors ${!isMuted ? 'bg-amber-700 hover:bg-amber-800 text-white' : 'text-amber-700 border-amber-700 hover:bg-amber-100'}`}
                           >
                             {isMuted ? <VolumeX className="h-3.5 w-3.5 mr-1.5" /> : <Volume2 className="h-3.5 w-3.5 mr-1.5" />}
-                            {isMuted ? 'Muted' : 'Playing'}
+                            {isMuted ? (showTranslation ? 'Dibisukan' : 'Muted') : (showTranslation ? 'Dimainkan' : 'Playing')}
                           </Button>
                         </div>
                       </div>
@@ -376,7 +452,9 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                       exit={{ opacity: 0, x: -10 }}
                       className="bg-white/80 p-5 rounded-2xl border border-amber-200 shadow-sm"
                     >
-                      <h3 className="font-[Coiny] text-xl text-amber-900 mb-4 border-b pb-2">{activeSection}</h3>
+                      <h3 className="font-[Coiny] text-xl text-amber-900 mb-4 border-b pb-2">
+                        {showTranslation ? menuItems.find(m => m.id === activeSection)?.idLabel : menuItems.find(m => m.id === activeSection)?.enLabel}
+                      </h3>
                       {renderSectionContent()}
                     </motion.div>
                   )}
