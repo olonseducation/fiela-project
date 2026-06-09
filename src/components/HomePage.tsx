@@ -202,11 +202,11 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 </motion.div>
               </motion.div>
               <div className="flex flex-col items-center text-center space-y-4 w-full">
-                <h1 className="block w-full text-center leading-tight font-[Frijole] text-[50px] sm:text-[65px] md:text-[80px] lg:text-[96px] -mr-[0.2em] translate-x-1" style={{ background: 'linear-gradient(90deg, #1a4d5e 0%, #3A7F94 50%, #1a4d5e 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 8px 16px rgba(26, 77, 94, 0.4)', letterSpacing: '0.1em' }}>FIELA</h1>
+                <h1 className="block w-full text-center leading-tight font-[Frijole] text-[50px] sm:text-[65px] md:text-[80px] lg:text-[96px] -mr-[0.2em] translate-x-1" style={{ background: 'linear-gradient(90deg, #1a4d5e 0%, #3A7F94 50%, #064f68 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 8px 16px rgba(26, 77, 94, 0.6)', letterSpacing: '0.1em' }}>FIELA</h1>
                 <div className="h-1 mx-auto mt-2 rounded-full w-[60%]" style={{ background: 'linear-gradient(90deg, transparent 0%, #4A90A4 50%, transparent 100%)' }} />
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="flex items-center gap-3 px-6 py-3 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 100%)', boxShadow: '0 4px 16px rgba(74, 144, 164, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8)', border: '2px solid rgba(74, 144, 164, 0.3)' }}>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="flex items-center gap-3 px-6 py-3 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 100%)', boxShadow: '0 8px 18px rgba(38, 94, 109, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8)', border: '2px solid rgba(74, 144, 164, 0.3)' }}>
                   <span className="text-2xl">🌏</span>
-                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-[Coiny] font-bold" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Fun & Interactive English Learning Atlas</p>
+                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-[Coiny] font-regular text-shadow-md" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Fun & Interactive English Learning Atlas</p>
                   <span className="text-2xl">🗺️</span>
                 </motion.div>
               </div>
@@ -242,7 +242,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                     <CoinIcon className="w-7 h-7 md:w-9 md:h-9 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] md:text-xs font-bold text-amber-800 uppercase tracking-widest leading-none mb-0.5 drop-shadow-sm">Atlas Coins</span>
+                    <span className="text-[10px] md:text-xs font-bold text-amber-800 uppercase tracking-widest leading-none sm:mb-1.5 md:mb-2 text-shadow-md">Atlas Coins</span>
                     <span className="font-[Coiny] text-amber-950 font-bold text-2xl md:text-3xl drop-shadow-sm leading-none">{totalCoins}</span>
                   </div>
                 </div>
@@ -407,7 +407,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                               <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)` }} />
                               <div className="flex justify-between items-start mb-2 relative z-10">
                                 <div className="flex items-center gap-3">
-                                  <span className="opacity-90 font-bold font-[Coiny] text-[#e8c87c] text-xl sm:text-[24px] lg:text-3xl">Expedition {unit.id}</span>
+                                  <span className="opacity-90 font-bold font-[Coiny] text-[#eaca0b] text-shadow-lg text-xl sm:text-[24px] lg:text-3xl">Expedition {unit.id}</span>
                                 </div>
                                 <div className="flex gap-2 items-center">
                                 {/* HANYA ADA BINTANG KARENA PULAU INI PASTI SUDAH TERBUKA */}
@@ -422,7 +422,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                                 </div>
                               </div>
                               </div>
-                              <h3 className="mb-1 sm:mb-2 text-2xl sm:text-[26px] lg:text-[36px] font-[Coiny] font-bold tracking-wide mt-2 lg:mt-4 leading-tight">{unit.title}</h3>
+                              <h3 className="mb-1 sm:mb-2 text-2xl sm:text-[26px] lg:text-[36px] font-[Coiny] font-bold tracking-wide mt-2 lg:mt-4 leading-tight text-shadow-md">{unit.title}</h3>
                               <p className="text-sm sm:text-base lg:text-lg text-[#f4ebe0]/90 font-[Nunito] italic font-medium">{unit.theme}</p>
                               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-200/30 to-transparent" />
                             </div>
@@ -431,15 +431,15 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                               <p className="text-amber-950 mb-5 lg:mb-8 font-[Nunito] leading-relaxed lg:leading-loose font-bold text-base sm:text-[17px] lg:text-xl">{unit.description}</p>
                               
                               <div className="flex flex-wrap gap-2 lg:gap-3 mb-6 lg:mb-10">
-                                <span className="text-xs sm:text-sm lg:text-base bg-amber-100 text-amber-900 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-300/50 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2">📜 Story</span>
-                                <span className="text-xs sm:text-sm lg:text-base bg-amber-100 text-amber-900 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-300/50 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2">📖 Vocabulary</span>
-                                <span className="text-xs sm:text-sm lg:text-base bg-amber-100 text-amber-900 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-300/50 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2">🎯 Quest</span>
+                                <span className="text-xs sm:text-sm lg:text-base bg-[#0a6f99] text-amber-100 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-200/90 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2 text-shadow-md">📜 Story</span>
+                                <span className="text-xs sm:text-sm lg:text-base bg-[#0a6f99] text-amber-100 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-200/90 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2 text-shadow-md">📖 Vocabulary</span>
+                                <span className="text-xs sm:text-sm lg:text-base bg-[#0a6f99] text-amber-100 px-2.5 sm:px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-amber-200/90 font-[Coiny] font-medium flex items-center gap-1 lg:gap-2 text-shadow-md">🎯 Quest</span>
                               </div>
                               
                               <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-full flex justify-center mt-6 lg:mt-8">
                                 <Button 
                                   onClick={() => handleUnitClick(unit.id, isCompleted)} 
-                                  className="w-auto max-w-sm lg:max-w-md mx-auto bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-800 hover:via-amber-900 hover:to-amber-950 text-[#f4ebe0] rounded-xl py-4 md:py-6 px-10 md:px-16 text-xs sm:text-sm md:text-base lg:text-xl font-[Coiny] tracking-wide shadow-lg border-2 border-amber-950/30 transition-transform active:scale-95"
+                                  className="w-auto max-w-sm lg:max-w-md mx-auto bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-800 hover:via-amber-900 hover:to-amber-950 text-[#f4ebe0] rounded-xl py-4 md:py-6 px-10 md:px-16 text-md sm:text-md md:text-lg lg:text-2xl font-[Coiny] tracking-wide shadow-lg border-2 border-amber-950/30 transition-transform active:scale-95"
                                 >
                                   {isCompleted ? '📖 Review Expedition' : '🧭 Begin Expedition'}
                                 </Button>
@@ -533,10 +533,10 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
             <DialogDescription className="font-[Nunito] font-medium text-amber-800/80 text-base mt-1">Choose your path to review this expedition</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 mt-2">
-            <Button onClick={() => handleReviewOption('intro')} className="w-full bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-amber-950/20 shadow-sm transition-transform active:scale-95"><RotateCcw className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">Begin Anew</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Embark on the expedition from the start</div></div></Button>
-            <Button onClick={() => handleReviewOption('review')} className="w-full bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-blue-950/20 shadow-sm transition-transform active:scale-95"><GraduationCap className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">Study the Lexicon</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Review discovered vocabulary</div></div></Button>
-            <Button onClick={() => handleReviewOption('game')} className="w-full bg-gradient-to-r from-green-700 to-emerald-900 hover:from-green-800 hover:to-emerald-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-emerald-950/20 shadow-sm transition-transform active:scale-95"><Gamepad2 className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">Test Your Knowledge</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Challenge yourself once more</div></div></Button>
-            <Button onClick={() => handleReviewOption('reward')} className="w-full bg-gradient-to-r from-yellow-700 to-orange-800 hover:from-yellow-800 hover:to-orange-900 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-orange-950/20 shadow-sm transition-transform active:scale-95"><Trophy className="h-6 w-6" /><div className="text-left"><div className="font-semibold font-[Coiny] text-lg">View Treasures</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Admire your achievements</div></div></Button>
+            <Button onClick={() => handleReviewOption('intro')} className="w-full bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-amber-950/20 shadow-sm transition-transform active:scale-95"><RotateCcw className="h-6 w-6" /><div className="text-left"><div className="font-bold font-[Fredoka] text-lg text-shadow-md">Begin Anew</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Embark on the expedition from the start</div></div></Button>
+            <Button onClick={() => handleReviewOption('review')} className="w-full bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-blue-950/20 shadow-sm transition-transform active:scale-95"><GraduationCap className="h-6 w-6" /><div className="text-left"><div className="font-bold font-[Fredoka] text-lg text-shadow-md">Study the Lexicon</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Review discovered vocabulary</div></div></Button>
+            <Button onClick={() => handleReviewOption('game')} className="w-full bg-gradient-to-r from-green-700 to-emerald-900 hover:from-green-800 hover:to-emerald-950 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-emerald-950/20 shadow-sm transition-transform active:scale-95"><Gamepad2 className="h-6 w-6" /><div className="text-left"><div className="font-bold font-[Fredoka] text-lg text-shadow-md">Test Your Knowledge</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Challenge yourself once more</div></div></Button>
+            <Button onClick={() => handleReviewOption('reward')} className="w-full bg-gradient-to-r from-yellow-700 to-orange-800 hover:from-yellow-800 hover:to-orange-900 text-[#f4ebe0] rounded-xl py-6 flex items-center justify-start gap-4 border-2 border-orange-950/20 shadow-sm transition-transform active:scale-95"><Trophy className="h-6 w-6" /><div className="text-left"><div className="font-bold font-[Fredoka] text-lg text-shadow-md">View Treasures</div><div className="text-sm text-[#f4ebe0]/90 font-[Nunito] font-medium">Admire your achievements</div></div></Button>
             <Button onClick={() => setReviewDialogOpen(false)} variant="outline" className="w-full border-2 border-amber-700/40 hover:bg-amber-100 rounded-xl py-6 font-[Fredoka] text-lg text-amber-900 font-bold">Cancel</Button>
           </div>
         </DialogContent>
