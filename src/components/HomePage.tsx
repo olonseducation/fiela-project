@@ -1,4 +1,4 @@
-import fielaLogo from '../imports/mascot_fiela_logo_transparant.png'
+import fielaLogo from '../imports/atlas_mascot_homepage.png'
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
 import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown } from 'lucide-react';
@@ -198,7 +198,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                     style={{ filter: "drop-shadow(0 8px 16px rgba(74, 144, 164, 0.5))" }}
                     variants={owlAnimationVariants} animate={isOwlAnimating ? "wiggling" : "idle"} onClick={handleOwlClick} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                   />
-                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-2 -right-4 md:-top-4 md:-right-8 text-4xl md:text-5xl z-20 pointer-events-none" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))', willChange: 'transform' }}>⭐</motion.div>
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-2 -right-4 md:-top-4 md:-right-8 text-3xl md:text-5xl z-20 pointer-events-none" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))', willChange: 'transform' }}>⭐</motion.div>
                 </motion.div>
               </motion.div>
               <div className="flex flex-col items-center text-center space-y-4 w-full">

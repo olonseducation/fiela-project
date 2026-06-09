@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { customAudioManager } from '../utils/customAudio';
-// Pastikan kamu sudah menambahkan/menyesuaikan path audio di audioConfigHelper.ts
 import { welcomePageAudio } from '../utils/audioConfigHelper'; 
-import fielaLogo from '../imports/mascot_fiela_logo_transparant.png';
+import welcomeBgmPath from '../imports/welcomepage-bgmusic.mp3';
+import fielaLogo from '../imports/fiela_logo_transparent.png'; 
 
 interface WelcomePageProps {
   onStart: () => void;
@@ -17,13 +17,54 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number }>>([]);
   
-  // --- STATE BARU UNTUK FITUR NAMA ---
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [playerName, setPlayerName] = useState('');
-  const [isImpatientStart, setIsImpatientStart] = useState(false); // Menandai jika anak langsung klik Start
+  const [isImpatientStart, setIsImpatientStart] = useState(false);
+
+  // 🔮 SENJATA ANTI-AUTOPLAY POLICY UNTUK BGM
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Mengecek apakah sebelumnya anak sudah pernah memasukkan nama
+    // Vite akan otomatis mengurus jalur file ini tanpa takut error 404 lagi!
+    bgmRef.current = new Audio(welcomeBgmPath); 
+
+    if (bgmRef.current) {
+      bgmRef.current.loop = true;
+      bgmRef.current.volume = 0.3; 
+    }
+
+    const unlockAudio = () => {
+      if (bgmRef.current && bgmRef.current.paused) {
+        // Coba putar musik, dan tangkap hasil 'Promise'-nya
+        bgmRef.current.play().then(() => {
+          // Jika sukses berputar, segera cabut jebakan agar memori tidak bocor
+          document.removeEventListener('click', unlockAudio);
+          document.removeEventListener('touchstart', unlockAudio);
+          document.removeEventListener('keydown', unlockAudio);
+        }).catch((err) => {
+          console.warn("Kraken Autoplay masih menahan musik:", err);
+        });
+      }
+    };
+
+    // Pasang jebakan berlapis (Klik, Sentuh Layar, atau Tekan Tombol Keyboard sembarang)
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+    document.addEventListener('keydown', unlockAudio);
+
+    return () => {
+      // 🛑 Hancurkan musik saat kapal pindah halaman
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current.currentTime = 0;
+      }
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('keydown', unlockAudio);
+    };
+  }, []);
+
+  useEffect(() => {
     const savedName = localStorage.getItem('fiela_player_name');
     if (savedName) {
       setPlayerName(savedName);
@@ -39,39 +80,27 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
     };
   }, []);
 
-  // Skenario 1 & 3: Anak Interaktif (Klik Logo)
   const handleLogoClick = () => {
     if (isAudioPlaying) return;
     
     setIsAudioPlaying(true);
-    
-    // Cek apakah anak ini sudah punya nama di memori
     const savedName = localStorage.getItem('fiela_player_name');
 
     if (savedName) {
-      // --- SKENARIO 3: SUDAH PUNYA NAMA ---
-      // Putar audio versi pendek ("...Let's go!")
       const greetingWithNameAudio = welcomePageAudio.greetingWithNamePath || '/sounds/atlas-with-player-name.mp3';
       customAudioManager.playAudio(greetingWithNameAudio).catch(() => {});
 
-      // Berikan jeda untuk mematikan efek 'glow' Atlas. 
-      // Angka 7000 (7 detik) ini adalah perkiraan durasi audio barumu. 
-      // (Silakan ubah angka 7000 ini jika durasi audio aslinya lebih cepat/lama)
       setTimeout(() => {
         setIsAudioPlaying(false);
       }, 7000); 
 
     } else {
-      // --- SKENARIO 1: BELUM PUNYA NAMA ---
-      // Putar audio panjang ("...What is your name?")
       const greetingAudio = welcomePageAudio.greetingPath || '/sounds/atlas-greeting.mp3';
       customAudioManager.playAudio(greetingAudio).catch(() => {});
 
-      // SUTRADARA MEMBERIKAN JEDA 9 DETIK
       setTimeout(() => {
-        setIsAudioPlaying(false); // Matikan animasi glow pada maskot
+        setIsAudioPlaying(false); 
         
-        // Cek sekali lagi untuk keamanan, lalu munculkan pop-up!
         if (!localStorage.getItem('fiela_player_name')) {
           setShowNameDialog(true);
         }
@@ -79,7 +108,6 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
     }
   };
 
-  // Fungsi Transisi Utama (Efek Partikel & Pindah Halaman)
   const executeStartTransition = () => {
     setIsTransitioning(true);
     soundEffects.buttonPlay();
@@ -96,40 +124,29 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
     }, 150);
   };
 
-  // Skenario 2: Anak Tidak Sabar (Klik Tombol Start)
   const handleStartClick = () => {
     soundEffects.buttonPlay();
     
-    // Jika nama BELUM ADA di memori browser
     if (!localStorage.getItem('fiela_player_name')) {
-      setIsImpatientStart(true); // Tandai bahwa dia lewat jalur cepat
-      setShowNameDialog(true);   // Cegat dengan Pop-up!
+      setIsImpatientStart(true); 
+      setShowNameDialog(true); 
       return;
     }
     
-    // Jika nama SUDAH ADA, langsung mulai ekspedisi
     executeStartTransition();
   };
 
-  // Logika saat tombol OK di Pop-up Dialog ditekan
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!playerName.trim()) return; // Jangan izinkan nama kosong
+    if (!playerName.trim()) return; 
 
-    // 1. Simpan ke memori browser
     localStorage.setItem('fiela_player_name', playerName.trim());
     setShowNameDialog(false);
 
-    // 2. Mainkan Audio 2 ("Okay! Let's Go!")
     const letsGoAudio = welcomePageAudio.letsGoPath || '/sounds/atlas-lets-go.mp3';
-    
-    // Putar audio dan berikan "Silent Catch" (Peredam Eror) jika gagal
     customAudioManager.playAudio(letsGoAudio).catch(() => {});
     
-    // 3. Jika tadi anak lewat jalur "Start", tahan dulu sebelum pindah halaman
     if (isImpatientStart) {
-      // SUTRADARA MEMBERIKAN JEDA 2.5 DETIK
-      // (Silakan ubah angka 2500 ini jika durasi audio "Okay! Let's Go!" milikmu lebih cepat/lama)
       setTimeout(() => {
         executeStartTransition();
       }, 2500); 
@@ -149,17 +166,62 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
         <div className="absolute left-3/4 top-0 bottom-0 w-px bg-amber-950" />
       </div>
 
-      {/* Decorative ornaments */}
-      {!isTransitioning && (
-        <>
-          <motion.div className="absolute top-8 left-8 lg:top-12 lg:left-12 text-amber-950/30" animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 120, ease: "linear" }}>
-            <svg width="60" height="60" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="3"/><path d="M50,5 L52,48 L50,50 L48,48 Z" fill="currentColor"/><text x="50" y="15" textAnchor="middle" fontSize="16" fill="currentColor" fontFamily="serif">N</text></svg>
-          </motion.div>
-          <motion.div className="absolute top-16 right-16 lg:top-24 lg:right-24 opacity-20" animate={{ y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}><div className="text-4xl lg:text-5xl">🧭</div></motion.div>
-          <motion.div className="absolute bottom-16 left-16 lg:bottom-24 lg:left-24 opacity-20" animate={{ rotate: [0, 360] }} transition={{ repeat: Infinity, duration: 50, ease: "linear" }}><div className="text-4xl lg:text-5xl">⚓</div></motion.div>
-          <motion.div className="absolute bottom-24 right-24 lg:bottom-32 lg:right-32 opacity-20" animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}><div className="text-3xl lg:text-4xl">🗺️</div></motion.div>
-        </>
-      )}
+      {/* 🔮 DECORATIVE ORNAMENTS: VINTAGE MAP SVG EDITION */}
+          {!isTransitioning && (
+            <>
+              {/* Kompas Klasik (Top Right) */}
+              <motion.div 
+                className="absolute top-40 right-6 md:top-28 md:right-16 lg:top-24 lg:right-24 w-24 h-24 lg:w-32 lg:h-32 opacity-20 pointer-events-none"
+                animate={{ rotate: 360 }} 
+                transition={{ repeat: Infinity, duration: 80, ease: "linear" }}
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full stroke-amber-950 fill-transparent" strokeWidth="1.5">
+                  <circle cx="50" cy="50" r="45" strokeDasharray="4 4" />
+                  <circle cx="50" cy="50" r="35" />
+                  <path d="M50 5 L55 45 L95 50 L55 55 L50 95 L45 55 L5 50 L45 45 Z" className="fill-amber-950/20" strokeLinejoin="round" />
+                </svg>
+              </motion.div>
+
+              {/* Kapal Layar Klasik (Bottom Right) */}
+              <motion.div 
+                // Mengubah bottom-38 menjadi bottom-40 agar valid di Tailwind
+                className="absolute bottom-40 right-4 md:bottom-32 md:right-16 lg:bottom-28 lg:right-32 w-28 h-28 lg:w-40 lg:h-40 opacity-20 pointer-events-none"
+                animate={{ y: [0, -8, 0], rotate: [-2, 2, -2] }} 
+                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full stroke-amber-950 fill-transparent" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
+                  <path d="M15 75 L85 75 L75 90 L25 90 Z" className="fill-amber-950/20" />
+                  <path d="M45 75 L45 20 L75 60 L45 65" className="fill-amber-950/10" />
+                  <path d="M40 75 L40 30 L15 65 L40 65" className="fill-amber-950/10" />
+                  <path d="M45 20 L55 25 L45 30 Z" className="fill-amber-950/30" />
+                  <path d="M5 80 Q 20 70 35 85 T 65 80 T 95 85" strokeWidth="1.5" strokeDasharray="3 3" />
+                </svg>
+              </motion.div>
+
+              {/* Jalur Peta Harta Karun (Top Left) */}
+              <motion.div 
+                // Mengubah top-46 menjadi top-48 agar valid di Tailwind
+                className="absolute top-48 left-2 md:top-36 md:left-12 lg:top-32 lg:left-20 w-32 h-32 lg:w-48 lg:h-48 opacity-20 pointer-events-none"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full stroke-amber-950 fill-transparent">
+                  <path d="M10 90 Q 20 60 50 50 T 90 20" strokeWidth="2" strokeDasharray="5 5" fill="none" />
+                  <path d="M80 10 L100 30 M100 10 L80 30" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+              </motion.div>
+
+              {/* Pegunungan Peta (Bottom Left) */}
+              <motion.div 
+                className="absolute bottom-48 left-4 md:bottom-36 md:left-12 lg:bottom-32 lg:left-24 w-28 h-28 lg:w-40 lg:h-40 opacity-20 pointer-events-none"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full stroke-amber-950 fill-transparent" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
+                  <path d="M10 85 L35 35 L60 85 Z" className="fill-amber-950/10" />
+                  <path d="M40 85 L65 45 L90 85 Z" className="fill-amber-950/10" />
+                  <path d="M25 55 L35 35 L45 55 L40 60 L30 50 Z" className="fill-amber-950/30" />
+                  <path d="M55 61 L65 45 L75 61 L70 65 L60 58 Z" className="fill-amber-950/30" />
+                </svg>
+              </motion.div>
+            </>
+          )}
 
       {/* Main Content Container */}
       <motion.div 
@@ -203,17 +265,17 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
             <motion.div 
               animate={{ 
                 y: [0, -10, 0],
-                // Tambahkan efek glow tipis saat audio bermain agar Atlas terlihat "hidup"
                 filter: isAudioPlaying ? ['drop-shadow(0 0 15px rgba(251,191,36,0.8))', 'drop-shadow(0 0 5px rgba(251,191,36,0.4))', 'drop-shadow(0 0 15px rgba(251,191,36,0.8))'] : 'drop-shadow(0 10px 15px rgba(0,0,0,0.25))'
               }} 
               transition={{ repeat: Infinity, duration: isAudioPlaying ? 1 : 2, ease: "easeInOut" }} 
               onClick={handleLogoClick} 
-              className="cursor-pointer relative"
+              className="cursor-pointer relative z-20"
             >
-              <img src={fielaLogo} className="h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48 object-contain mx-auto" alt="FIELA Logo" />
+              {/* MENGGUNAKAN LOGO BARU */}
+              <img src={fielaLogo} className="h-40 w-40 sm:h-48 sm:w-48 lg:h-56 lg:w-56 object-contain mx-auto" alt="FIELA Logo" />
               
               {!isAudioPlaying && !isTransitioning && !localStorage.getItem('fiela_player_name') && (
-                <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.5, type: "spring" }} className="absolute right-0 top-12 md:-right-8 md:top-16 lg:right-2 lg:top-24">
+                <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.5, type: "spring" }} className="absolute right-0 top-16 md:-right-8 md:top-20 lg:right-2 lg:top-28">
                   <div className="relative bg-[#faf6f1] rounded-lg px-3 py-1.5 shadow-lg border-2 border-amber-700/40 translate-x-full">
                     <p className="text-amber-900 font-bold text-sm whitespace-nowrap font-[Coiny]">Click me!</p>
                     <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-0 h-0 border-t-6 border-t-transparent border-b-6 border-b-transparent border-r-6 border-r-[#faf6f1]"></div>
@@ -225,7 +287,7 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
         </div>
 
         {/* BAGIAN 4: FITUR HIGHLIGHTS */}
-        <div className="flex-shrink-0 w-full px-2 mb-6 lg:mb-8">
+        <div className="flex-shrink-0 w-full px-2 mb-6 lg:mb-8 z-20 relative">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -243,18 +305,18 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.3 + index * 0.1 }}
-                className="bg-[#b35f2e6e] backdrop-blur-sm px-4 sm:px-5 lg:px-6 py-2.5 rounded-xl border-2 border-amber-200/40 flex items-center justify-center whitespace-nowrap"
+                className="bg-[#0a6f99] backdrop-blur-sm px-4 sm:px-5 lg:px-6 py-2.5 rounded-xl border-2 border-amber-200/90 flex items-center justify-center whitespace-nowrap"
                 style={{ boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(101, 67, 33, 0.3)' }}
               >
                 <span className="text-lg sm:text-xl mr-2 shrink-0">{feature.icon}</span>
-                <span className="text-[#f4ebe0] font-[Fredoka] font-medium tracking-wide text-sm sm:text-base">{feature.text}</span>
+                <span className="text-[#f4ebe0] font-[Fredoka] font-medium tracking-wide text-shadow-md text-sm sm:text-base">{feature.text}</span>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
         {/* BAGIAN 5: TOMBOL START & FOOTER */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center w-full space-y-6 lg:space-y-8">
+        <div className="flex-shrink-0 flex flex-col items-center justify-center w-full space-y-6 lg:space-y-8 z-20 relative">
           <AnimatePresence>
             {showButton && !isTransitioning && (
               <motion.div 
@@ -308,7 +370,7 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
               className="bg-[#faf6f1] border-4 border-amber-700 rounded-3xl p-6 sm:p-8 w-full max-w-sm shadow-2xl relative overflow-hidden"
             >
               {/* Ornamen dalam pop-up */}
-              <div className="absolute -top-6 -right-6 text-6xl opacity-10">🗺️</div>
+              <div className="absolute -top-6 -right-6 text-6xl opacity-10 pointer-events-none">🗺️</div>
               
               <h2 className="text-2xl sm:text-3xl font-[Coiny] text-amber-900 text-center mb-6 drop-shadow-sm">
                 What is your name?
@@ -342,7 +404,7 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
       {!isTransitioning && [...Array(12)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1.5 h-1.5 bg-amber-200/60 rounded-full"
+          className="absolute w-1.5 h-1.5 bg-amber-200/60 rounded-full pointer-events-none"
           style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, willChange: 'transform' }}
           animate={{ y: [0, -80, 0], x: [0, Math.random() * 40 - 20, 0], opacity: [0, 0.7, 0] }}
           transition={{ repeat: Infinity, duration: 4 + Math.random() * 3, delay: Math.random() * 3 }}
