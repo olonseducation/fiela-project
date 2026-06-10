@@ -86,24 +86,33 @@ export function CompletionPage({
 
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16 relative z-10">
           
+          {/* KOLOM KIRI: TROFI & GLORY */}
           <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -2, 2, -2, 0] }} transition={{ delay: 0.4, type: 'spring', stiffness: 100, duration: 2 }} className="relative mb-6 sm:mb-8">
+            
+            {/* 🔮 PERBAIKAN 1: Menambahkan mt-8 (margin-top) agar mahkota punya ruang di HP */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1, rotate: [0, -2, 2, -2, 0] }}
+              transition={{ delay: 0.4, type: 'spring', stiffness: 100, duration: 2 }}
+              className="relative mb-6 sm:mb-8 mt-8 sm:mt-10 md:mt-0"
+            >
               <div className="absolute inset-0 bg-gradient-to-b from-amber-200 to-yellow-600 rounded-full blur-[40px] opacity-30 animate-pulse" />
               <div className="relative">
-                <Crown className="h-16 w-16 sm:h-20 sm:w-20 absolute -top-8 sm:-top-10 left-1/2 -translate-x-1/2 text-yellow-300 drop-shadow-[0_0_15px_rgba(253,224,71,0.8)] z-20" />
-                <Trophy className="h-40 w-40 sm:h-52 sm:w-52 md:h-64 md:w-64 text-transparent fill-[url(#gold-gradient)] drop-shadow-2xl relative z-10" />
-                <svg width="0" height="0">
-                  <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop stopColor="#fde047" offset="0%" />
-                    <stop stopColor="#d97706" offset="50%" />
-                    <stop stopColor="#78350f" offset="100%" />
-                  </linearGradient>
-                </svg>
+                
+                {/* 🔮 PERBAIKAN 2: Ukuran mahkota disesuaikan agar lebih proporsional di layar kecil */}
+                <Crown className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 absolute -top-6 sm:-top-8 md:-top-10 left-1/2 -translate-x-1/2 text-yellow-300 drop-shadow-[0_0_15px_rgba(253,224,71,0.8)] z-20" />
+                
+                {/* 🔮 PERBAIKAN 3: Menghapus 'fill' yang merusak bentuk, mengandalkan stroke dan bayangan bercahaya */}
+                <Trophy 
+                  className="h-36 w-36 sm:h-48 sm:w-48 md:h-64 md:w-64 text-amber-400 relative z-10 stroke-[1.5] drop-shadow-[0_0_25px_rgba(245,158,11,0.6)]" 
+                  fill="rgba(245, 158, 11, 0.15)" 
+                />
+                
               </div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <h1 className="text-amber-100 mb-2 font-[Coiny] text-4xl sm:text-5xl md:text-6xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] tracking-wide">
+              <h1 className="text-amber-100 mb-2 font-[Coiny] text-4xl sm:text-5xl md:text-6xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] tracking-wide mt-4">
                 GRAND FINALE
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-amber-400 mb-4 font-[Nunito] font-bold uppercase tracking-[0.2em]">
