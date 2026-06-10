@@ -457,7 +457,7 @@ export function MiniGamePage({ vocabulary, gameType, onComplete, onGoHome }: Min
           className="w-full flex flex-col sm:flex-row justify-between items-center mb-5 sm:mb-6 md:mb-8 gap-3 sm:gap-4"
         >
           <div className="text-center sm:text-left">
-            <h2 className="text-orange-950 text-2xl sm:text-3xl md:text-4xl font-[Fredoka] font-bold tracking-wide drop-shadow-sm">🎯 Challenge Quest</h2>
+            <h2 className="text-orange-950 text-2xl sm:text-3xl md:text-4xl font-[Coiny] font-bold tracking-wide drop-shadow-sm">🎯 Challenge Quiz</h2>
             <p className="text-orange-900/90 font-[Nunito] font-bold text-sm sm:text-base md:text-xl mt-0.5 sm:mt-1">Challenge {currentQuestion + 1} of {totalQuestions}</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 bg-[#faf6f1] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-xl shadow-md md:shadow-lg border-2 border-orange-700/30">

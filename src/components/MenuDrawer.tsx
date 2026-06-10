@@ -149,13 +149,13 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
               </div>
             </div>
 
-            {/* CHALLENGE QUESTS */}
+            {/* CHALLENGE QUIZZES */}
             <div className="bg-[#fffdf8] rounded-2xl p-4 border-2 border-amber-100 shadow-sm flex items-start gap-4 transition-transform hover:-translate-y-1">
               <div className="bg-yellow-100 p-3 rounded-2xl shrink-0">
                 <Gamepad2 className="h-6 w-6 text-yellow-700" />
               </div>
               <div>
-                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Misi Tantangan" : "Challenge Quests"}</h4>
+                <h4 className="font-[Coiny] text-amber-900 tracking-wide mb-1 uppercase text-sm">{showTranslation ? "Kuis Tantangan" : "Challenge Quizzes"}</h4>
                 <p className="text-[13px] sm:text-sm text-amber-950/80 font-bold leading-snug">
                   {showTranslation ? "Uji pengetahuanmu dengan tantangan mencocokkan dan teka-teki kata!" : "Test your knowledge with matching challenges and word puzzles!"}
                 </p>
@@ -183,11 +183,11 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
             <p className="font-bold text-lg">{showTranslation ? "Cara Bermain & Belajar:" : "How to Play & Learn:"}</p>
             <ol className="list-decimal pl-5 space-y-3">
               <li>{showTranslation ? "Pilih pulau ekspedisi yang aktif di peta samudra utama." : "Select an active expedition island on the main ocean map."}</li>
-              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Dengarkan dan baca cerita di halaman <span class='font-bold'>Story Scene</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Listen to and read the fun & meaningful story in the <span class='font-bold'>Story Scene</span>."}} />}</li>
-              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Latih pelafalanmu dan pelajari lagi arti kosakata di halaman <span class='font-bold'>Lexicon Review</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Practice your pronunciation and learn the meanings of important words on the <span class='font-bold'>Lexicon Review</span> page."}} />}</li>
-              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Selesaikan tantangan <span class='font-bold'>Mini Game Quest</span> untuk mendapat skor tertinggi."}} /> : <span dangerouslySetInnerHTML={{__html: "Complete the <span class='font-bold'>Mini Game Quest</span> challenges to collect the highest score."}} />}</li>
-              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Buka <span class='font-bold'>Treasure Vault</span> untuk melihat lencana emasmu!"}} /> : <span dangerouslySetInnerHTML={{__html: "Open the <span class='font-bold'>Treasure Vault</span> to admire the golden badges and artifacts you've successfully unlocked!"}} />}</li>
-              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Kumpulkan <span class='font-bold'>Atlas Coins</span> untuk membuka pulau ekspedisi berikutnya."}} /> : <span dangerouslySetInnerHTML={{__html: "Collect <span class='font-bold'>Atlas Coins</span> to unlock the next expedition."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Dengarkan dan baca cerita di halaman <span class='font-bold'>Gambaran Kisah</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Listen to and read the fun & meaningful story in the <span class='font-bold'>Story Scene</span> page."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Latih pelafalanmu dan pelajari lagi arti kosakata di halaman <span class='font-bold'>Kilas Kata</span>."}} /> : <span dangerouslySetInnerHTML={{__html: "Practice your pronunciation and learn the meanings of important words on the <span class='font-bold'>Lexicon Review</span> page."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Selesaikan <span class='font-bold'>Tantangan Kuis</span> ekspedisi untuk mendapat skor tertinggi."}} /> : <span dangerouslySetInnerHTML={{__html: "Complete the expedition <span class='font-bold'>Challenge Quiz</span> to collect the highest score."}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Buka <span class='font-bold'>Gudang Harta karun</span> untuk melihat total skor dan lencana emasmu!"}} /> : <span dangerouslySetInnerHTML={{__html: "Open the <span class='font-bold'>Treasure Vault</span> to see your total quest score and to admire the golden badges and artifacts you've successfully unlocked!"}} />}</li>
+              <li>{showTranslation ? <span dangerouslySetInnerHTML={{__html: "Kumpulkan <span class='font-bold'>Koin Atlas</span> untuk membuka pulau ekspedisi berikutnya."}} /> : <span dangerouslySetInnerHTML={{__html: "Collect the <span class='font-bold'>Atlas Coins</span> to unlock the next expedition."}} />}</li>
             </ol>
           </div>
         );

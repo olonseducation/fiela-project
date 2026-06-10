@@ -326,22 +326,22 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                     </div>
                   </div>
 
-                  {/* 2. QUEST SCORE POD */}
+                  {/* 2. QUIZ SCORE POD */}
                   <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Quest</span>
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Quiz</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${quizScore === 100 ? 'text-yellow-600' : quizScore >= 80 ? 'text-blue-600' : 'text-red-600'}`}>
-                      {score}/{totalQuestions}
+                      {quizScore}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">({quizScore}%)</span>
+                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">({score}/{totalQuestions} correct)</span>
                   </div>
 
                   {/* 3. VOICE SCORE POD */}
                   <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
                     <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Voice</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${voiceScore >= 80 ? 'text-green-600' : voiceScore >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
-                      {voiceScore}%
+                      {voiceScore}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">Accuracy</span>
+                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">/ 100 score</span>
                   </div>
 
                 </div>
