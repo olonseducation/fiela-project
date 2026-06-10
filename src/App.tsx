@@ -213,7 +213,7 @@ export default function App() {
     setCurrentPage('reward');
   };
 
-  const handleRewardContinue = () => {
+  const handleRewardContinue = (triggerCompletion?: boolean) => {
     if (currentUnit) {
       const newCompleted = new Set(completedUnits);
       newCompleted.add(currentUnit);
@@ -222,15 +222,11 @@ export default function App() {
       // Hitung persentase kuis baru
       const percentage = gameResults.total > 0 ? (gameResults.score / gameResults.total) * 100 : 0;
       
-      // Gunakan callback prevScores agar selalu membaca data paling mutakhir
       setUnitScores(prevScores => {
         const oldScoreData = prevScores[currentUnit];
-        
-        // Totalkan nilai kombo (Kuis + Pelafalan) dari sesi baru dan sesi lama
         const newTotalValue = percentage + (gameResults.pronunciationScore || 0);
         const oldTotalValue = oldScoreData ? (oldScoreData.percentage || 0) + (oldScoreData.pronunciationScore || 0) : -1;
 
-        // SISTEM REKOR TERTINGGI: Hanya timpa jika skor baru BENAR-BENAR lebih tinggi
         if (newTotalValue > oldTotalValue) {
           return {
             ...prevScores,
@@ -243,13 +239,11 @@ export default function App() {
             }
           };
         }
-        
-        // Jika skor baru lebih rendah atau sama, ABAIKAN (Pertahankan rekor lama)
         return prevScores;
       });
 
-      // Check if all units are completed
-      if (newCompleted.size === units.length) {
+      // 🔮 PERUBAHAN KRUSIAL: Hanya buka Completion Page jika tombol "Complete the Atlas" yang ditekan
+      if (triggerCompletion === true) {
         setShowCompletion(true);
       }
 
@@ -293,7 +287,16 @@ export default function App() {
       
       {showCompletion && (
         <motion.div key="completion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-          <CompletionPage onRestart={handleRestart} />
+          <CompletionPage 
+            onRestart={handleRestart} 
+            // 🔮 MENGHITUNG TOTAL SKOR KESELURUHAN DARI SELURUH PULAU
+            totalQuizScore={Object.values(unitScores).reduce((sum, u) => sum + (u.percentage || 0), 0)}
+            totalMaxQuizScore={units.length * 100} // 500 (Jika ada 5 pulau)
+            totalVoiceScore={Object.values(unitScores).reduce((sum, u) => sum + (u.pronunciationScore || 0), 0)}
+            totalMaxVoiceScore={units.length * 100} // 500 (Jika ada 5 pulau)
+            wordsMastered={Object.values(unitScores).reduce((sum, u) => sum + (u.score || 0), 0)}
+            totalWords={Object.values(unitScores).reduce((sum, u) => sum + (u.total || 0), 0)}
+          />
         </motion.div>
       )}
 

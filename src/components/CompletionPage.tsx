@@ -1,18 +1,35 @@
 import { motion } from 'motion/react';
 import { Button } from './ui/button';
-import { Trophy, Star, Sparkles, Map, Compass, Crown, Lock, Unlock } from 'lucide-react';
+import { Trophy, Star, Sparkles, Map, Compass, Crown, Lock, Unlock, Mic, Gamepad2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { soundEffects } from '../utils/soundEffects';
 
 interface CompletionPageProps {
   onRestart: () => void;
-  // Tambahan Props untuk mendeteksi kesempurnaan (Bisa di-passing dari komponen induk)
-  finalScore?: number; 
-  maxScore?: number;
+  // 🔮 PROPS BARU UNTUK SINKRONISASI SKOR LENGKAP
+  totalQuizScore: number;
+  totalMaxQuizScore: number;
+  totalVoiceScore: number;
+  totalMaxVoiceScore: number;
+  wordsMastered?: number;
+  totalWords?: number;
 }
 
-export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: CompletionPageProps) {
-  // Logika untuk mengecek apakah semua pertanyaan di 5 unit dijawab dengan benar
+export function CompletionPage({ 
+  onRestart, 
+  totalQuizScore, 
+  totalMaxQuizScore, 
+  totalVoiceScore, 
+  totalMaxVoiceScore,
+  wordsMastered = 50,
+  totalWords = 50
+}: CompletionPageProps) {
+  
+  // Kalkulasi Skor Total Keseluruhan
+  const finalScore = totalQuizScore + totalVoiceScore;
+  const maxScore = totalMaxQuizScore + totalMaxVoiceScore;
+  
+  // Syarat Sempurna: Skor Kuis & Suara harus maksimal
   const isPerfectRun = finalScore >= maxScore;
 
   useEffect(() => {
@@ -24,7 +41,6 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
   }, []);
 
   return (
-    // TEMA ROYAL TREASURE: Gelap, Marun, dan Emas untuk membedakan dari Reward Page
     <div className="min-h-screen bg-gradient-to-br from-[#2a1205] via-[#4a1c03] to-[#1c0d04] flex items-center justify-center p-4 sm:p-6 md:p-8 relative overflow-hidden">
       
       {/* Efek Tekstur Klasik */}
@@ -39,7 +55,7 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
       {/* Cahaya Emas di Tengah */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-amber-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Partikel Bara Api Emas (Golden Embers) */}
+      {/* Partikel Bara Api Emas */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(30)].map((_, i) => (
           <motion.div
@@ -74,10 +90,8 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, type: "spring", bounce: 0.3 }}
-        // PANEL UTAMA: Glassmorphism Elegan yang Lebar
         className="max-w-6xl w-full bg-black/40 backdrop-blur-xl rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10 p-6 sm:p-10 md:p-12 relative z-10 overflow-hidden"
       >
-        {/* Garis Emas Puncak */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-80" />
 
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16 relative z-10">
@@ -127,18 +141,40 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
                 <Map className="h-6 w-6 text-amber-400" /> Your Expedition Record
               </h3>
 
+              {/* GRID STATISTIK LENGKAP */}
               <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6">
+                <div className="flex flex-col">
+                  <span className="text-amber-500/80 font-[Nunito] font-bold text-xs sm:text-sm uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Mic className="h-3 w-3" /> Voice Accuracy
+                  </span>
+                  <div className="flex items-end gap-2">
+                    <span className="text-3xl sm:text-4xl font-[Coiny] text-amber-100">{totalVoiceScore}</span>
+                    <span className="text-amber-400/80 font-[Fredoka] font-bold text-sm sm:text-base pb-1">/ {totalMaxVoiceScore}</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col">
+                  <span className="text-amber-500/80 font-[Nunito] font-bold text-xs sm:text-sm uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Gamepad2 className="h-3 w-3" /> Quiz Mastery
+                  </span>
+                  <div className="flex items-end gap-2">
+                    <span className="text-3xl sm:text-4xl font-[Coiny] text-amber-100">{totalQuizScore}</span>
+                    <span className="text-amber-400/80 font-[Fredoka] font-bold text-sm sm:text-base pb-1">/ {totalMaxQuizScore}</span>
+                  </div>
+                </div>
+
                 <div className="flex flex-col">
                   <span className="text-amber-500/80 font-[Nunito] font-bold text-xs sm:text-sm uppercase tracking-wider mb-1">Words Mastered</span>
                   <div className="flex items-end gap-2">
-                    <span className="text-3xl sm:text-4xl font-[Coiny] text-amber-100">50</span>
-                    <span className="text-amber-400/80 font-[Fredoka] font-bold text-sm sm:text-base pb-1">/ 50</span>
+                    <span className="text-2xl sm:text-3xl font-[Coiny] text-amber-100">{wordsMastered}</span>
+                    <span className="text-amber-400/80 font-[Fredoka] font-bold text-sm sm:text-base pb-1">/ {totalWords}</span>
                   </div>
                 </div>
+
                 <div className="flex flex-col">
                   <span className="text-amber-500/80 font-[Nunito] font-bold text-xs sm:text-sm uppercase tracking-wider mb-1">Expeditions</span>
                   <div className="flex items-end gap-2">
-                    <span className="text-3xl sm:text-4xl font-[Coiny] text-amber-100">5</span>
+                    <span className="text-2xl sm:text-3xl font-[Coiny] text-amber-100">5</span>
                     <span className="text-amber-400/80 font-[Fredoka] font-bold text-sm sm:text-base pb-1">/ 5</span>
                   </div>
                 </div>
@@ -161,14 +197,13 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
               </div>
             </motion.div>
 
-            {/* NOTIFIKASI CERDAS (Conditional) */}
+            {/* NOTIFIKASI CERDAS */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}
             >
               {isPerfectRun ? (
-                // PANEL JIKA SEMPURNA (100%)
                 <div className="bg-gradient-to-r from-yellow-500/20 to-amber-500/10 border border-yellow-400/50 rounded-2xl p-5 flex items-start gap-4 mb-8 shadow-[0_0_20px_rgba(253,224,71,0.15)]">
                   <div className="bg-yellow-400/20 p-3 rounded-full shrink-0">
                     <Unlock className="h-6 w-6 text-yellow-300" />
@@ -181,7 +216,6 @@ export function CompletionPage({ onRestart, finalScore = 42, maxScore = 50 }: Co
                   </div>
                 </div>
               ) : (
-                // PANEL JIKA BELUM SEMPURNA (< 100%)
                 <div className="bg-gradient-to-r from-rose-900/40 to-orange-900/30 border border-rose-500/40 rounded-2xl p-5 flex items-start gap-4 mb-8 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-rose-500/5 group-hover:bg-rose-500/10 transition-colors" />
                   <div className="bg-rose-500/20 p-3 rounded-full shrink-0 relative z-10">

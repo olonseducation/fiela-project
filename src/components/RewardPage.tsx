@@ -16,7 +16,8 @@ const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
 
 interface RewardPageProps {
   unitNumber: number;
-  onContinue: () => void;
+  // 🔮 UBAH BARIS INI: Tambahkan parameter boolean
+  onContinue: (triggerCompletion?: boolean) => void; 
   isLastUnit: boolean;
   wrongAnswers?: WrongAnswer[];
   score?: number;
@@ -256,7 +257,14 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                 )}
 
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button onClick={() => { soundEffects.buttonSuccess(); onContinue(); }} className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-6 sm:py-8 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-base sm:text-xl">
+                  <Button 
+                    onClick={() => { 
+                      soundEffects.buttonSuccess(); 
+                      // 🔮 MENGIRIMKAN STATUS isLastUnit KE APP.TSX
+                      onContinue(isLastUnit); 
+                    }} 
+                    className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-6 sm:py-8 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-base sm:text-xl"
+                  >
                     {isLastUnit ? '🎊 Complete the Atlas!' : 'Continue the Journey ➡️'}
                   </Button>
                 </motion.div>
