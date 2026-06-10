@@ -41,6 +41,12 @@ export function BadgeCollection({ unitScores, totalUnits }: BadgeCollectionProps
   const scores = Object.values(unitScores).map((catatan: any) => catatan.percentage || 0);
   const pronunScores = Object.values(unitScores).map((catatan: any) => catatan.pronunciationScore || 0);
   
+  // 🔮 KALKULASI TOTAL SKOR KESELURUHAN UNTUK DITAMPILKAN DI TREASURE VAULT
+  const totalQuizScore = scores.reduce((sum, s) => sum + s, 0);
+  const totalVoiceScore = pronunScores.reduce((sum, s) => sum + s, 0);
+  const currentTotalScore = totalQuizScore + totalVoiceScore;
+  const maxPossibleScore = totalUnits * 200; // 5 unit * 200 (100 Kuis + 100 Suara)
+
   const highestPronunScore = pronunScores.length > 0 ? Math.max(...pronunScores) : 0;
   
   const count70 = scores.filter(s => s >= 70).length;
@@ -92,12 +98,25 @@ export function BadgeCollection({ unitScores, totalUnits }: BadgeCollectionProps
           </div>
         </div>
 
-        <div className="w-full bg-white/95 p-3 rounded-2xl border-2 border-amber-200 shadow-sm">
-          <div className="flex justify-between items-end mb-1.5">
+        <div className="w-full bg-white/95 p-4 rounded-2xl border-2 border-amber-200 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+          
+          {/* 🔮 BARIS BARU: Menampilkan Total Skor Ekspedisi */}
+          <div className="mb-4 pb-4 border-b-2 border-dashed border-amber-200/60 relative z-10">
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-[11px] text-amber-800 font-bold uppercase tracking-wider font-[Nunito]">Total Quest Score</span>
+              <span className="text-amber-600 font-[Coiny] text-xl leading-none">{currentTotalScore} <span className="text-xs text-amber-900/40">/ {maxPossibleScore}</span></span>
+            </div>
+            <div className="w-full h-2 bg-amber-100 rounded-full overflow-hidden shadow-inner border border-amber-200/30">
+              <div className="h-full bg-gradient-to-r from-amber-400 to-orange-400 transition-all duration-1000" style={{ width: `${(currentTotalScore / maxPossibleScore) * 100}%` }} />
+            </div>
+          </div>
+
+          <div className="flex justify-between items-end mb-1.5 relative z-10">
             <span className="text-[11px] text-amber-800 font-bold uppercase tracking-wider font-[Nunito]">Treasures Found</span>
             <span className="text-sm text-amber-950 font-bold font-[Coiny]">{earnedBadges.length}/{ATLAS_TREASURES.length}</span>
           </div>
-          <div className="h-2.5 w-full bg-amber-100 rounded-full overflow-hidden shadow-inner border border-amber-200/50">
+          <div className="h-2.5 w-full bg-amber-100 rounded-full overflow-hidden shadow-inner border border-amber-200/50 relative z-10">
             <div
               className="h-full bg-gradient-to-r from-amber-400 to-orange-400 transition-all duration-1000 ease-out"
               style={{ width: `${(earnedBadges.length / ATLAS_TREASURES.length) * 100}%` }}

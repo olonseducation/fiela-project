@@ -289,13 +289,14 @@ export default function App() {
         <motion.div key="completion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           <CompletionPage 
             onRestart={handleRestart} 
-            // 🔮 MENGHITUNG TOTAL SKOR KESELURUHAN DARI SELURUH PULAU
             totalQuizScore={Object.values(unitScores).reduce((sum, u) => sum + (u.percentage || 0), 0)}
-            totalMaxQuizScore={units.length * 100} // 500 (Jika ada 5 pulau)
+            totalMaxQuizScore={units.length * 100}
             totalVoiceScore={Object.values(unitScores).reduce((sum, u) => sum + (u.pronunciationScore || 0), 0)}
-            totalMaxVoiceScore={units.length * 100} // 500 (Jika ada 5 pulau)
+            totalMaxVoiceScore={units.length * 100}
             wordsMastered={Object.values(unitScores).reduce((sum, u) => sum + (u.score || 0), 0)}
             totalWords={Object.values(unitScores).reduce((sum, u) => sum + (u.total || 0), 0)}
+            // 🔮 BARIS BARU: Mengirimkan seluruh catatan nilai agar bisa dihitung Treasures-nya
+            unitScores={unitScores}
           />
         </motion.div>
       )}
