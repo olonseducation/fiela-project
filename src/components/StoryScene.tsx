@@ -287,7 +287,8 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
                 className="absolute inset-0 z-0"
               >
                 <ImageWithFallback
-                  src={`https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/unit${unitId}/scene${currentScene + 1}.png`}
+                  /* 🔮 JALUR BARU: Menggunakan jsDelivr CDN dan berakhiran .webp */
+                  src={`https://cdn.jsdelivr.net/gh/olonsgallery/fiela-repository@main/images/unit${unitId}/scene${currentScene + 1}.webp`}
                   alt={`Story Unit ${unitId} Scene ${currentScene + 1}`}
                   className="w-full h-full object-cover"
                 />

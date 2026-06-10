@@ -125,27 +125,28 @@ export function categorizeWord(word: VocabularyWord): VocabularyCategory {
   return 'general';
 }
 
-const BASE_URL = 'https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/unit1/minigame/';
+// 🔮 JALUR BARU: Menggunakan jsDelivr CDN
+const BASE_URL = 'https://cdn.jsdelivr.net/gh/olonsgallery/fiela-repository@main/images/unit1/minigame/';
 
 /**
  * Pengecoh Khusus Ekspedisi 1 (Wajib bergambar & terbagi per kategori logis)
  */
 const EXPEDITION_1_DISTRACTORS: VocabularyWord[] = [
   // 1. Kategori: object-item (Untuk mengecoh kata benda seperti 'backpack')
-  { word: 'book', definition: 'pages to read', pronunciation: 'bʊk', example: 'I read a book.', image: `${BASE_URL}book.jpeg` },
-  { word: 'pencil', definition: 'a tool for writing', pronunciation: 'ˈpensl', example: 'I write with a pencil.', image: `${BASE_URL}pencil.jpeg` },
+  { word: 'book', definition: 'pages to read', pronunciation: 'bʊk', example: 'I read a book.', image: `${BASE_URL}book.webp` },
+  { word: 'pencil', definition: 'a tool for writing', pronunciation: 'ˈpensl', example: 'I write with a pencil.', image: `${BASE_URL}pencil.webp` },
   
   // 2. Kategori: clothing-apparel (Untuk mengecoh baju/pakaian)
-  { word: 'hat', definition: 'clothing for your head', pronunciation: 'hæt', example: 'I wear a hat.', image: `${BASE_URL}hat.jpeg` },
-  { word: 'jacket', definition: 'a short coat', pronunciation: 'ˈdʒækɪt', example: 'Wear a jacket.', image: `${BASE_URL}jacket.jpeg` },
+  { word: 'hat', definition: 'clothing for your head', pronunciation: 'hæt', example: 'I wear a hat.', image: `${BASE_URL}hat.webp` },
+  { word: 'jacket', definition: 'a short coat', pronunciation: 'ˈdʒækɪt', example: 'Wear a jacket.', image: `${BASE_URL}jacket.webp` },
   
   // 3. Kategori: food-meal (Untuk mengecoh sarapan/makanan)
-  { word: 'apple', definition: 'a round red or green fruit', pronunciation: 'ˈæpl', example: 'I eat an apple.', image: `${BASE_URL}apple.jpeg` },
-  { word: 'bread', definition: 'food made of baked flour', pronunciation: 'bred', example: 'I eat bread.', image: `${BASE_URL}bread.jpeg` },
+  { word: 'apple', definition: 'a round red or green fruit', pronunciation: 'ˈæpl', example: 'I eat an apple.', image: `${BASE_URL}apple.webp` },
+  { word: 'bread', definition: 'food made of baked flour', pronunciation: 'bred', example: 'I eat bread.', image: `${BASE_URL}bread.webp` },
   
   // 4. Kategori: action-verb (Untuk mengecoh kata kerja tambahan jika kurang)
-  { word: 'sleep', definition: 'to rest with your eyes closed', pronunciation: 'sliːp', example: 'I sleep.', image: `${BASE_URL}sleep.jpeg` },
-  { word: 'drink', definition: 'to swallow a liquid', pronunciation: 'drɪŋk', example: 'I drink water.', image: `${BASE_URL}drink.jpeg` }
+  { word: 'sleep', definition: 'to rest with your eyes closed', pronunciation: 'sliːp', example: 'I sleep.', image: `${BASE_URL}sleep.webp` },
+  { word: 'drink', definition: 'to swallow a liquid', pronunciation: 'drɪŋk', example: 'I drink water.', image: `${BASE_URL}drink.webp` }
 ];
 
 /**
