@@ -3,20 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
 import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown } from 'lucide-react';
 import type { PageType, Unit } from '../types/index';
-
-// Safe import for soundEffects
-let soundEffects: any = { play: () => {}, click: () => {}, buttonReview: () => {}, buttonPlay: () => {}, correct: () => {}, incorrect: () => {}, buttonClick: () => {}, buttonNavigation: () => {} };
-
-const loadSoundEffects = async () => {
-  try {
-    const module = await import('../utils/soundEffects');
-    soundEffects = ((module as any).default) ?? module;
-  } catch (e) {}
-};
-
-loadSoundEffects();
-
 import { backgroundMusic } from '../utils/backgroundMusic';
+import { soundEffects } from '../utils/soundEffects';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog.tsx';
 import { BadgeCollection } from './BadgeCollection.tsx';
