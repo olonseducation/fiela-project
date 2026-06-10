@@ -1,4 +1,4 @@
-import fielaLogo from '../imports/atlas_mascot_homepage.png'
+import fielaLogo from '../imports/atlas_mascot_homepage.webp'
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
 import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown } from 'lucide-react';

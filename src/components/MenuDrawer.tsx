@@ -1,5 +1,5 @@
-import fielaLogo from '../imports/mascot_fiela_logo_transparant.png'
-import olonseducationlogo from '../imports/olons-education-logo.png'
+import fielaLogo from '../imports/mascot_fiela_logo_transparent.webp'
+import olonseducationlogo from '../imports/olons-education-logo.webp'
 import { useState, useEffect } from 'react';
 import { PrivacyModal } from './PrivacyModal';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,6 +7,8 @@ import { Menu, X, Info, Sparkles, BookOpen, Mail, Music, Volume2, VolumeX, Arrow
 import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { backgroundMusic } from '../utils/backgroundMusic';
+import flagId from '../imports/id.webp';
+import flagEn from '../imports/en.webp';
 
 interface MenuDrawerProps {
   pageKey?: string | null;
@@ -378,7 +380,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         /> 
                         FIELA Menu
                       </h2>
-                      {/* 🔍 TOMBOL DWITBAHASA */}
+                      {/* 🔍 TOMBOL DWIBAHASA LOKAL */}
                       <motion.button
                         onClick={toggleTranslation}
                         whileHover={{ scale: 1.05 }}
@@ -386,11 +388,8 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-amber-200 shadow-sm bg-white overflow-hidden transition-colors hover:bg-amber-50 shrink-0"
                       >
                         <img 
-                          src={showTranslation 
-                            ? "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/id.png" 
-                            : "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/en.png"
-                          }
-                          alt="Language Toggle"
+                          src={showTranslation ? flagId : flagEn}
+                          alt={showTranslation ? "Bendera Indonesia" : "English Flag"}
                           className="w-full h-full object-cover"
                         />
                       </motion.button>

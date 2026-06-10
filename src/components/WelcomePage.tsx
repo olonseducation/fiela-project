@@ -4,8 +4,8 @@ import { Button } from './ui/button';
 import { soundEffects } from '../utils/soundEffects';
 import { customAudioManager } from '../utils/customAudio';
 import { welcomePageAudio } from '../utils/audioConfigHelper'; 
-import welcomeBgmPath from '../imports/welcomepage-bgmusic.mp3';
-import fielaLogo from '../imports/fiela_logo_transparent.png'; 
+import welcomeBgmPath from '../imports/welcomepage-background-music.mp3';
+import fielaLogo from '../imports/fiela_logo_transparent.webp'; 
 
 interface WelcomePageProps {
   onStart: () => void;

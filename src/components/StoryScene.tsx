@@ -8,6 +8,8 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { soundEffects } from '../utils/soundEffects';
 import { voiceSettings } from '../utils/voiceSettings';
 import { customAudioManager } from '../utils/customAudio';
+import flagId from '../imports/id.webp';
+import flagEn from '../imports/en.webp';
 
 interface StorySceneProps {
   scenes: StorySceneType[];
@@ -376,16 +378,13 @@ export function StoryScene({ scenes, vocabulary, onComplete, unitId = 1, onGoHom
                 className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border-2 shadow-md bg-white border-indigo-200 hover:bg-indigo-50 transition-colors font-[Fredoka] font-bold text-xs sm:text-sm"
             >
               <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-full border border-gray-200">
-                {/* Sesuaikan URL di bawah ini dengan path di GitHub-mu */}
                 <img 
-                  src={showTranslation 
-                    ? "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/id.png"
-                    : "https://raw.githubusercontent.com/olonsgallery/fiela-repository/main/images/en.png"
-                  }
-                  alt="Language Flag"
+                  src={showTranslation ? flagId : flagEn}
+                  alt={showTranslation ? "Bendera Indonesia" : "English Flag"}
                   className="w-full h-full object-cover"
                 />
               </div>
+              
               {/* Teks label tetap kita sembunyikan di HP agar tidak terlalu lebar, tapi tampil di desktop */}
               <span className="text-indigo-900 hidden sm:inline">
                 {showTranslation ? "ID" : "EN"}
