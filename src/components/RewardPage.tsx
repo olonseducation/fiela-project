@@ -144,30 +144,30 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
 
   function getNewlyUnlockedTreasures() {
     const unlocked = [];
-    if (unitNumber === 1) unlocked.push({ icon: BookOpen, label: 'First Steps', requirement: 'Complete 1 Expedition', color: 'text-emerald-600', bgColor: 'from-emerald-100 to-green-100' });
-    if (unitNumber === 3) unlocked.push({ icon: Target, label: 'Avid Explorer', requirement: 'Complete 3 Expeditions', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-100' });
-    if (unitNumber === 5) unlocked.push({ icon: Trophy, label: 'Atlas Conqueror', requirement: 'Complete 5 Expeditions', color: 'text-amber-600', bgColor: 'from-amber-100 via-orange-100 to-yellow-100' });
+    if (unitNumber === 1) unlocked.push({ icon: BookOpen, label: 'First Steps', requirement: 'Complete 1 Expedition', color: 'text-emerald-600', bgColor: 'from-emerald-100 to-green-100', tier: 1 });
+    if (unitNumber === 3) unlocked.push({ icon: Target, label: 'Avid Explorer', requirement: 'Complete 3 Expeditions', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-100', tier: 2 });
+    if (unitNumber === 5) unlocked.push({ icon: Trophy, label: 'Atlas Conqueror', requirement: 'Complete 5 Expeditions', color: 'text-amber-600', bgColor: 'from-amber-100 via-orange-100 to-yellow-100', tier: 3 });
 
-    if (percentage >= 70 && unitNumber === 1) unlocked.push({ icon: Flame, label: 'Spark of Knowledge', requirement: 'Score 70%+', color: 'text-rose-600', bgColor: 'from-rose-100 to-red-100' });
-    if (percentage >= 80 && unitNumber === 2) unlocked.push({ icon: Medal, label: 'Silver Scholar', requirement: 'Score 80%+', color: 'text-slate-600', bgColor: 'from-slate-100 via-gray-100 to-slate-200' });
-    if (percentage >= 90 && unitNumber === 3) unlocked.push({ icon: Star, label: 'Brilliant Star', requirement: 'Score 90%+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-blue-100' });
-    if (percentage === 100 && unitNumber === 1) unlocked.push({ icon: Crown, label: 'Perfect Champion', requirement: 'Score 100%', color: 'text-yellow-600', bgColor: 'from-yellow-100 via-yellow-200 to-amber-200' });
-    if (percentage === 100 && unitNumber === 3) unlocked.push({ icon: Gem, label: 'Master Scholar', requirement: 'Score 100%', color: 'text-fuchsia-600', bgColor: 'from-fuchsia-100 via-pink-100 to-purple-100' });
-    if (percentage >= 90 && unitNumber === 5) unlocked.push({ icon: Brain, label: 'Sharp Mind', requirement: 'Score 90%+', color: 'text-blue-700', bgColor: 'from-blue-100 to-indigo-200' });
-    if (percentage === 100 && unitNumber === 5) unlocked.push({ icon: Zap, label: 'Flawless Legend', requirement: 'Score 100%', color: 'text-amber-700', bgColor: 'from-yellow-200 to-amber-300' });
+    if (percentage >= 70 && unitNumber === 1) unlocked.push({ icon: Flame, label: 'Spark of Knowledge', requirement: 'Score 70%+', color: 'text-rose-600', bgColor: 'from-rose-100 to-red-100', tier: 1 });
+    if (percentage >= 80 && unitNumber === 2) unlocked.push({ icon: Medal, label: 'Silver Scholar', requirement: 'Score 80%+', color: 'text-slate-600', bgColor: 'from-slate-100 via-gray-100 to-slate-200', tier: 2 });
+    if (percentage >= 90 && unitNumber === 3) unlocked.push({ icon: Star, label: 'Brilliant Star', requirement: 'Score 90%+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-blue-100', tier: 2 });
+    if (percentage === 100 && unitNumber === 1) unlocked.push({ icon: Crown, label: 'Perfect Champion', requirement: 'Score 100%', color: 'text-yellow-600', bgColor: 'from-yellow-100 via-yellow-200 to-amber-200', tier: 2 });
+    if (percentage === 100 && unitNumber === 3) unlocked.push({ icon: Gem, label: 'Master Scholar', requirement: 'Score 100%', color: 'text-fuchsia-600', bgColor: 'from-fuchsia-100 via-pink-100 to-purple-100', tier: 3 });
+    if (percentage >= 90 && unitNumber === 5) unlocked.push({ icon: Brain, label: 'Sharp Mind', requirement: 'Score 90%+', color: 'text-blue-700', bgColor: 'from-blue-100 to-indigo-200', tier: 3 });
+    if (percentage === 100 && unitNumber === 5) unlocked.push({ icon: Zap, label: 'Flawless Legend', requirement: 'Score 100%', color: 'text-amber-700', bgColor: 'from-yellow-200 to-amber-300', tier: 3 });
 
     if (pronunciationScore >= 95) {
-      unlocked.push({ icon: Gem, label: 'Diamond Whisperer', requirement: '95%+ Speech', color: 'text-cyan-500', bgColor: 'from-cyan-100 to-blue-200' });
+      unlocked.push({ icon: Gem, label: 'Diamond Whisperer', requirement: '95%+ Speech', color: 'text-cyan-500', bgColor: 'from-cyan-100 to-blue-200', tier: 3 });
     } else if (pronunciationScore >= 80) {
-      unlocked.push({ icon: Mic, label: 'Golden Orator', requirement: '80%+ Speech', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300' });
+      unlocked.push({ icon: Mic, label: 'Golden Orator', requirement: '80%+ Speech', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300', tier: 2 });
     } else if (pronunciationScore >= 60) {
-      unlocked.push({ icon: Mic, label: 'Silver Voice', requirement: '60%+ Speech', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300' });
+      unlocked.push({ icon: Mic, label: 'Silver Voice', requirement: '60%+ Speech', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300', tier: 1 });
     } else if (pronunciationScore > 0) {
-      unlocked.push({ icon: Mic, label: 'Brave Speaker', requirement: 'Complete speaking', color: 'text-orange-700', bgColor: 'from-orange-100 to-amber-200' });
+      unlocked.push({ icon: Mic, label: 'Brave Speaker', requirement: 'Complete speaking', color: 'text-orange-700', bgColor: 'from-orange-100 to-amber-200', tier: 1 });
     }
 
     if (unlocked.length === 0) {
-      unlocked.push({ icon: CheckCircle, label: 'Expedition Cleared', requirement: 'The journey continues!', color: 'text-teal-600', bgColor: 'from-teal-100 to-emerald-100' });
+      unlocked.push({ icon: CheckCircle, label: 'Expedition Cleared', requirement: 'The journey continues!', color: 'text-teal-600', bgColor: 'from-teal-100 to-emerald-100', tier: 1 });
     }
     return unlocked;
   }
@@ -355,6 +355,9 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
               <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-1 pb-1">
                 {earnedTreasures.map((badge, index) => {
                   const isVisible = index < revealedTreasuresCount;
+                  const isTier3 = badge.tier === 3;
+                  const isTier2 = badge.tier === 2;
+
                   return (
                     <AnimatePresence key={index}>
                       {isVisible && (
@@ -363,22 +366,37 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                           animate={{ opacity: 1, scale: 1, y: 0 }} 
                           whileHover={{ scale: 1.04, y: -3 }} 
                           transition={{ type: "spring", stiffness: 260, damping: 15 }} 
-                          className={`bg-gradient-to-br ${badge.bgColor} rounded-2xl p-3 sm:p-4 shadow-md border-2 border-white relative z-10 flex flex-col items-center justify-center text-center gap-2.5 min-h-[110px]`} 
-                          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                          className={`relative bg-gradient-to-br ${badge.bgColor} rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[110px] overflow-hidden ${
+                            isTier3 ? 'border-[3px] border-yellow-300 shadow-[0_0_20px_rgba(250,204,21,0.6)] z-10' :
+                            isTier2 ? 'border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.3)]' :
+                            'border-2 border-white shadow-sm'
+                          }`}
                         >
+                          {/* Efek Bersinar Ekstra untuk Tier 3 */}
+                          {isTier3 && <div className="absolute inset-0 bg-white/30 animate-pulse pointer-events-none" />}
+
                           <motion.div 
                             animate={{ scale: [1, 1.06, 1] }} 
                             transition={{ repeat: Infinity, duration: 2.5, delay: index * 0.2 }} 
-                            className="bg-white/60 p-2 rounded-xl shadow-inner flex items-center justify-center shrink-0 border border-white"
+                            className={`p-2 rounded-full shrink-0 relative z-10 ${
+                              isTier3 ? 'bg-gradient-to-br from-yellow-100 to-amber-300 shadow-md' : 
+                              isTier2 ? 'bg-white/95 shadow-sm' : 
+                              'bg-white/60 border border-white shadow-inner'
+                            }`}
                           >
-                            <badge.icon className={`h-6 w-6 ${badge.color} drop-shadow-sm`} />
+                            <badge.icon className={`h-6 w-6 ${badge.color} ${isTier3 ? 'drop-shadow-sm' : ''}`} />
                           </motion.div>
                           
-                          <div className="flex flex-col items-center justify-center overflow-hidden w-full">
-                            <p className="text-xs sm:text-sm font-bold text-amber-950 font-[Fredoka] tracking-wide leading-tight break-words max-w-full">
+                          <div className="flex flex-col items-center justify-center overflow-hidden w-full relative z-10">
+                            <p className={`text-xs sm:text-sm font-bold font-[Fredoka] tracking-wide leading-tight break-words max-w-full ${
+                              isTier3 ? 'text-amber-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' :
+                              isTier2 ? 'text-amber-950' : 'text-amber-950'
+                            }`}>
                               {badge.label}
                             </p>
-                            <p className="text-[9px] sm:text-[10px] font-bold text-amber-900/50 font-[Nunito] leading-tight mt-1 max-w-full">
+                            <p className={`text-[9px] sm:text-[10px] font-bold font-[Nunito] leading-tight mt-1 max-w-full ${
+                              isTier3 ? 'text-amber-800' : 'text-amber-900/50'
+                            }`}>
                               {badge.requirement}
                             </p>
                           </div>
