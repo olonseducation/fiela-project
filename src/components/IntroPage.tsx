@@ -196,7 +196,7 @@ export function IntroPage({ unit, onStart, onGoHome }: IntroPageProps) {
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 + index * 0.1 }}
-                    className="bg-white/80 px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl text-amber-950 shadow-sm border-2 border-amber-400/40 font-[Nunito] font-extrabold text-base lg:text-lg transition-transform hover:-translate-y-1 hover:bg-amber-200/80 cursor-default"
+                    className="bg-[#0a6f99] px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl text-amber-100 hover:text-amber-950 shadow-sm border-2 border-amber-300/90 font-[Nunito] font-extrabold text-base lg:text-lg transition-transform hover:-translate-y-1 hover:bg-emerald-200/80 cursor-default"
                   >
                     {vocab.word}
                   </motion.span>
