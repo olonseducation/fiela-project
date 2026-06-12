@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
-import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown } from 'lucide-react';
+import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown, X, MessageCircle } from 'lucide-react';
 import type { PageType, Unit } from '../types/index';
 import { backgroundMusic } from '../utils/backgroundMusic';
 import { soundEffects } from '../utils/soundEffects';
@@ -136,6 +136,9 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       pose: atlasTertawa 
     }
   ], [playerName]);
+
+  // 🔮 SAKELAR VISIBILITAS ATLAS
+  const [isAtlasVisible, setIsAtlasVisible] = useState(true);
 
   const [currentDialogue, setCurrentDialogue] = useState(atlasDialogues[0]);
 
@@ -552,56 +555,89 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       {/* ======================================================================= */}
       <AnimatePresence>
         {selectedIsland === null && !treasureVaultOpen && !passwordDialogOpen && !reviewDialogOpen && !isDrawerOpen && (
-          <motion.div 
-            initial={{ y: 150, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 150, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
-            className="fixed bottom-0 right-0 w-full md:w-auto md:right-8 md:bottom-8 z-[100] flex items-end justify-center md:justify-end pointer-events-none"
-          >
-            {/* 🔮 items-end agar kotak tumbuh ke atas, bukan mendorong Atlas */}
-            <div className="relative flex items-end gap-2 md:gap-4 px-4 pb-0 pt-8 md:p-0 pointer-events-auto max-w-lg w-full md:w-auto">
-              
-              {/* KOTAK DIALOG (TAMPILAN RPG BERSIH & KOMPAK DI MOBILE) */}
+          <>
+            {/* 🔮 JIKA ATLAS DITAMPILKAN */}
+            {isAtlasVisible && (
               <motion.div 
-                animate={{ y: [0, -5, 0] }} 
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                // 🔮 Menggunakan kalibrasi Kapten (translate-x-14 md:translate-x-2)
-                // 🔮 Ditambah mb-4 md:mb-10 agar posisinya pas di atas pijakan
-                className="bg-[#fffcf2] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border-2 md:border-4 border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.4)] relative w-fit max-w-[200px] sm:max-w-[300px] translate-x-14 md:translate-x-4 md:translate-y-10 mb-4 md:mb-10"
+                initial={{ y: 150, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 150, opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
+                className="fixed bottom-0 right-0 w-full md:w-auto md:right-8 md:bottom-8 z-[100] flex items-end justify-center md:justify-end pointer-events-none"
               >
-                {/* 🔮 EFEK NOISE HALUS DI KOTAK DIALOG */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0 rounded-xl sm:rounded-2xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
+                {/* 🔮 items-end agar kotak tumbuh ke atas, bukan mendorong Atlas */}
+                <div className="relative flex items-end gap-2 md:gap-4 px-4 pb-0 pt-8 md:p-0 pointer-events-auto max-w-lg w-full md:w-auto">
+                  
+                  {/* KOTAK DIALOG (TAMPILAN RPG BERSIH & KOMPAK DI MOBILE) */}
+                  <motion.div 
+                    animate={{ y: [0, -5, 0] }} 
+                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                    // 🔮 Menggunakan kalibrasi Kapten persis! (translate-x-14 md:translate-x-4 md:translate-y-10...)
+                    className="bg-[#fffcf2] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border-2 md:border-4 border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.4)] relative w-fit max-w-[200px] sm:max-w-[300px] translate-x-16 md:translate-x-4 translate-y-3 md:translate-y-14 mb-4 md:mb-10"
+                  >
+                    {/* 🔮 TOMBOL CLOSE (X) - MASUK KE DALAM KOTAK (SELALU TERLIHAT) */}
+                    <button 
+                      onClick={() => {
+                        soundEffects.buttonNavigation?.(); // 🔊 Bunyikan lonceng kapal!
+                        setIsAtlasVisible(false);
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 hover:scale-110 transition-transform z-30"
+                      aria-label="Hide Atlas"
+                    >
+                      <X size={12} strokeWidth={3} />
+                    </button>
 
-                {/* Ekor Dialog Mobile (Kanan Bawah, Mengarah ke Atlas) */}
-                <div className="md:hidden absolute -right-1.5 bottom-4 w-3 h-3 bg-[#fffcf2] rotate-45 border-t-2 border-r-2 border-amber-400" />
-                
-                {/* Ekor Dialog Desktop (Kanan Bawah, Mengarah ke Atlas) */}
-                {/* 🔮 Karena memanjang ke atas, ekor desktop dipindah ke bottom-6 */}
-                <div className="hidden md:block absolute -right-3 bottom-6 w-5 h-5 bg-[#fffcf2] rotate-45 border-t-4 border-r-4 border-amber-400" />
-                
-                <div className="relative z-10">
-                    <h3 className="font-[Coiny] text-amber-600 text-[9px] sm:text-xs uppercase tracking-widest border-b border-amber-100 pb-0.5 sm:pb-1 mb-1 sm:mb-1.5 inline-block">
-                    Captain Atlas
-                    </h3>
-                    <p className="font-[Nunito] font-bold text-[11px] sm:text-base text-amber-950 leading-snug">
-                    {currentDialogue.text}
-                    </p>
+                    {/* 🔮 EFEK NOISE HALUS DI KOTAK DIALOG */}
+                    <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0 rounded-xl sm:rounded-2xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
+
+                    {/* Ekor Dialog Mobile (Kanan Bawah, Mengarah ke Atlas) */}
+                    <div className="md:hidden absolute -right-1.5 bottom-4 w-3 h-3 bg-[#fffcf2] rotate-45 border-t-2 border-r-2 border-amber-400" />
+                    
+                    {/* Ekor Dialog Desktop (Kanan Bawah, Mengarah ke Atlas) */}
+                    <div className="hidden md:block absolute -right-3 bottom-6 w-5 h-5 bg-[#fffcf2] rotate-45 border-t-4 border-r-4 border-amber-400" />
+                    
+                    <div className="relative z-10">
+                        <h3 className="font-[Coiny] text-amber-600 text-[9px] sm:text-xs uppercase tracking-widest border-b border-amber-100 pb-0.5 sm:pb-1 mb-1 sm:mb-1.5 inline-block">
+                        Captain Atlas
+                        </h3>
+                        <p className="font-[Nunito] font-bold text-[11px] sm:text-base text-amber-950 leading-snug">
+                        {currentDialogue.text}
+                        </p>
+                    </div>
+                  </motion.div>
+
+                  {/* KARAKTER ATLAS (Mengintip dari bawah di Mobile) */}
+                  {/* 🔮 Menggunakan kalibrasi Kapten persis! */}
+                  <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-5 md:translate-y-8.5 translate-x-16 md:translate-x-4">
+                    <img 
+                      src={currentDialogue.pose} 
+                      alt="Captain Atlas" 
+                      className="w-full h-auto drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] object-contain"
+                    />
+                  </div>
+
                 </div>
               </motion.div>
+            )}
 
-              {/* KARAKTER ATLAS (Mengintip dari bawah di Mobile) */}
-              {/* 🔮 Menggunakan kalibrasi Kapten persis */}
-              <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-4 md:translate-y-4 translate-x-12 md:translate-x-4">
-                <img 
-                  src={currentDialogue.pose} 
-                  alt="Captain Atlas" 
-                  className="w-full h-auto drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] object-contain"
-                />
-              </div>
-
-            </div>
-          </motion.div>
+            {/* 🔮 JIKA ATLAS DISEMBUNYIKAN (TOMBOL PANGGIL KEMBALI) */}
+            {!isAtlasVisible && (
+              <motion.button
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  soundEffects.buttonNavigation?.(); // 🔊 Bunyikan terompet pemanggil!
+                  setIsAtlasVisible(true);
+                }}
+                className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[100] bg-[#fffcf2] border-2 border-amber-400 p-2.5 sm:p-3 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.3)] text-amber-600 hover:text-amber-700 transition-colors pointer-events-auto"
+                title="Call Captain Atlas"
+              >
+                <MessageCircle size={24} className="sm:w-8 sm:h-8" />
+              </motion.button>
+            )}
+          </>
         )}
       </AnimatePresence>
 
