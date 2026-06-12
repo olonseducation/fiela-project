@@ -54,13 +54,42 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
     try { backgroundMusic.play(0); } catch (e) { console.warn("BGM Homepage tertahan oleh browser:", e); }
     return () => { try { backgroundMusic.stop(); } catch (e) {} };
   }, []);
+
+  // 🔮 SIHIR PRELOAD: Memuat pose Atlas ke memori secara diam-diam
+  useEffect(() => {
+    // Daftar semua pose Atlas dengan tanda koma sebagai pemisah
+    const atlasPoses = [
+      atlasTersenyum,
+      atlasBingung,
+      atlasKegirangan,
+      atlasKehilanganArah,
+      atlasMengajak,
+      atlasMengantuk,
+      atlasNgobrol,
+      atlasPenasaran,
+      atlasRaguRagu,
+      atlasSemangat,
+      atlasSerius,
+      atlasSetujuOk,
+      atlasSumringah,
+      atlasTangguh,
+      atlasTerbang,
+      atlasTertawa
+    ];
+
+    atlasPoses.forEach((poseSrc) => {
+      if (poseSrc) {
+        const img = new Image();
+        img.src = poseSrc;
+      }
+    });
+  }, []); // Array kosong berarti sihir ini hanya dijalankan satu kali saat awal aplikasi dibuka
   
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [selectedLockedUnit, setSelectedLockedUnit] = useState<number | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedReviewUnit, setSelectedReviewUnit] = useState<number | null>(null);
   const [selectedIsland, setSelectedIsland] = useState<number | null>(null);
