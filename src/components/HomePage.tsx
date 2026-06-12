@@ -25,6 +25,7 @@ import atlasSumringah from '../imports/atlas-sumringah.webp';
 import atlasTangguh from '../imports/atlas-tangguh.webp';
 import atlasTerbang from '../imports/atlas-terbang.webp';
 import atlasTertawa from '../imports/atlas-tertawa.webp';
+import tumpuanAtlas from '../imports/tumpuan-atlas.webp';
 
 // Komponen SVG Atlas Coin yang anti-error di semua HP
 const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
@@ -638,14 +639,26 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                     </div>
                   </motion.div>
 
-                  {/* KARAKTER ATLAS (Mengintip dari bawah di Mobile) */}
-                  {/* 🔮 UBAH 4: Sama seperti kotak, translate-x kita normalkan jadi `translate-x-2` di HP. */}
+                  {/* ========================================== */}
+                  {/* KARAKTER ATLAS & TUMPUAN ORGANIK TEMATIK  */}
+                  {/* ========================================== */}
                   <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-5 md:translate-y-8.5 translate-x-2 md:translate-x-4">
+                    
+                    {/* 🔮 1. GAMBAR ATLAS (Di atas tumpuan dengan z-20) */}
+                    {/* 💡 Tip: Ubah nilai -translate-y jika ingin menaikkan/menurunkan posisi cakar Atlas di atas objek */}
                     <img 
                       src={currentDialogue.pose} 
                       alt="Captain Atlas" 
-                      className="w-full h-auto drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] object-contain"
+                      className="w-full h-auto drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] object-contain relative z-20 -translate-y-1.5"
                     />
+
+                    {/* 🔮 2. GAMBAR TUMPUAN (Menggunakan tumpuanAtlas) */}
+                    <img 
+                      src={tumpuanAtlas} 
+                      alt="Atlas Pedestal" 
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[125%] max-w-none h-auto z-10 object-contain pointer-events-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
+                    />
+
                   </div>
 
                 </div>
