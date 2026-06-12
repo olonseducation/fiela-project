@@ -1,13 +1,30 @@
-import fielaLogo from '../imports/atlas_mascot_homepage.webp'
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
 import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown } from 'lucide-react';
 import type { PageType, Unit } from '../types/index';
 import { backgroundMusic } from '../utils/backgroundMusic';
 import { soundEffects } from '../utils/soundEffects';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog.tsx';
 import { BadgeCollection } from './BadgeCollection.tsx';
+
+// 🔮 IMPORT POSE ATLAS UNTUK HOMEPAGE
+import atlasTersenyum from '../imports/atlas-tersenyum.webp';
+import atlasBingung from '../imports/atlas-bingung.webp';
+import atlasKegirangan from '../imports/atlas-kegirangan.webp';
+import atlasKehilanganArah from '../imports/atlas-kehilangan-arah.webp';
+import atlasMengajak from '../imports/atlas-mengajak.webp';
+import atlasMengantuk from '../imports/atlas-mengantuk.webp';
+import atlasNgobrol from '../imports/atlas-ngobrol.webp';
+import atlasPenasaran from '../imports/atlas-penasaran.webp';
+import atlasRaguRagu from '../imports/atlas-ragu-ragu.webp';
+import atlasSemangat from '../imports/atlas-semangat.webp';
+import atlasSerius from '../imports/atlas-serius.webp';
+import atlasSetujuOk from '../imports/atlas-setuju-ok.webp';
+import atlasSumringah from '../imports/atlas-sumringah.webp';
+import atlasTangguh from '../imports/atlas-tangguh.webp';
+import atlasTerbang from '../imports/atlas-terbang.webp';
+import atlasTertawa from '../imports/atlas-tertawa.webp';
 
 // Komponen SVG Atlas Coin yang anti-error di semua HP
 const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
@@ -27,9 +44,10 @@ interface HomePageProps {
   onReviewUnit?: (unitId: number, page: PageType) => void;
   onPasswordUnlock: (unitId: number) => void;
   onBackToWelcome?: () => void;
+  isDrawerOpen?: boolean;
 }
 
-export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitScores, onSelectUnit, onReviewUnit, onPasswordUnlock, onBackToWelcome }: HomePageProps) {
+export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitScores, onSelectUnit, onReviewUnit, onPasswordUnlock, onBackToWelcome, isDrawerOpen = false }: HomePageProps) {
   
   useEffect(() => {
     try { backgroundMusic.stop(); } catch (e) { console.warn("Gagal menghentikan musik sebelumnya:", e); }
@@ -47,41 +65,130 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
   const [selectedReviewUnit, setSelectedReviewUnit] = useState<number | null>(null);
   const [selectedIsland, setSelectedIsland] = useState<number | null>(null);
   const [treasureVaultOpen, setTreasureVaultOpen] = useState(false);
-  const [isOwlAnimating, setIsOwlAnimating] = useState(false);
+
+  // 🔮 MENGAMBIL NAMA PELAUT DARI LOGBOOK
+  const playerName = localStorage.getItem('fiela_player_name') || "Explorer";
+
+  // 🔮 15 KUMPULAN DIALOG ACAK & POSE ATLAS YANG SESUAI
+  const atlasDialogues = useMemo(() => [
+    { 
+      text: `The sea is calm today, Captain ${playerName}. Ready for an expedition?`, 
+      pose: atlasTersenyum 
+    },
+    { 
+      text: `Hmm... so many islands! Where should we drop our anchor first?`, 
+      pose: atlasBingung 
+    },
+    { 
+      text: `Hooray! A brand new day for a brand new adventure!`, 
+      pose: atlasKegirangan 
+    },
+    { 
+      text: `Wait a minute... did we sail in a circle? Let's check the map again!`, 
+      pose: atlasKehilanganArah 
+    },
+    { 
+      text: `Come on, Captain! The treasure vault isn't going to fill itself!`, 
+      pose: atlasMengajak 
+    },
+    { 
+      text: `*Yawn*... The sea breeze is making me sleepy. Let's do a quick quest to wake up!`, 
+      pose: atlasMengantuk 
+    },
+    { 
+      text: `Did you know every island has its own secret vocabulary waiting to be discovered?`, 
+      pose: atlasNgobrol 
+    },
+    { 
+      text: `I wonder what kind of shiny rewards are hiding in the next expedition...`, 
+      pose: atlasPenasaran 
+    },
+    { 
+      text: `Are you sure you want to go that way? Well, you are the Captain!`, 
+      pose: atlasRaguRagu 
+    },
+    { 
+      text: `Full sail ahead! Let's collect those shiny Atlas Coins!`, 
+      pose: atlasSemangat
+    },
+    { 
+      text: `Check your supplies and read the Explorer's Notes carefully before we depart.`, 
+      pose: atlasSerius 
+    },
+    { 
+      text: `Aye aye, Captain! Whatever path you choose, I'm right behind you!`, 
+      pose: atlasSetujuOk 
+    },
+    { 
+      text: `Looking at this beautiful ocean map always puts me in a great mood!`, 
+      pose: atlasSumringah 
+    },
+    { 
+      text: `Brace yourself! No vocabulary monster is strong enough to defeat us today!`, 
+      pose: atlasTangguh 
+    },
+    { 
+      text: `Look at me! I'm so excited I could fly! Let's go to the next island!`, 
+      pose: atlasTerbang 
+    },
+    { 
+      text: `Hahaha! Sailing with you is always full of joy and laughter, Captain ${playerName}! Let's conquer the next challenge!`, 
+      pose: atlasTertawa 
+    }
+  ], [playerName]);
+
+  const [currentDialogue, setCurrentDialogue] = useState(atlasDialogues[0]);
+
+  // 🔮 JAM PASIR AJAIB: Ganti kalimat & pose otomatis setiap 10 detik saat diam di beranda
+  useEffect(() => {
+    // Fungsi internal untuk mengocok dialog secara acak
+    const kocokDialogAjaib = () => {
+      const randomIndex = Math.floor(Math.random() * atlasDialogues.length);
+      setCurrentDialogue(atlasDialogues[randomIndex]);
+    };
+
+    // 1. Pemicu Pertama: Jalankan sekali saat halaman baru dibuka
+    kocokDialogAjaib();
+
+    // 2. Pemicu Otomatis: Pasang timer 20 detik (20.000 milidetik)
+    const timerAtlas = setInterval(() => {
+      kocokDialogAjaib();
+    }, 20000);
+
+    // ⚠️ KUNCI UTAMA: Bersihkan timer saat pemain meninggalkan HomePage (unmount)
+    // Ini sangat penting agar ruang mesin tidak bocor (memory leak) dan membuat aplikasi berat!
+    return () => clearInterval(timerAtlas);
+  }, [atlasDialogues]);
 
   // =====================================================================
   // SISTEM EKONOMI ATLAS COINS & BINTANG KKTP
   // =====================================================================
   
-  // Menghitung jumlah Bintang per Pulau (Sesuai Standar Kurikulum Merdeka)
   const getUnitStars = (unitScore: any) => {
     if (!unitScore) return 0;
     const quiz = Math.round(unitScore.percentage || 0);
     const voice = Math.round(unitScore.pronunciationScore || 0);
     
     let stars = 0;
-    if (quiz >= 70 && voice >= 60) stars = 1; // KKTP Tuntas Minimum
-    if (quiz >= 85 && voice >= 80) stars = 2; // Cakap / Baik
-    if (quiz === 100 && voice >= 95) stars = 3; // Mahir / Sempurna
+    if (quiz >= 70 && voice >= 60) stars = 1; 
+    if (quiz >= 85 && voice >= 80) stars = 2; 
+    if (quiz === 100 && voice >= 95) stars = 3; 
     return stars;
   };
 
-  // Menghitung jumlah Atlas Coins dari satu pulau
   const getUnitCoins = (unitScore: any) => {
     if (!unitScore) return 0;
     const quiz = Math.round(unitScore.percentage || 0);
     const voice = Math.round(unitScore.pronunciationScore || 0);
     
-    let coins = quiz + voice; // Gaji Pokok
+    let coins = quiz + voice; 
 
-    if (quiz > 0 || voice > 0) coins += 20; // Bonus Partisipasi
+    if (quiz > 0 || voice > 0) coins += 20; 
 
-    // Bonus Tingkat Kuis
     if (quiz === 100) coins += 50;
     else if (quiz >= 85) coins += 25;
     else if (quiz >= 70) coins += 15;
 
-    // Bonus Tingkat Suara
     if (voice >= 95) coins += 50;
     else if (voice >= 80) coins += 25;
     else if (voice >= 60) coins += 15;
@@ -89,7 +196,6 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
     return coins;
   };
 
-  // Kalkulasi Total Harta Kekayaan (Semua Koin Diakumulasi)
   const totalCoins = Object.values(unitScores).reduce((sum, score) => sum + getUnitCoins(score), 0);
 
   // =====================================================================
@@ -139,31 +245,19 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
     setTreasureVaultOpen(true);
   };
 
-  const handleOwlClick = () => {
-    if (!isOwlAnimating) {
-      if (typeof soundEffects.buttonClick === 'function') soundEffects.buttonClick();
-      setIsOwlAnimating(true);
-      setTimeout(() => setIsOwlAnimating(false), 1000);
-    }
-  };
-
-  const owlAnimationVariants: any = {
-    idle: { rotate: 0, scale: 1 },
-    wiggling: { rotate: [0, -12, 12, -12, 12, 0], scale: [1, 1.15, 1.15, 1], transition: { duration: 0.8, ease: [0.42, 0, 0.58, 1] } }
-  };
-
+  // 🔮 KALIBRASI GULIRAN BARU
   useEffect(() => {
     if (selectedIsland !== null) {
-      const isMobile = window.innerWidth < 768;
-      const scrollPosition = isMobile ? 420 : 620;
-      window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+      // Gulir perlahan kembali ke puncak layar (top: 0) agar kotak pulau terlihat di tengah persis
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [selectedIsland]);
   
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #4A90A4 40%, #2E5266 100%)' }}>
+    // 🔮 PERHATIKAN: Menambahkan pb-24 md:pb-0 agar di layar HP (Mobile) peta tidak tertutup oleh Atlas!
+    <div className="min-h-screen relative overflow-x-hidden pb-28 md:pb-0" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #4A90A4 40%, #2E5266 100%)' }}>
       <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 255, 255, 0.05) 20px, rgba(255, 255, 255, 0.05) 40px)` }} />
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-1/3 right-10 md:right-32 text-3xl opacity-15">🐳</div>
         <div className="absolute top-1/2 right-12 md:right-32 text-2xl opacity-15">🐟</div>
         <div className="absolute top-1/2 left-12 md:left-32 text-2xl opacity-15">🦑</div>
@@ -172,39 +266,22 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10 pt-12 sm:pt-16 md:pt-20">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8 md:mb-16">
-          <div className="relative">
-            <div className="absolute inset-0 -z-10 opacity-20" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(135, 206, 235, 0.5) 25%, rgba(74, 144, 164, 0.6) 50%, rgba(135, 206, 235, 0.5) 75%, transparent 100%)' }} />
-            <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 mb-6 p-[0px]">
-              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 150, damping: 15 }} className="relative">
-                <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="relative" style={{ willChange: "transform" }}>
-                  <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: 'radial-gradient(circle, rgba(135, 206, 235, 0.8) 0%, rgba(74, 144, 164, 0.4) 50%, transparent 100%)', transform: 'scale(1.5)' }} />
-                  <motion.img
-                    src={fielaLogo}
-                    className="h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 object-contain relative z-10 cursor-pointer"
-                    alt="FIELA - Ocean Learning Adventure"
-                    style={{ filter: "drop-shadow(0 8px 16px rgba(74, 144, 164, 0.5))" }}
-                    variants={owlAnimationVariants} animate={isOwlAnimating ? "wiggling" : "idle"} onClick={handleOwlClick} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                  />
-                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-2 -right-4 md:-top-4 md:-right-8 text-3xl md:text-5xl z-20 pointer-events-none" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))', willChange: 'transform' }}>⭐</motion.div>
-                </motion.div>
-              </motion.div>
-              <div className="flex flex-col items-center text-center space-y-4 w-full">
-                <h1 className="block w-full text-center leading-tight font-[Frijole] text-[50px] sm:text-[65px] md:text-[80px] lg:text-[96px] -mr-[0.2em] translate-x-1" style={{ background: 'linear-gradient(90deg, #1a4d5e 0%, #3A7F94 50%, #064f68 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 8px 16px rgba(26, 77, 94, 0.6)', letterSpacing: '0.1em' }}>FIELA</h1>
-                <div className="h-1 mx-auto mt-2 rounded-full w-[60%]" style={{ background: 'linear-gradient(90deg, transparent 0%, #4A90A4 50%, transparent 100%)' }} />
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="flex items-center gap-3 px-6 py-3 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 100%)', boxShadow: '0 8px 18px rgba(38, 94, 109, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8)', border: '2px solid rgba(74, 144, 164, 0.3)' }}>
-                  <span className="text-2xl">🌏</span>
-                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-[Coiny] font-regular text-shadow-md" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Fun & Interactive English Learning Atlas</p>
-                  <span className="text-2xl">🗺️</span>
-                </motion.div>
-              </div>
-            </div>
+        
+        {/* 🔮 BAGIAN JUDUL BARU: LEBIH RINGKAS & ELEGAN */}
+      {selectedIsland === null && (
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-4 md:mb-12">
+          <div className="relative flex flex-col items-center text-center w-full px-4">
+            <h1 className="leading-tight font-[Frijole] text-[30px] sm:text-[50px] md:text-[70px] lg:text-[80px] pt-6 sm:pt-4 md:pt-2 lg:pt-0" style={{ background: 'linear-gradient(90deg, #1a4d5e 0%, #3A7F94 50%, #064f68 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 6px 12px rgba(26, 77, 94, 0.4)', letterSpacing: '0.05em' }}>
+              FIELA Map
+            </h1>
+            <div className="h-1 rounded-full w-40 md:w-64 mt-1" style={{ background: 'linear-gradient(90deg, transparent 0%, #4A90A4 50%, transparent 100%)' }} />
           </div>
         </motion.div>
+      )}
 
         <AnimatePresence mode="wait">
           {selectedIsland === null ? (
-            <motion.div key="map-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }} style={{ willChange: 'opacity, transform' }} className="relative z-10 mb-20 max-w-6xl mx-auto px-4">
+            <motion.div key="map-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }} style={{ willChange: 'opacity, transform' }} className="relative z-10 mb-10 max-w-6xl mx-auto px-4">
               <div className="absolute top-24 left-0 w-full h-[calc(100%-12rem)] pointer-events-none -z-10">
                 <svg className="hidden md:block w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 1000">
                   <path d="M 500 50 C 500 150, 250 150, 250 250 C 250 350, 750 350, 750 450 C 750 550, 200 550, 200 650 C 200 750, 800 750, 800 850 C 800 900, 300 900, 300 980" stroke="#4A90A4" strokeWidth="5" fill="none" strokeDasharray="15 10" opacity="0.4" vectorEffect="non-scaling-stroke" />
@@ -217,26 +294,26 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
               </div>   
               
               {/* ================================================== */}
-              {/* DOMPET ATLAS COINS (DIPINDAH KE TENGAH PETA)         */}
+              {/* DOMPET ATLAS COINS                                   */}
               {/* ================================================== */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.8 }} 
                 animate={{ opacity: 1, scale: 1 }} 
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="relative z-20 flex justify-center mb-2 mt-6"
+                className="relative z-20 flex justify-center mb-2"
               >
-                <div className="flex items-center gap-3 bg-gradient-to-r from-amber-200 to-yellow-400 px-5 py-2 md:px-6 md:py-2.5 rounded-full border-4 border-amber-600 shadow-[0_8px_16px_rgba(0,0,0,0.3)]">
+                <div className="flex items-center gap-3 bg-gradient-to-r from-amber-200 to-yellow-400 px-3 py-1.5 md:px-6 md:py-2.5 rounded-full border-4 border-amber-600 shadow-[0_8px_16px_rgba(0,0,0,0.3)]">
                   <div className="bg-amber-100 rounded-full p-1.5 border-2 border-amber-500 shadow-inner flex items-center justify-center">
-                    <CoinIcon className="w-7 h-7 md:w-9 md:h-9 drop-shadow-md" />
+                    <CoinIcon className="w-5 h-5 md:w-9 md:h-9 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] md:text-xs font-bold text-amber-800 uppercase tracking-widest leading-none sm:mb-1.5 md:mb-2 text-shadow-md">Atlas Coins</span>
-                    <span className="font-[Coiny] text-amber-950 font-bold text-2xl md:text-3xl drop-shadow-sm leading-none">{totalCoins}</span>
+                    <span className="text-[9px] md:text-xs font-bold text-amber-800 uppercase tracking-widest leading-none sm:mb-1.5 md:mb-2 text-shadow-md">Atlas Coins</span>
+                    <span className="font-[Coiny] text-amber-950 font-bold text-xl md:text-3xl drop-shadow-sm leading-none">{totalCoins}</span>
                   </div>
                 </div>
               </motion.div>
 
-              <div className="relative mb-16 mt-8 z-10">
+              <div className="relative mb-16 mt-2 md:mb-16 md:mt-6 lg:mb-16 lg:mt-8 z-10">
                 <motion.div whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }} onClick={openTreasureVault} className="relative w-44 h-48 md:w-56 md:h-56 cursor-pointer mx-auto" style={{ filter: 'drop-shadow(0 12px 24px rgba(251, 191, 36, 0.4))', willChange: 'transform' }}>
                   <div className="absolute inset-0 bg-yellow-400/40 rounded-full blur-[40px] animate-pulse" />
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-32 md:h-40" style={{ background: 'radial-gradient(ellipse at center bottom, #fef08a 0%, #eab308 30%, #b45309 80%, #78350f 100%)', borderRadius: '50% 50% 55% 45% / 40% 60% 40% 60%', boxShadow: '0 10px 30px rgba(217, 119, 6, 0.5), inset 0 -5px 15px rgba(67, 20, 7, 0.4)' }}>
@@ -268,12 +345,9 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
 
                 const isPasswordUnlocked = passwordUnlockedUnits.has(unit.id);
                 
-                // =========================================================
-                // LOGIKA GEMBOK BARU: DITENTUKAN OLEH JUMLAH ATLAS COINS!
-                // =========================================================
                 const requiredCoins = index * 180; 
                 const isLocked = totalCoins < requiredCoins && !isPasswordUnlocked;
-                const islandStars = getUnitStars(unitScores[unit.id]); // Ambil bintang KKTP
+                const islandStars = getUnitStars(unitScores[unit.id]); 
 
                 let marginClass = "relative mb-8 md:mb-12 z-10";
                 if (index === 1 || index === 2 || index === 3) marginClass = "relative -translate-y-4 md:-translate-y-12 translate-x-4 md:translate-x-6 mb-4 md:mb-6 z-10";
@@ -327,9 +401,6 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                         <p className="text-[#f4ebe0] font-bold relative z-10 text-sm sm:text-base font-[Balsamiq_Sans]" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>Expedition {unit.id}</p>
                         <p className="text-[#f4ebe0] font-[Nunito] font-bold text-[10px] md:text-xs mt-0.5 mb-1 relative z-10 leading-tight" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>{unit.title}</p>
                         
-                        {/* ========================================================= */}
-                        {/* UI 3 BINTANG KKTP (JIKA SUDAH TERBUKA)                    */}
-                        {/* ========================================================= */}
                         {!isLocked && (
                           <div className="flex justify-center gap-1 mt-0.5 relative z-10">
                             {[1, 2, 3].map(starIndex => (
@@ -342,9 +413,6 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                           </div>
                         )}
 
-                        {/* ========================================================= */}
-                        {/* UI HARGA GEMBOK ATLAS COIN (JIKA TERKUNCI)                */}
-                        {/* ========================================================= */}
                         {isLocked && (
                           <div className="mt-1.5 relative z-10 bg-black/60 backdrop-blur-sm rounded-md py-1 px-2.5 flex items-center justify-center gap-1.5 border border-amber-500/40 shadow-lg">
                             <Lock className="h-3 w-3 text-yellow-500" />
@@ -359,7 +427,10 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
               })}
             </motion.div>
           ) : (
-            <motion.div key={`island-${selectedIsland}`} initial={{ opacity: 0, scale: 0.8, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 30 }} transition={{ type: "spring", stiffness: 250, damping: 25 }} style={{ willChange: 'opacity, transform' }} className="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
+            // ==========================================
+            // TAMPILAN DETAIL PULAU (Saat pulau diklik)
+            // ==========================================
+            <motion.div key={`island-${selectedIsland}`} initial={{ opacity: 0, scale: 0.8, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 30 }} transition={{ type: "spring", stiffness: 250, damping: 25 }} style={{ willChange: 'opacity, transform' }} className="relative z-10 min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-8 md:py-12">
               {(() => {
                 const unit = units.find(u => u.id === selectedIsland);
                 if (!unit) return null;
@@ -373,7 +444,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 const islandStars = getUnitStars(unitScores[unit.id]);
 
                 return (
-                  <div className="relative w-full max-w-4xl mt-16 md:mt-12">
+                  <div className="relative w-full max-w-4xl my-auto">
                     <Button onClick={() => { soundEffects.buttonNavigation?.(); setSelectedIsland(null); }} className="absolute -top-14 left-0 rounded-xl px-4 py-2 font-[Coiny] leading-none text-base sm:text-lg shadow-lg border-2 z-50 hover:scale-105 transition-transform" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(74, 144, 164, 0.6)', color: '#2E5266' }}>
                       <ArrowLeft className="h-6 w-5 sm:h-8 mr-1 inline" /> Back to Map
                     </Button>
@@ -398,7 +469,6 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                                   <span className="opacity-90 font-bold font-[Coiny] text-[#eaca0b] text-shadow-lg text-xl sm:text-[24px] lg:text-3xl">Expedition {unit.id}</span>
                                 </div>
                                 <div className="flex gap-2 items-center">
-                                {/* HANYA ADA BINTANG KARENA PULAU INI PASTI SUDAH TERBUKA */}
                                 <div className="flex gap-1 bg-black/20 px-3 py-1.5 rounded-full border border-amber-500/30">
                                   {[1, 2, 3].map(starIndex => (
                                     <Star 
@@ -427,7 +497,6 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                               <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-full flex justify-center mt-6 lg:mt-8">
                                 <Button 
                                   onClick={() => handleUnitClick(unit.id, isCompleted)} 
-                                  // 🔮 PERHATIKAN BAGIAN px-6 sm:px-8 md:px-16
                                   className="w-auto max-w-sm lg:max-w-md mx-auto bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-800 hover:via-amber-900 hover:to-amber-950 text-[#f4ebe0] rounded-xl py-4 md:py-6 px-6 sm:px-8 md:px-16 text-md sm:text-md md:text-lg lg:text-2xl font-[Coiny] leading-none tracking-wide shadow-lg border-2 border-amber-950/30 transition-transform active:scale-95"
                                 >
                                   {isCompleted ? '📖 Review Expedition' : '🧭 Begin Expedition'}
@@ -444,44 +513,97 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
           )}
         </AnimatePresence>
 
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full lg:w-[750px] lg:mx-auto lg:self-center mt-12 mb-8 lg:mb-12 rounded-2xl shadow-2xl p-8 md:p-10 text-center border-2 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 50%, rgba(230, 245, 255, 0.95) 100%)', borderColor: 'rgba(74, 144, 164, 0.5)' }}>
-          <div className="absolute top-0 left-0 right-0 h-2 opacity-50" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(74, 144, 164, 0.6) 25%, rgba(91, 163, 184, 0.8) 50%, rgba(74, 144, 164, 0.6) 75%, transparent 100%)' }} />
-          <div className="relative z-10">
-            <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 relative">
-              <div className="absolute inset-0 rounded-full blur-xl opacity-30" style={{ background: 'radial-gradient(circle, rgba(74, 144, 164, 0.8) 0%, transparent 70%)' }} />
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="relative" style={{ willChange: "transform" }}>
-                <svg viewBox="0 0 100 100" className="w-full h-full" style={{ filter: 'drop-shadow(0 4px 8px rgba(46, 82, 102, 0.3))' }}>
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="#2E5266" strokeWidth="3"/><circle cx="50" cy="50" r="40" fill="none" stroke="#4A90A4" strokeWidth="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#5BA3B8" strokeWidth="1"/><path d="M50,10 L54,48 L50,50 L46,48 Z" fill="#2E5266"/><path d="M90,50 L52,54 L50,50 L52,46 Z" fill="#3A6B7A"/><path d="M50,90 L46,52 L50,50 L54,52 Z" fill="#2E5266"/><path d="M10,50 L48,46 L50,50 L48,54 Z" fill="#5BA3B8"/><path d="M75,25 L52,48 L50,50 L48,48 Z" fill="#4A90A4"/><path d="M75,75 L52,52 L50,50 L52,48 Z" fill="#4A90A4"/><path d="M25,75 L48,52 L50,50 L52,52 Z" fill="#3A6B7A"/><path d="M25,25 L48,48 L50,50 L48,52 Z" fill="#3A6B7A"/><circle cx="50" cy="50" r="6" fill="#2E5266"/><circle cx="50" cy="50" r="3" fill="#5BA3B8"/>
-                </svg>
-              </motion.div>
-            </div>
-            <h3 className="mb-3 font-black text-2xl md:text-3xl tracking-wide font-[Coiny]" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>🌊 Journey Progress 🌊</h3>
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <p className="font-[Nunito] font-bold text-lg md:text-xl px-4 py-2 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(74, 144, 164, 0.15) 0%, rgba(91, 163, 184, 0.1) 100%)', color: '#2E5266' }}>{completedUnits.size} of {units.length} islands discovered</p>
-            </div>
-            <div className="max-w-lg mx-auto">
-              <div className="relative">
-                <div className="h-8 md:h-10 rounded-full overflow-hidden border-3 shadow-inner relative" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', borderColor: 'rgba(74, 144, 164, 0.5)' }}>
-                  <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: completedUnits.size / units.length }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full relative overflow-hidden origin-left" style={{ width: '100%', background: 'linear-gradient(90deg, #5BA3B8 0%, #4A90A4 25%, #3A7F94 50%, #2E7D8F 75%, #2E5266 100%)', willChange: 'transform' }} />
+        {/* 🔮 PROGRESS BAR BAWAH */}
+        {selectedIsland === null && (
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full lg:w-[750px] lg:mx-auto lg:self-center mt-12 mb-8 lg:mb-12 rounded-2xl shadow-2xl p-8 md:p-10 text-center border-2 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 50%, rgba(230, 245, 255, 0.95) 100%)', borderColor: 'rgba(74, 144, 164, 0.5)' }}>
+            <div className="absolute top-0 left-0 right-0 h-2 opacity-50" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(74, 144, 164, 0.6) 25%, rgba(91, 163, 184, 0.8) 50%, rgba(74, 144, 164, 0.6) 75%, transparent 100%)' }} />
+            <div className="relative z-10">
+              <h3 className="mb-3 font-black text-2xl md:text-3xl tracking-wide font-[Coiny]" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>🌊 Journey Progress 🌊</h3>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <p className="font-[Nunito] font-bold text-lg md:text-xl px-4 py-2 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(74, 144, 164, 0.15) 0%, rgba(91, 163, 184, 0.1) 100%)', color: '#2E5266' }}>{completedUnits.size} of {units.length} islands discovered</p>
+              </div>
+              <div className="max-w-lg mx-auto">
+                <div className="relative">
+                  <div className="h-8 md:h-10 rounded-full overflow-hidden border-3 shadow-inner relative" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', borderColor: 'rgba(74, 144, 164, 0.5)' }}>
+                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: completedUnits.size / units.length }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full relative overflow-hidden origin-left" style={{ width: '100%', background: 'linear-gradient(90deg, #5BA3B8 0%, #4A90A4 25%, #3A7F94 50%, #2E7D8F 75%, #2E5266 100%)', willChange: 'transform' }} />
+                  </div>
+                  {completedUnits.size > 0 && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.5 }} className="absolute top-1/2 -translate-y-1/2 text-xl md:text-2xl" style={{ left: `calc(${(completedUnits.size / units.length) * 100}% - 16px)` }}>⛵</motion.div>
+                  )}
                 </div>
-                {completedUnits.size > 0 && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.5 }} className="absolute top-1/2 -translate-y-1/2 text-xl md:text-2xl" style={{ left: `calc(${(completedUnits.size / units.length) * 100}% - 16px)` }}>⛵</motion.div>
-                )}
-              </div>
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <span className="text-xl">🗺️</span>
-                <p className="font-[Coiny] font-medium text-base md:text-lg px-4 py-1 rounded-full" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{Math.round((completedUnits.size / units.length) * 100)}% of the Ocean Explored</p>
-                <span className="text-xl">🧭</span>
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <span className="text-xl">🗺️</span>
+                  <p className="font-[Coiny] font-medium text-base md:text-lg px-4 py-1 rounded-full" style={{ background: 'linear-gradient(135deg, #2E5266 0%, #4A90A4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{Math.round((completedUnits.size / units.length) * 100)}% of the Ocean Explored</p>
+                  <span className="text-xl">🧭</span>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
         
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 1 }} className="w-full text-center mt-6 mb-8 text-amber-900/50 text-xs sm:text-sm font-[Nunito] font-bold tracking-widest uppercase flex flex-col items-center gap-1">
           <p>© {new Date().getFullYear()} OLONS Education</p>
           <p className="text-[10px] sm:text-xs tracking-wider">FIELA v1.0.0 - Fun & Interactive English Learning Atlas</p>
         </motion.div>
       </div>
+
+      {/* ======================================================================= */}
+      {/* 🔮 ATLAS LIVE GUIDE BAR (DESKTOP POJOK KANAN BAWAH, MOBILE FIXED BAWAH) */}
+      {/* ======================================================================= */}
+      <AnimatePresence>
+        {selectedIsland === null && !treasureVaultOpen && !passwordDialogOpen && !reviewDialogOpen && !isDrawerOpen && (
+          <motion.div 
+            initial={{ y: 150, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 150, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
+            className="fixed bottom-0 right-0 w-full md:w-auto md:right-8 md:bottom-8 z-[100] flex items-end justify-center md:justify-end pointer-events-none"
+          >
+            {/* 🔮 items-end agar kotak tumbuh ke atas, bukan mendorong Atlas */}
+            <div className="relative flex items-end gap-2 md:gap-4 px-4 pb-0 pt-8 md:p-0 pointer-events-auto max-w-lg w-full md:w-auto">
+              
+              {/* KOTAK DIALOG (TAMPILAN RPG BERSIH & KOMPAK DI MOBILE) */}
+              <motion.div 
+                animate={{ y: [0, -5, 0] }} 
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                // 🔮 Menggunakan kalibrasi Kapten (translate-x-14 md:translate-x-2)
+                // 🔮 Ditambah mb-4 md:mb-10 agar posisinya pas di atas pijakan
+                className="bg-[#fffcf2] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border-2 md:border-4 border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.4)] relative w-fit max-w-[200px] sm:max-w-[300px] translate-x-14 md:translate-x-4 md:translate-y-10 mb-4 md:mb-10"
+              >
+                {/* 🔮 EFEK NOISE HALUS DI KOTAK DIALOG */}
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0 rounded-xl sm:rounded-2xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
+
+                {/* Ekor Dialog Mobile (Kanan Bawah, Mengarah ke Atlas) */}
+                <div className="md:hidden absolute -right-1.5 bottom-4 w-3 h-3 bg-[#fffcf2] rotate-45 border-t-2 border-r-2 border-amber-400" />
+                
+                {/* Ekor Dialog Desktop (Kanan Bawah, Mengarah ke Atlas) */}
+                {/* 🔮 Karena memanjang ke atas, ekor desktop dipindah ke bottom-6 */}
+                <div className="hidden md:block absolute -right-3 bottom-6 w-5 h-5 bg-[#fffcf2] rotate-45 border-t-4 border-r-4 border-amber-400" />
+                
+                <div className="relative z-10">
+                    <h3 className="font-[Coiny] text-amber-600 text-[9px] sm:text-xs uppercase tracking-widest border-b border-amber-100 pb-0.5 sm:pb-1 mb-1 sm:mb-1.5 inline-block">
+                    Captain Atlas
+                    </h3>
+                    <p className="font-[Nunito] font-bold text-[11px] sm:text-base text-amber-950 leading-snug">
+                    {currentDialogue.text}
+                    </p>
+                </div>
+              </motion.div>
+
+              {/* KARAKTER ATLAS (Mengintip dari bawah di Mobile) */}
+              {/* 🔮 Menggunakan kalibrasi Kapten persis */}
+              <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-4 md:translate-y-4 translate-x-12 md:translate-x-4">
+                <img 
+                  src={currentDialogue.pose} 
+                  alt="Captain Atlas" 
+                  className="w-full h-auto drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] object-contain"
+                />
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
         <DialogContent className="max-w-md bg-[#faf6f1] border-2 border-amber-900/40 rounded-2xl">
@@ -541,7 +663,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
         </DialogContent>
       </Dialog>
 
-      {onBackToWelcome && (
+      {onBackToWelcome && selectedIsland === null && (
         <motion.div className="absolute top-4 left-4 z-50">
           <motion.button onClick={() => { soundEffects.buttonNavigation?.(); onBackToWelcome(); }} initial="normal" animate="normal" whileHover="diHover" whileTap="diKlik"
             variants={{

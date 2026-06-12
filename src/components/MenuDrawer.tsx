@@ -12,9 +12,10 @@ import flagEn from '../imports/en.webp';
 
 interface MenuDrawerProps {
   pageKey?: string | null;
+  onDrawerStateChange?: (isOpen: boolean) => void; // 🔮 TAMBAHAN BARU: Kabel Telegraf
 }
 
-export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
+export function MenuDrawer({ pageKey = 'home', onDrawerStateChange }: MenuDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume] = useState(0.15); 
@@ -86,6 +87,14 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
   const closeDrawer = () => {
     setIsOpen(false);
     setActiveSection(null);
+    if (onDrawerStateChange) onDrawerStateChange(false); // 🔮 Kirim sinyal tertutup
+  };
+
+  // 🔮 TAMBAHKAN FUNGSI BARU INI TEPAT DI BAWAH closeDrawer:
+  const openDrawer = () => {
+    if (typeof soundEffects.buttonNavigation === 'function') soundEffects.buttonNavigation();
+    setIsOpen(true);
+    if (onDrawerStateChange) onDrawerStateChange(true); // 🔮 Kirim sinyal terbuka
   };
 
   // Static Content
@@ -291,7 +300,7 @@ export function MenuDrawer({ pageKey = 'home' }: MenuDrawerProps) {
           className="absolute top-4 right-4 z-50"
         >
           <motion.button 
-            onClick={() => { if (typeof soundEffects.buttonNavigation === 'function') soundEffects.buttonNavigation(); setIsOpen(true); }} 
+            onClick={openDrawer} // 🔮 UBAH BARIS INI
             initial="normal"
             animate="normal"
             whileHover="diHover" 

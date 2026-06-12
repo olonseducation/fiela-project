@@ -38,6 +38,8 @@ export default function App() {
   const [passwordUnlockedUnits, setPasswordUnlockedUnits] = useState<Set<number>>(new Set());
   const [showCompletion, setShowCompletion] = useState(false);
   const [unitScores, setUnitScores] = useState<Record<number, UnitScore>>({});
+  // 🔮 Tambahkan state ini untuk melacak status laci
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // TAMBAHAN: Menambahkan pronunciationScore ke memori sementara gameResults
   const [gameResults, setGameResults] = useState<{ wrongAnswers: WrongAnswer[], score: number, total: number, pronunciationScore: number }>({
@@ -281,7 +283,8 @@ export default function App() {
         <path d="M1540 700 Q 1100 500, 720 800 T -100 600" fill="transparent" stroke="#451a03" strokeWidth="4" strokeDasharray="12 16" />
       </svg>
 
-      {!showWelcome && !showCompletion && <MenuDrawer pageKey={currentPage || 'home'} />}
+      {!showWelcome && !showCompletion && <MenuDrawer pageKey={currentPage || 'home'} onDrawerStateChange={setIsMenuOpen} // 🔮 TANGKAP SINYALNYA DI SINI
+  />}
       
       <AnimatePresence mode="wait">
       
@@ -327,6 +330,7 @@ export default function App() {
             onReviewUnit={handleReviewUnit}
             onPasswordUnlock={handlePasswordUnlock}
             onBackToWelcome={handleBackToWelcome}
+            isDrawerOpen={isMenuOpen}
           />
         </motion.div>
       )}
