@@ -81,19 +81,20 @@ export function BadgeCollection({ unitScores, totalUnits }: BadgeCollectionProps
   const lockedBadges = ATLAS_TREASURES.filter(b => !earnedIds.has(b.id)).sort((a, b) => b.tier - a.tier);
 
   return (
-    // 🔮 PERBAIKAN: WADAH LUAR (Hanya untuk Background, Border, dan Ukuran)
-    <div className="w-full max-h-[85vh] bg-gradient-to-br from-[#1c0d04] via-[#3a1604] to-[#120600] rounded-[2rem] shadow-[0_0_40px_rgba(0,0,0,0.8)] border-4 border-[#5a2400] relative overflow-hidden flex flex-col">
+    // 🔮 PERBAIKAN 1: WADAH LUAR (Tambahkan max-w-5xl dan mx-auto agar terkunci proporsional di tengah)
+    <div className="w-full max-w-lg md:max-w-4xl lg:max-w-5xl mx-auto max-h-[85vh] bg-gradient-to-br from-[#1c0d04] via-[#3a1604] to-[#120600] rounded-[2rem] shadow-[0_0_40px_rgba(0,0,0,0.8)] border-4 border-[#5a2400] relative overflow-hidden flex flex-col">
       
-      {/* 🔮 EFEK NOISE SVG (Sekarang statis menempel di dinding belakang, tidak ikut ter-skrol) */}
+      {/* EFEK NOISE SVG */}
       <div className="absolute inset-0 opacity-[0.15] pointer-events-none z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
 
-      {/* 🔮 WADAH DALAM: Menangani Scroll dan Konten */}
-      <div className="relative z-10 w-full h-full overflow-y-auto overflow-x-hidden p-5 sm:p-6 md:p-8 flex flex-col lg:flex-row items-start">
+      {/* 🔮 PERBAIKAN 2: WADAH DALAM (Ubah lg:flex-row menjadi md:flex-row agar di Tablet sudah jadi 2 kolom) */}
+      <div className="relative z-10 w-full h-full overflow-y-auto overflow-x-hidden p-5 sm:p-6 md:p-8 flex flex-col md:flex-row items-start">
         
         {/* ========================================== */}
         {/* KOLOM KIRI: INFO & STATISTIK               */}
         {/* ========================================== */}
-        <div className="flex-1 lg:w-[35%] flex flex-col gap-5 relative z-10 lg:sticky lg:top-0 h-fit pr-0 lg:pr-8">
+        {/* 🔮 UBAH lg: menjadi md: di sini */}
+        <div className="w-full md:w-[40%] lg:w-[35%] flex flex-col gap-5 relative z-10 md:sticky md:top-0 h-fit pr-0 md:pr-6 lg:pr-8">
           
           <div className="flex items-center gap-4">
             <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-3 rounded-full shadow-lg border-2 border-amber-300 shrink-0">
@@ -168,16 +169,15 @@ export function BadgeCollection({ unitScores, totalUnits }: BadgeCollectionProps
           )}
         </div>
 
-        {/* 🔮 GARIS PEMISAH VERTIKAL (Hanya muncul di Desktop) */}
-        <div className="hidden lg:block w-1 bg-amber-900/40 shrink-0 mx-6 rounded-full" />
-        
-        {/* 🔮 GARIS PEMISAH HORIZONTAL (Hanya muncul di HP) */}
-        <div className="block lg:hidden h-1 w-full bg-amber-900/40 shrink-0 my-2 rounded-full" />
+        {/* 🔮 UBAH: Garis Pemisah (Berubah di md, bukan lg) */}
+        <div className="hidden md:block w-1 bg-amber-900/40 shrink-0 mx-4 lg:mx-6 rounded-full" />
+        <div className="block md:hidden h-1 w-full bg-amber-900/40 shrink-0 my-4 rounded-full" />
 
         {/* ========================================== */}
         {/* KOLOM KANAN: KOLEKSI LENCANA               */}
         {/* ========================================== */}
-        <div className="flex-1 lg:w-[65%] flex flex-col gap-6 relative z-10 border-t-4 lg:border-t-0 lg:border-l-4 border-amber-900/40 pt-6 lg:pt-0 lg:pl-8 mt-6 lg:mt-0 pb-10">
+        {/* 🔮 UBAH lg: menjadi md: di sini */}
+        <div className="w-full md:w-[60%] lg:w-[65%] flex flex-col gap-6 relative z-10 border-t-4 md:border-t-0 md:border-l-4 border-amber-900/40 pt-6 md:pt-0 md:pl-6 lg:pl-8 mt-6 md:mt-0 pb-10">
           
           <div>
             <h4 className="mb-4 font-bold tracking-widest font-[Nunito] uppercase text-xs text-amber-500/80 flex items-center gap-3">
