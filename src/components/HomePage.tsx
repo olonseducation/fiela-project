@@ -556,24 +556,27 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       <AnimatePresence>
         {selectedIsland === null && !treasureVaultOpen && !passwordDialogOpen && !reviewDialogOpen && !isDrawerOpen && (
           <>
-            {/* 🔮 JIKA ATLAS DITAMPILKAN */}
+            {/* ========================================== */}
+            {/* 1. JIKA ATLAS DITAMPILKAN (KOTAK & KARAKTER) */}
+            {/* ========================================== */}
             {isAtlasVisible && (
               <motion.div 
                 initial={{ y: 150, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 150, opacity: 0, scale: 0.8 }}
                 transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
-                className="fixed bottom-0 right-0 w-full md:w-auto md:right-8 md:bottom-8 z-[100] flex items-end justify-center md:justify-end pointer-events-none"
+                // 🔮 UBAH 1: Hapus `w-full` dan `justify-center`. Jadikan murni rata kanan di semua layar.
+                className="fixed bottom-0 right-0 md:right-8 md:bottom-8 z-[100] flex items-end justify-end pointer-events-none"
               >
-                {/* 🔮 items-end agar kotak tumbuh ke atas, bukan mendorong Atlas */}
-                <div className="relative flex items-end gap-2 md:gap-4 px-4 pb-0 pt-8 md:p-0 pointer-events-auto max-w-lg w-full md:w-auto">
+                {/* 🔮 UBAH 2: Hapus `w-full` di sini, dan tambahkan `pr-4 md:pr-0` agar di HP ada jarak aman dari tepi layar */}
+                <div className="relative flex items-end justify-end gap-2 md:gap-4 pr-4 md:pr-0 pb-0 pt-8 md:p-0 pointer-events-auto w-auto">
                   
                   {/* KOTAK DIALOG (TAMPILAN RPG BERSIH & KOMPAK DI MOBILE) */}
                   <motion.div 
                     animate={{ y: [0, -5, 0] }} 
                     transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                    // 🔮 Menggunakan kalibrasi Kapten persis! (translate-x-14 md:translate-x-4 md:translate-y-10...)
-                    className="bg-[#fffcf2] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border-2 md:border-4 border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.4)] relative w-fit max-w-[200px] sm:max-w-[300px] translate-x-16 md:translate-x-4 translate-y-3 md:translate-y-14 mb-4 md:mb-10"
+                    // 🔮 UBAH 3: Karena pondasi sudah murni di kanan, `translate-x-16` kita normalkan jadi `translate-x-4`. (Kalibrasi Y Kapten utuh!)
+                    className="bg-[#fffcf2] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border-2 md:border-4 border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.4)] relative w-fit max-w-[200px] sm:max-w-[300px] translate-x-4 md:translate-x-4 translate-y-3 md:translate-y-14 mb-4 md:mb-10"
                   >
                     {/* 🔮 TOMBOL CLOSE (X) - MASUK KE DALAM KOTAK (SELALU TERLIHAT) */}
                     <button 
@@ -596,7 +599,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                     {/* Ekor Dialog Desktop (Kanan Bawah, Mengarah ke Atlas) */}
                     <div className="hidden md:block absolute -right-3 bottom-6 w-5 h-5 bg-[#fffcf2] rotate-45 border-t-4 border-r-4 border-amber-400" />
                     
-                    <div className="relative z-10">
+                    <div className="relative z-10 pr-6">
                         <h3 className="font-[Coiny] text-amber-600 text-[9px] sm:text-xs uppercase tracking-widest border-b border-amber-100 pb-0.5 sm:pb-1 mb-1 sm:mb-1.5 inline-block">
                         Captain Atlas
                         </h3>
@@ -607,8 +610,8 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                   </motion.div>
 
                   {/* KARAKTER ATLAS (Mengintip dari bawah di Mobile) */}
-                  {/* 🔮 Menggunakan kalibrasi Kapten persis! */}
-                  <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-5 md:translate-y-8.5 translate-x-16 md:translate-x-4">
+                  {/* 🔮 UBAH 4: Sama seperti kotak, translate-x kita normalkan jadi `translate-x-2` di HP. */}
+                  <div className="w-24 sm:w-28 md:w-30 shrink-0 relative flex items-end justify-center translate-y-5 md:translate-y-8.5 translate-x-2 md:translate-x-4">
                     <img 
                       src={currentDialogue.pose} 
                       alt="Captain Atlas" 

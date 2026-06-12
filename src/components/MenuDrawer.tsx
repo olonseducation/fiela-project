@@ -367,7 +367,8 @@ export function MenuDrawer({ pageKey = 'home', onDrawerStateChange }: MenuDrawer
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 26, stiffness: 220 }}
-              className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-[#faf6f1] shadow-2xl border-l-4 border-amber-900/20 z-[101] overflow-y-auto"
+              // 🔮 UBAH DI SINI: w-full sm:w-[420px] diganti menjadi w-[85vw] max-w-[420px]
+              className="fixed top-0 right-0 h-full w-[85vw] max-w-[420px] bg-[#faf6f1] shadow-2xl border-l-4 border-amber-900/20 z-[101] overflow-y-auto"
             >
               <div className="p-6">
                 
@@ -443,16 +444,21 @@ export function MenuDrawer({ pageKey = 'home', onDrawerStateChange }: MenuDrawer
                       </Button>
 
                       <div className="bg-amber-100/60 p-4 rounded-xl border-2 border-amber-200/60 shadow-inner mt-6">
-                        <div className="flex items-center justify-between">
+                        {/* 🔮 UBAH: Dari flex-row (justify-between) menjadi flex-col dengan jarak gap-3 */}
+                        <div className="flex flex-col gap-3">
                           <span className="font-[Nunito] font-bold text-amber-950 text-sm flex items-center gap-2">
-                            <Music className="h-4 w-4 text-amber-700" /> {showTranslation ? "Musik Latar Samudra" : "Ocean Background Music"}
+                            {/* 🔮 Tambahan shrink-0 pada ikon agar tidak ikut menyusut jika layarnya sangat kecil */}
+                            <Music className="h-4 w-4 text-amber-700 shrink-0" /> 
+                            {showTranslation ? "Musik Latar Samudra" : "Ocean Background Music"}
                           </span>
+                          
                           <Button 
                             onClick={toggleBgm} 
                             variant={isMuted ? "outline" : "default"} 
-                            className={`rounded-full px-5 h-9 font-[Coiny] text-xs transition-colors ${!isMuted ? 'bg-amber-700 hover:bg-amber-800 text-white' : 'text-amber-700 border-amber-700 hover:bg-amber-100'}`}
+                            // 🔮 UBAH: Tambahkan w-full agar tombol membentang penuh di bawah teks
+                            className={`w-full rounded-full px-5 h-10 font-[Coiny] text-xs sm:text-sm transition-colors shadow-sm ${!isMuted ? 'bg-amber-700 hover:bg-amber-800 text-white' : 'text-amber-700 border-amber-700 hover:bg-amber-100'}`}
                           >
-                            {isMuted ? <VolumeX className="h-3.5 w-3.5 mr-1.5" /> : <Volume2 className="h-3.5 w-3.5 mr-1.5" />}
+                            {isMuted ? <VolumeX className="h-4 w-4 mr-2" /> : <Volume2 className="h-4 w-4 mr-2" />}
                             {isMuted ? (showTranslation ? 'Dibisukan' : 'Muted') : (showTranslation ? 'Dimainkan' : 'Playing')}
                           </Button>
                         </div>
