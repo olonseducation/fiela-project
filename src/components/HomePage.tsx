@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button.tsx';
-import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown, X, MessageCircle } from 'lucide-react';
+import { Star, Sparkles, ArrowLeft, Lock, Eye, EyeOff, RotateCcw, GraduationCap, Gamepad2, Trophy, Crown, X } from 'lucide-react';
 import type { PageType, Unit } from '../types/index';
 import { backgroundMusic } from '../utils/backgroundMusic';
 import { soundEffects } from '../utils/soundEffects';
@@ -620,21 +620,30 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
               </motion.div>
             )}
 
-            {/* 🔮 JIKA ATLAS DISEMBUNYIKAN (TOMBOL PANGGIL KEMBALI) */}
+            {/* 🔮 JIKA ATLAS DISEMBUNYIKAN (TOMBOL AVATAR PANGGIL KEMBALI) */}
             {!isAtlasVisible && (
               <motion.button
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.1 }}
+                // 🔮 Tambahkan sedikit rotasi agar munculnya lebih dinamis (gaya game)
+                initial={{ scale: 0, opacity: 0, rotate: -15 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
-                  soundEffects.buttonNavigation?.(); // 🔊 Bunyikan terompet pemanggil!
+                  soundEffects.buttonNavigation?.(); 
                   setIsAtlasVisible(true);
                 }}
-                className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[100] bg-[#fffcf2] border-2 border-amber-400 p-2.5 sm:p-3 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.3)] text-amber-600 hover:text-amber-700 transition-colors pointer-events-auto"
+                // 🔮 Ubah kelas menjadi lingkaran sempurna (w-14 h-14 / sm:w-16 sm:h-16) dengan border tebal
+                className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[100] bg-[#fffcf2] border-4 border-amber-400 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.4)] pointer-events-auto overflow-hidden w-14 h-14 sm:w-16 sm:h-16 flex items-end justify-center hover:border-amber-500 hover:shadow-[0_8px_20px_rgba(0,0,0,0.5)] transition-all"
                 title="Call Captain Atlas"
               >
-                <MessageCircle size={24} className="sm:w-8 sm:h-8" />
+                {/* 🔮 Gambar Atlas mengintip dari dalam lencana */}
+                <img 
+                  // Kapten bisa mengganti atlasTersenyum dengan atlasNgobrol atau pose lain yang cocok untuk ikon!
+                  src={atlasTersenyum} 
+                  alt="Call Captain Atlas" 
+                  // object-bottom dan translate-y-1 agar posisinya pas menapak di dasar lingkaran
+                  className="w-[95%] h-[95%] object-contain object-bottom translate-y-1"
+                />
               </motion.button>
             )}
           </>
