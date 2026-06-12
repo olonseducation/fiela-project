@@ -651,9 +651,12 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       </AnimatePresence>
 
       <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
-        <DialogContent className="max-w-md bg-[#faf6f1] border-2 border-amber-900/40 rounded-2xl">
+        {/* 🔮 UBAH DI SINI: Tambahkan -mt-40 (dorong ke atas di HP) dan sm:mt-0 (kembali ke tengah di Desktop) */}
+        <DialogContent className="max-w-md bg-[#faf6f1] border-2 border-amber-900/40 rounded-2xl -mt-40 sm:mt-0">
           <DialogHeader>
-            <DialogTitle className="text-amber-900 flex items-center gap-2 font-[Coiny] text-2xl"><Lock className="h-6 w-6 text-amber-700" /> Unlock Expedition</DialogTitle>
+            <DialogTitle className="text-amber-900 flex items-center gap-2 font-[Coiny] text-2xl">
+              <Lock className="h-6 w-6 text-amber-700" /> Unlock Expedition
+            </DialogTitle>
             <DialogDescription className="font-[Nunito] font-medium mt-3" asChild>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 bg-amber-100 p-4 rounded-xl border-2 border-amber-300 shadow-sm">
@@ -669,8 +672,21 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
           <div className="space-y-5 mt-2">
             <div>
               <div className="relative">
-                <input type={showPassword ? "text" : "password"} value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()} placeholder="Enter secret code" className="w-full px-4 py-3 pr-12 border-2 border-amber-700/30 rounded-xl focus:outline-none focus:border-amber-700 bg-white text-amber-950 font-[Nunito] tracking-wider text-lg shadow-inner" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-600 hover:text-amber-900 transition-colors">{showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}</button>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={passwordInput} 
+                  onChange={(e) => setPasswordInput(e.target.value)} 
+                  onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()} 
+                  placeholder="Enter secret code" 
+                  className="w-full px-4 py-3 pr-12 border-2 border-amber-700/30 rounded-xl focus:outline-none focus:border-amber-700 bg-white text-amber-950 font-[Nunito] tracking-wider text-lg shadow-inner" 
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-600 hover:text-amber-900 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
               </div>
               {passwordError && <p className="text-red-600 text-sm mt-2 font-[Nunito] font-bold">{passwordError}</p>}
             </div>
