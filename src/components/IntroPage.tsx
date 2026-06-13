@@ -213,7 +213,7 @@ export function IntroPage({ unit, onStart, onGoHome }: IntroPageProps) {
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.2, delay: 0.8 }}
+          transition={{ duration: 0.2 }}
           className="relative z-10 flex justify-center w-full"
         >
           <Button

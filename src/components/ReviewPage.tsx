@@ -287,7 +287,7 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
             })}
           </div>
           
-          <div className={`w-full flex justify-center relative z-10 ${canProceed ? 'animate-pulse' : ''}`}>
+          <div className="w-full flex justify-center relative z-10">
             <motion.div whileTap={canProceed ? { scale: 0.98 } : {}} animate={canProceed ? { scale: [1, 1.15, 1] } : {}} transition={canProceed ? { repeat: Infinity, duration: 1.5, ease: "easeInOut" } : {}}>
               <Button 
                 onClick={handleFinishReview} 
