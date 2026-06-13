@@ -294,7 +294,7 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
                 disabled={!canProceed} 
                 className="bg-gradient-to-r from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-amber-950 font-[Coiny] py-5 md:py-7 px-8 md:px-12 rounded-xl sm:rounded-2xl shadow-xl text-base md:text-xl w-full sm:w-auto transition-all border-2 border-amber-300/50 tracking-wide flex items-center justify-center whitespace-nowrap"
               >
-                Continue to Quest 🎯
+                Continue to Quiz 🎯
               </Button>
             </motion.div>
           </div>
