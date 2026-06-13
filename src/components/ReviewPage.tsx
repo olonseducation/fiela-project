@@ -8,6 +8,11 @@ import { customAudioManager } from '../utils/customAudio';
 import { PronunciationFeedback } from './PronunciationFeedback';
 import { soundEffects } from '../utils/soundEffects';
 
+// 📦 IMPORT POSE ATLAS
+import atlasCeria from '../imports/atlas-ceria.webp';
+import atlasTidakPaham from '../imports/atlas-tidak-paham.webp';
+import atlasSetujuOk from '../imports/atlas-setuju-ok.webp';
+
 interface ReviewPageProps {
   vocabulary: VocabularyWord[];
   // UBAH: onComplete sekarang membawa kargo nilai (skor rata-rata)
@@ -22,6 +27,10 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
   
   // BRANKAS BARU: Menyimpan skor untuk setiap indeks kata
   const [wordScores, setWordScores] = useState<Record<number, number>>({});
+
+  // 🔮 STATE BARU: Mengontrol kemunculan Atlas (Kondisi 'correct' atau 'incorrect')
+  // 🔮 TIPE DITAMBAHKAN: Menambahkan opsi 'skip-ok'
+  const [atlasStatus, setAtlasStatus] = useState<'correct' | 'incorrect' | 'skip-ok' | null>(null);
 
   const word = vocabulary[currentWord];
 
@@ -42,22 +51,44 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
   };
 
   // UBAH: Sekarang menerima nilai confidence dari PronunciationFeedback
-  // UBAH: Menerapkan Rumus Katrol Pendidikan EFL
   const handlePronunciationSuccess = (confidenceScore: number = 0.85) => {
-    setCompletedWords((prev) => new Set([...prev, currentWord]));
-    
-    // RUMUS KATROL: 70 (Base Intelligibility) + 30 (Confidence Bonus)
-    // Dibulatkan agar tidak ada angka desimal berantakan
-    const finalScore = Math.round(70 + (confidenceScore * 30));
+    // 🔮 SIHIR DETEKSI: Cek apakah ini hasil Skip (angkanya 0.7 pas)
+    // 🔮 UBAH: Cek apakah ini hasil Skip (angkanya tepat 0)
+    const isSkipAction = confidenceScore === 0;
 
-    setWordScores((prev) => {
-      if (prev[currentWord] !== undefined) return prev; // Sudah ada nilainya, biarkan
-      return { ...prev, [currentWord]: finalScore }; // Simpan skor yang sudah dikatrol!
-    });
-
-    if (currentWord < vocabulary.length - 1) {
-      setCurrentWord(currentWord + 1);
+    // 🔮 PERINTAH POSE DITAMBAHKAN
+    if (isSkipAction) {
+      // Jika hasil skip, munculkan pose Setuju/Ok
+      setAtlasStatus('skip-ok'); // Kita butuh update tipe data state sebentar lagi
+    } else {
+      // Jika hasil pelafalan asli yang benar, pose Ceria
+      setAtlasStatus('correct');
     }
+    
+    setTimeout(() => {
+      setCompletedWords((prev) => new Set([...prev, currentWord]));
+      const finalScore = Math.round(70 + (confidenceScore * 30));
+
+      setWordScores((prev) => {
+        if (prev[currentWord] !== undefined) return prev;
+        return { ...prev, [currentWord]: finalScore };
+      });
+
+      if (currentWord < vocabulary.length - 1) {
+        setCurrentWord(currentWord + 1);
+      }
+      setAtlasStatus(null);
+    }, 1500);
+  };
+
+  // 🔮 FUNGSI BARU: Dipanggil jika anak-anak gagal melafalkan dengan benar
+  const handlePronunciationFail = () => {
+    setAtlasStatus('incorrect');
+    
+    // Atlas hilang setelah 1.5 detik, tapi TIDAK pindah ke kata berikutnya (harus coba lagi)
+    setTimeout(() => {
+      setAtlasStatus(null);
+    }, 1500);
   };
 
   const canProceed = completedWords.size === vocabulary.length;
@@ -141,7 +172,7 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
       </motion.div>
 
       <div className="max-w-4xl w-full mx-auto relative z-10 pt-4 md:pt-6 pb-4">
-        <div className="text-center mb-4 md:mb-6">
+        <div className="text-center mb-4 md:mb-6 mt-4">
           <h2 className="text-emerald-950 font-[Coiny] font-bold text-3xl md:text-4xl drop-shadow-sm">🗺️ Lexicon Study 🗺️</h2>
           <p className="text-emerald-800 font-[Nunito] font-bold text-base md:text-2xl opacity-90 mt-1">Practice the pronunciation!</p>
         </div>
@@ -154,14 +185,44 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="bg-[#faf6f1] rounded-3xl shadow-2xl shadow-emerald-900/15 p-6 md:p-8 border-4 border-white/60 w-full relative overflow-hidden"
+              // 🔮 UBAH: overflow-hidden dihapus agar Atlas bisa terbang keluar
+              className="bg-[#faf6f1] rounded-3xl shadow-2xl shadow-emerald-900/15 p-6 md:p-8 border-4 border-white/60 w-full relative overflow-visible"
             >
-              <div
-                className="absolute inset-0 opacity-[0.05] pointer-events-none z-0"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`
-                }}
-              />
+              
+              {/* 🔮 RUANG MESIN: Kotak noise dibungkus sendiri dan diberi overflow-hidden agar bintik teksturnya tidak tumpah melewati sudut melengkung */}
+              <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-0">
+                <div
+                  className="absolute inset-0 opacity-[0.05]"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`
+                  }}
+                />
+              </div>
+
+              {/* 🪶 SIHIR ATLAS: Melompat dari sudut kanan atas! */}
+              <AnimatePresence>
+                {atlasStatus && (
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0, y: 10, rotate: -15 }}
+                    animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
+                    exit={{ scale: 0.5, opacity: 0, rotate: 10 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="absolute -top-10 -right-4 sm:-top-14 sm:-right-6 md:-top-16 md:-right-8 z-50 pointer-events-none"
+                  >
+                    <img
+                      // 🔮 LOGIKA PEMILIHAN POSE BARU
+                      src={
+                        atlasStatus === 'correct' ? atlasCeria : 
+                        atlasStatus === 'incorrect' ? atlasTidakPaham : 
+                        atlasStatus === 'skip-ok' ? atlasSetujuOk : // Kondisi Skip
+                        ''
+                      }
+                      alt={atlasStatus || 'Atlas'}
+                      className="h-24 sm:h-28 md:h-36 w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.3)] object-contain"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="text-center space-y-4 md:space-y-6 relative z-10">
                 <div className="flex flex-row items-center justify-center gap-4">
@@ -190,7 +251,12 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
                 </div>
 
                 <div className="border-t-2 border-amber-200/50 pt-4 md:pt-5 mt-2 md:mt-4">
-                  <PronunciationFeedback targetWord={word.word} onSuccess={handlePronunciationSuccess} />
+                  {/* 🔮 PENTING: Jangan lupa mengirim fungsi gagal ke komponen anak! */}
+                  <PronunciationFeedback 
+                    targetWord={word.word} 
+                    onSuccess={handlePronunciationSuccess} 
+                    onFail={handlePronunciationFail}
+                  />
                 </div>
               </div>
             </motion.div>
@@ -208,7 +274,7 @@ export function ReviewPage({ vocabulary, onComplete, onGoHome }: ReviewPageProps
                 <motion.div key={index} whileHover={canNavigate ? { scale: 1.15 } : {}} whileTap={canNavigate ? { scale: 0.9 } : {}} >
                   <Button
                     onClick={() => { if(canNavigate) { soundEffects.buttonPlay(); setCurrentWord(index); } }}
-                    disabled={!canNavigate}
+                    disabled={!canNavigate || atlasStatus !== null} // Nonaktifkan tombol navigasi saat Atlas sedang tampil
                     className={`rounded-xl sm:rounded-2xl min-w-[40px] md:min-w-[52px] h-10 md:h-13 font-['Fredoka_One'] text-base md:text-lg transition-all shadow-md border-2 ${
                     isCurrent ? 'bg-amber-300 text-amber-950 border-amber-400 shadow-amber-300/50' : 
                     isCompleted ? 'bg-emerald-400 text-white border-emerald-500' : 'bg-white/90 text-emerald-800 border-emerald-200 opacity-80'

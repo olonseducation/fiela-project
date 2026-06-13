@@ -5,6 +5,8 @@ import { Check, X, Trophy, Home } from 'lucide-react';
 import { soundEffects } from '../utils/soundEffects';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { getSmartDistractors } from '../utils/vocabularyCategories';
+import atlasBenar from '../imports/atlas-ekspresi-jawaban-benar.webp';
+import atlasSalah from '../imports/atlas-ekspresi-jawaban-salah.webp';
 
 interface MiniGamePageProps {
   vocabulary: VocabularyWord[];
@@ -91,28 +93,37 @@ export function MiniGamePage({ vocabulary, gameType, onComplete, onGoHome }: Min
 
     return (
       <div className="space-y-4 md:space-y-6 relative z-10 w-full">
-        <div className="bg-gradient-to-br from-[#e4e9cd] to-[#cdd5a0] rounded-xl p-4 sm:p-5 md:p-8 text-center border-2 border-[#829054] shadow-md">
+        {/* Panel utama dengan 'relative' dan mt-8 untuk ruang Atlas */}
+        <div className="bg-gradient-to-br from-[#e4e9cd] to-[#cdd5a0] rounded-xl p-4 sm:p-5 md:p-8 text-center border-2 border-[#829054] shadow-md relative overflow-visible">
+          
+          {/* 🔮 SIHIR POSISI BARU: Atlas dipindah ke sini (langsung di dalam div relative induk) */}
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0, y: 10, rotate: -15 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
+                exit={{ scale: 0.5, opacity: 0, rotate: 10 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                // Koordinat sekarang relatif terhadap sudut kanan atas PANEL GREEN.
+                // Kita gunakan nilai negatif kecil agar dia menyembul sedikit keluar panel.
+                className="absolute -top-10 -right-4 sm:-top-14 sm:-right-6 md:-top-16 md:-right-8 z-20 pointer-events-none"
+              >
+                <img
+                  src={isCorrect ? atlasBenar : atlasSalah}
+                  alt={isCorrect ? "Correct!" : "Incorrect!"}
+                  className="h-24 sm:h-28 md:h-36 w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.3)] object-contain"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <p className="text-[#4a572c] mb-1 sm:mb-2 font-[Fredoka] font-bold text-[11px] sm:text-xs md:text-xl tracking-widest uppercase opacity-90">
             Match the word with its meaning:
           </p>
-          <h2 className="text-[#2b3319] font-[Fredoka] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight inline-flex items-center justify-center relative">
+          
+          {/* 🔮 PERBAIKAN: <h2> dibersihkan dari inline-flex dan relative agar teks tetap di tengah tanpa mengganggu Atlas */}
+          <h2 className="text-[#2b3319] font-[Fredoka] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
             <span>{word.word}</span>
-            <AnimatePresence>
-              {showFeedback && (
-                <motion.span
-                  initial={{ scale: 0.5, opacity: 0, x: -10 }}
-                  animate={{ scale: 1, opacity: 1, x: 0 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
-                  className="absolute -right-10 sm:-right-14"
-                >
-                  {isCorrect ? (
-                    <Check className="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500 stroke-[4] drop-shadow-md" />
-                  ) : (
-                    <X className="h-8 w-8 sm:h-10 sm:w-10 text-red-500 stroke-[4] drop-shadow-md" />
-                  )}
-                </motion.span>
-              )}
-            </AnimatePresence>
           </h2>
         </div>
 
@@ -205,30 +216,41 @@ export function MiniGamePage({ vocabulary, gameType, onComplete, onGoHome }: Min
     };
 
     return (
+      // 🔮 PERBAIKAN: Tambahkan mt-8 di sini agar Atlas punya ruang untuk kepalanya saat melompat
       <div className="space-y-4 md:space-y-6 relative z-10 w-full">
-        <div className="bg-gradient-to-br from-[#e4e9cd] to-[#cdd5a0] rounded-xl p-4 sm:p-5 md:p-8 border-2 border-[#829054] shadow-md text-center md:text-left">
+        
+        {/* Wadah utama dipastikan memiliki posisi 'relative' */}
+        <div className="bg-gradient-to-br from-[#e4e9cd] to-[#cdd5a0] rounded-xl p-4 sm:p-5 md:p-8 border-2 border-[#829054] shadow-md text-center md:text-left relative">
+          
+          {/* 🔮 SIHIR ANIMASI ATLAS (Dipindah ke level wadah utama) */}
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0, y: 10, rotate: -15 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
+                exit={{ scale: 0.5, opacity: 0, rotate: 10 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                // Posisinya disandarkan ke pojok kanan atas wadah hijau
+                className="absolute -top-12 -right-4 sm:-top-16 sm:-right-8 md:-right-10 z-20 pointer-events-none"
+              >
+                <img
+                  src={isCorrect ? atlasBenar : atlasSalah}
+                  alt={isCorrect ? "Correct!" : "Incorrect!"}
+                  className="h-24 sm:h-28 md:h-36 w-auto drop-shadow-[0_10px_15px_rgba(0,0,0,0.3)] object-contain"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <p className="text-[#4a572c] mb-1 sm:mb-2 font-[Fredoka] font-bold text-[11px] sm:text-xs md:text-sm tracking-widest uppercase opacity-90">
             Complete the passage:
           </p>
-          <p className="text-lg sm:text-xl md:text-2xl text-[#2b3319] leading-relaxed font-[Nunito] font-bold inline-block relative pr-10 sm:pr-14">
+          
+          {/* Kelas 'relative' dan 'pr-10' (padding-right) dihapus dari sini karena Atlas sudah diamankan di atas */}
+          <p className="text-lg sm:text-xl md:text-2xl text-[#2b3319] leading-relaxed font-[Nunito] font-bold inline-block">
             <span>{blankedSentence}</span>
-            <AnimatePresence>
-              {showFeedback && (
-                <motion.span
-                  initial={{ scale: 0.5, opacity: 0, x: -10 }}
-                  animate={{ scale: 1, opacity: 1, x: 0 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
-                  className="absolute right-0 top-1/2 -translate-y-1/2"
-                >
-                  {isCorrect ? (
-                    <Check className="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500 stroke-[4] drop-shadow-md" />
-                  ) : (
-                    <X className="h-8 w-8 sm:h-10 sm:w-10 text-red-500 stroke-[4] drop-shadow-md" />
-                  )}
-                </motion.span>
-              )}
-            </AnimatePresence>
           </p>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">

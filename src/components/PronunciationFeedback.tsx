@@ -1,19 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Check, X, AlertCircle } from 'lucide-react';
+import { Mic, MicOff, Check, X, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { soundEffects } from '../utils/soundEffects';
 import { matchesWord } from '../utils/homophones';
 
 interface PronunciationFeedbackProps {
   targetWord: string;
   onSuccess: (confidenceScore: number) => void;
+  onFail: () => void;
 }
 
-export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFeedbackProps) {
-  const [isListening, setIsListening] = useState(false); // Tombol sedang ditekan
-  const [isRecording, setIsRecording] = useState(false); // Mesin BENAR-BENAR siap mendengarkan
-  const [isCooldown, setIsCooldown] = useState(false);   // Jeda anti-spam klik
+export function PronunciationFeedback({ targetWord, onSuccess, onFail }: PronunciationFeedbackProps) {
+  const [isListening, setIsListening] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isCooldown, setIsCooldown] = useState(false);
   
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
@@ -22,11 +23,19 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
+  // 🔮 BRANKAS BARU: Mencatat berapa kali anak telah gagal di kata ini
+  const [failedAttempts, setFailedAttempts] = useState(0);
+
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalTranscriptRef = useRef<string>('');
   const confidenceRef = useRef<number>(1);
 
   useEffect(() => {
+    // 🔮 RESET TOTAL: Setiap kali kata target berganti, hitungan gagal harus kembali ke 0
+    setFailedAttempts(0);
+    setTranscript('');
+    setFeedback(null);
+
     let recognitionInstance: any = null;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       try {
@@ -65,7 +74,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
                 finalText = result[0].transcript.toLowerCase().trim();
                 finalConf = result[0].confidence;
               }
-
             } else {
               interimText += result[0].transcript;
             }
@@ -83,7 +91,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         recognitionInstance.onend = () => {
           setIsListening(false);
           setIsRecording(false);
-          triggerCooldown(); // 🛡️ Nyalakan pelindung anti-spam klik
+          triggerCooldown();
 
           if (autoStopTimerRef.current) {
             clearTimeout(autoStopTimerRef.current);
@@ -101,6 +109,11 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
             setFeedback('incorrect');
             setTranscript('Oops! I didn\'t hear you.');
             soundEffects.incorrect();
+            
+            // 🔮 CATAT KEGAGALAN: Suara tidak terdengar juga dihitung gagal
+            setFailedAttempts(prev => prev + 1);
+            onFail(); 
+
             setTimeout(() => { 
               setFeedback(null); 
               setTranscript(''); 
@@ -111,15 +124,17 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
         recognitionInstance.onerror = (event: any) => {
           setIsListening(false);
           setIsRecording(false);
-          triggerCooldown(); // 🛡️ Nyalakan pelindung anti-spam klik
+          triggerCooldown();
           setError(event.error === 'not-allowed' ? 'Izin mikrofon ditolak.' : 'Terjadi kesalahan suara.');
+          
+          // 🔮 CATAT KEGAGALAN: Error sistem/mikrofon langsung memicu hitungan gagal
+          setFailedAttempts(prev => prev + 1);
+          onFail(); 
         };
 
         recognitionInstance.onstart = () => {
           setError(null);
-          // 🚦 LAMPU HIJAU! Mesin sudah siap
-          setIsRecording(true); 
-          // 🔔 Mainkan suara TING di sini untuk memberi aba-aba bicara!
+          setIsRecording(true);
           soundEffects.buttonPlay(); 
         };
 
@@ -132,7 +147,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       setIsSupported(false);
     }
     
-    // Pembersihan paksa untuk membunuh mikrofon zombi saat layar berpindah
     return () => {
       if (recognitionInstance) {
         try { recognitionInstance.abort(); } catch (e) {} 
@@ -140,12 +154,9 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     };
   }, [targetWord]);
 
-  // Fungsi waktu jeda tombol (1.5 Detik)
   const triggerCooldown = () => {
     setIsCooldown(true);
-    setTimeout(() => {
-      setIsCooldown(false);
-    }, 1500);
+    setTimeout(() => { setIsCooldown(false); }, 1500);
   };
 
   const checkPronunciation = (spokenText: string, confidenceScore: number) => {
@@ -155,21 +166,26 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       setTranscript(targetWord);
       setFeedback('correct');
       soundEffects.correctPronunciation();
+      onSuccess(confidenceScore); 
       
       setTimeout(() => { 
-        onSuccess(confidenceScore); 
         setFeedback(null); 
         setTranscript(''); 
       }, 1800);
     } else {
       setFeedback('incorrect');
       soundEffects.incorrect();
+      
+      // 🔮 CATAT KEGAGALAN: Pelafalan salah menaikkan angka log kesalahan
+      setFailedAttempts(prev => prev + 1);
+      onFail(); 
+      
       setTimeout(() => { setFeedback(null); setTranscript(''); }, 2500);
     }
   };
 
   const startListening = async () => {
-    if (!recognition || isCooldown) return; // Kunci tombol jika cooldown
+    if (!recognition || isCooldown) return;
     try {
       setTranscript('');
       setFeedback(null);
@@ -177,7 +193,7 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       confidenceRef.current = 1; 
       
       setIsListening(true);
-      setIsRecording(false); // Status kuning (tunggu)
+      setIsRecording(false);
       
       recognition.start();
       autoStopTimerRef.current = setTimeout(() => { if (recognition) recognition.stop(); }, 5000);
@@ -194,9 +210,16 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
     }
   };
 
+  // 🔮 FUNGSI TOMBOL SKIP: Memberikan berkat kelulusan otomatis dari Atlas
+  const handleSkipChallenge = () => {
+    soundEffects.buttonNavigation();
+    // Berikan nilai jaring pengaman 0.7 (Skor Akhir Katrol = 91)
+    // 🔮 UBAH: Kirim nilai 0 agar mereka hanya mendapat nilai KKTP (70)
+    onSuccess(0); 
+  };
+
   if (!isSupported) return <p className="text-center text-amber-900 font-[Nunito]">Browser tidak didukung.</p>;
 
-  // Variabel Penampilan Tombol
   const isButtonDisabled = !isReady || isCooldown;
   const buttonBackground = isCooldown 
     ? 'bg-gray-400 cursor-not-allowed' 
@@ -205,30 +228,52 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
       : 'bg-sky-500 hover:bg-sky-600';
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <div className="relative">
-        {/* Animasi sonar hanya muncul saat mesin SUDAH SIAP merekam */}
-        {isRecording && (
-          <motion.div
-            className="absolute inset-0 rounded-full bg-rose-400"
-            animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          />
-        )}
-        <motion.div 
-          whileHover={!isButtonDisabled ? { scale: 1.08 } : {}} 
-          whileTap={!isButtonDisabled ? { scale: 0.9 } : {}} 
-          className="rounded-full flex items-center justify-center h-16 w-16 md:h-20 md:w-20 relative cursor-pointer"
-        >
-          <div className={`absolute inset-0 rounded-full border-4 shadow-xl z-0 transition-colors ${isListening ? 'border-rose-900/20' : isCooldown ? 'border-gray-900/10' : 'border-sky-900/20'}`} />
-          <Button
-            onClick={() => { isListening ? stopListeningManually() : startListening(); }}
-            disabled={isButtonDisabled}
-            className={`h-full w-full rounded-full relative z-10 p-0 transition-colors duration-300 ${buttonBackground}`}
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="flex flex-row items-center justify-center gap-4 relative">
+        
+        {/* TOMBOL UTAMA REKAM AUDIO */}
+        <div className="relative">
+          {isRecording && (
+            <motion.div
+              className="absolute inset-0 rounded-full bg-rose-400"
+              animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            />
+          )}
+          <motion.div 
+            whileHover={!isButtonDisabled ? { scale: 1.08 } : {}} 
+            whileTap={!isButtonDisabled ? { scale: 0.9 } : {}} 
+            className="rounded-full flex items-center justify-center h-16 w-16 md:h-20 md:w-20 relative cursor-pointer"
           >
-            {isListening ? <MicOff className="h-7 w-7 md:h-8 md:w-8 text-white" /> : <Mic className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-md" />}
-          </Button>
-        </motion.div>
+            <div className={`absolute inset-0 rounded-full border-4 shadow-xl z-0 transition-colors ${isListening ? 'border-rose-900/20' : isCooldown ? 'border-gray-900/10' : 'border-sky-900/20'}`} />
+            <Button
+              onClick={() => { isListening ? stopListeningManually() : startListening(); }}
+              disabled={isButtonDisabled}
+              className={`h-full w-full rounded-full relative z-10 p-0 transition-colors duration-300 ${buttonBackground}`}
+            >
+              {isListening ? <MicOff className="h-7 w-7 md:h-8 md:w-8 text-white" /> : <Mic className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-md" />}
+            </Button>
+          </motion.div>
+        </div>
+
+        {/* 🔮 SIHIR TOMBOL SKIP: Hanya berlabuh di layar jika gagal >= 3 kali */}
+        <AnimatePresence>
+          {failedAttempts >= 3 && (
+            <motion.div
+              initial={{ opacity: 0, x: -20, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+              <Button
+                onClick={handleSkipChallenge}
+                className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-amber-950 font-[Fredoka] font-bold py-3 px-4 rounded-2xl shadow-lg border-2 border-amber-300 flex items-center gap-2 text-xs md:text-sm active:scale-95 transition-all"
+              >
+                Let's Move On! 🦉 <ArrowRight className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="h-24 flex flex-col items-center justify-start gap-2 w-full pt-1">
@@ -248,7 +293,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
            </p>
         )}
 
-        {/* LAMPU MERAH: Tombol ditekan, tapi mesin belum siap */}
         {isListening && !isRecording && (
           <motion.p 
             animate={{ opacity: [1, 0.5, 1] }} 
@@ -259,7 +303,6 @@ export function PronunciationFeedback({ targetWord, onSuccess }: PronunciationFe
           </motion.p>
         )}
 
-        {/* LAMPU HIJAU: Mesin siap, anak boleh bicara */}
         {isRecording && (
           <motion.p 
             animate={{ scale: [1, 1.1, 1] }} 

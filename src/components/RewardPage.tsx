@@ -5,6 +5,37 @@ import { Trophy, Star, Sparkles, BookOpen, X, Home, Crown, Target, Medal, Flame,
 import type { WrongAnswer } from './MiniGamePage';
 import { soundEffects } from '../utils/soundEffects';
 
+// Captain Atlas's Score Appraisal System
+import atlasMenang from '../imports/atlas-menang.webp';
+import atlasBertepukTangan from '../imports/atlas-bertepuk-tangan.webp';
+import atlasBerhasil from '../imports/atlas-berhasil.webp';
+import atlasTabah from '../imports/atlas-tabah.webp';
+
+// Fungsi penentu reaksi Captain Atlas berdasarkan total Quest (Quiz + Voice)
+const getAtlasReaction = (totalScore: number) => {
+  if (totalScore >= 190) {
+    return { 
+      pose: atlasMenang, 
+      text: "Absolutely magnificent! You are a true legend of the seas!" 
+    };
+  } else if (totalScore >= 170) {
+    return { 
+      pose: atlasBerhasil, 
+      text: "Brilliant sailing! A fine bounty for a fine captain!" 
+    };
+  } else if (totalScore >= 140) {
+    return { 
+      pose: atlasBertepukTangan, 
+      text: "Good effort, matey! Let's aim even higher next time!" 
+    };
+  } else {
+    return { 
+      pose: atlasTabah, 
+      text: "Rough waters today, but a true captain always tries again!" 
+    };
+  }
+};
+
 // 🪙 KOMPONEN KOIN EMAS FIELA ASLI
 const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -14,9 +45,22 @@ const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
+// 🪽 KOMPONEN SAYAP KEBESARAN FIELA
+const WingDecoration = ({ className = "", flip = false }: { className?: string, flip?: boolean }) => (
+  <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} ${flip ? 'scale-x-[-1]' : ''}`}>
+    {/* Bulu Bawah */}
+    <path d="M20 40 Q 50 48 65 45 Q 40 55 20 40" fill="#FBBF24" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Bulu Atas */}
+    <path d="M15 30 Q 60 10 98 5 Q 60 25 15 30" fill="#FBBF24" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Bulu Tengah (Lebih Panjang & Terang) */}
+    <path d="M10 35 Q 50 30 95 20 Q 60 45 10 35" fill="#FDE68A" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
+    {/* Bulu Tengah (Lebih Panjang & Terang) */}
+    <path d="M15 40 Q 15 55 40 55 Q 20 50 15 40" fill="#FDE68A" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 interface RewardPageProps {
   unitNumber: number;
-  // 🔮 UBAH BARIS INI: Tambahkan parameter boolean
   onContinue: (triggerCompletion?: boolean) => void; 
   isLastUnit: boolean;
   wrongAnswers?: WrongAnswer[];
@@ -36,6 +80,10 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   // 🧭 SINKRONISASI MATEMATIKA KURIKULUM & EKONOMI
   const quizScore = Math.round(percentage);
   const voiceScore = Math.round(pronunciationScore);
+
+  // 🔮 MENGHITUNG FINAL SCORE & REAKSI ATLAS
+  const finalScore = quizScore + voiceScore;
+  const reaction = getAtlasReaction(finalScore);
 
   // 1. Hitung Bintang KKTP
   let earnedStars = 0;
@@ -79,7 +127,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
     if (!isPageReady) return; 
 
     if (!hasPlayedInitAudio.current) {
-      //soundEffects.success();
       hasPlayedInitAudio.current = true;
     }
 
@@ -173,22 +220,22 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   }
 
   const getHeadingInfo = () => {
-    if (percentage === 100) return { title: 'Legendary Mastery!', emoji: '👑', rank: 'Master Scholar', subtitle: 'Flawless! You achieved absolute perfection!' };
-    if (percentage >= 90) return { title: 'Outstanding Excellence!', emoji: '🏆', rank: 'Expert Scholar', subtitle: "Almost perfect! You're a true expert!" };
-    if (percentage >= 80) return { title: 'Great Achievement!', emoji: '⭐', rank: 'Advanced Learner', subtitle: "Impressive work! You're doing excellent!" };
-    if (percentage >= 70) return { title: 'Good Progress!', emoji: '🎯', rank: 'Solid Learner', subtitle: "Well done! You're improving steadily!" };
-    return { title: 'Keep Going!', emoji: '💪', rank: 'Determined Explorer', subtitle: "Don't give up! Every expedition makes you stronger!" };
+    if (percentage === 100) return { title: 'Legendary Mastery!', emoji: '👑', subtitle: 'Flawless! You achieved absolute perfection!' };
+    if (percentage >= 90) return { title: 'Outstanding Excellence!', emoji: '🏆', subtitle: "Almost perfect! You're a true expert!" };
+    if (percentage >= 80) return { title: 'Great Achievement!', emoji: '⭐', subtitle: "Impressive work! You're doing excellent!" };
+    if (percentage >= 70) return { title: 'Good Progress!', emoji: '🎯', subtitle: "Well done! You're improving steadily!" };
+    return { title: 'Keep Going!', emoji: '💪', subtitle: "Don't give up! Every expedition makes you stronger!" };
   };
 
   const headingInfo = getHeadingInfo();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-violet-950 to-purple-950 flex items-center justify-center p-4 sm:p-5 md:p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-violet-950 to-purple-950 flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 relative overflow-x-hidden overflow-y-auto">
       <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`, backgroundSize: '150px 150px' }} />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-yellow-500/20 blur-[100px] rounded-full pointer-events-none" />
 
       {/* Button Kembali ke Home */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.2 }} className="absolute top-4 left-4 z-50">
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.2 }} className="absolute top-4 left-4 z-50 fixed">
         <motion.button onClick={() => { soundEffects.buttonHome(); onGoHome(); }} initial="normal" animate="normal" whileHover="diHover" whileTap="diKlik"
           variants={{
             normal: { backgroundColor: '#fffcf2', color: '#570e8b', borderColor: '#e6fcfe', borderRadius: '50%', scale: 1 },
@@ -206,78 +253,140 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         </motion.button>
       </motion.div>
 
-      {/* Main Container */}
+      {/* Main Container Papan Hasil */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8, y: 30 }} 
         animate={{ opacity: 1, scale: 1, y: 0 }} 
-        transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
+        transition={{ duration: 0.6, type: 'spring', bounce: 0.4, delay: 0.2 }}
         onAnimationComplete={() => setIsPageReady(true)} 
-        className="max-w-5xl w-full bg-[#fffcf2] rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 relative z-10 border-4 border-amber-300 shadow-2xl overflow-hidden" 
+        className="max-w-5xl w-full bg-[#fffcf2] rounded-3xl p-6 sm:p-8 md:p-10 relative z-10 border-4 border-amber-300 shadow-2xl overflow-hidden my-auto" 
         style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(251,191,36,0.1), 0 0 30px rgba(251,191,36,0.3)' }}
       >
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-3xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
         
-        {/* 🪄 GARIS PEMISAH VERTIKAL ELEGAN DI TENGAH */}
+        {/* GARIS PEMISAH VERTIKAL ELEGAN DI TENGAH */}
         <div className="hidden lg:block absolute left-1/2 top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-amber-200 to-transparent -translate-x-1/2 z-0 opacity-70" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
           
-          {/* SISI KIRI: GELAR & NAVIGATION */}
-          <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left h-full">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring', stiffness: 200 }} className="mb-4 sm:mb-6">
-              <motion.div animate={{ y: [-4, 4, -4], rotate: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="relative bg-gradient-to-b from-white to-amber-50 p-4 sm:p-5 rounded-full shadow-[0_10px_25px_rgba(217,119,6,0.3)] border-2 border-amber-200 inline-block">
-                {percentage === 100 ? <Trophy className="h-20 w-20 sm:h-24 sm:w-24 text-yellow-500 drop-shadow-lg" /> 
-                : percentage >= 80 ? <Star className="h-20 w-20 sm:h-24 sm:w-24 text-blue-500 drop-shadow-lg" /> 
-                : percentage >= 60 ? <Award className="h-20 w-20 sm:h-24 sm:w-24 text-green-500 drop-shadow-lg" /> 
-                : <Sparkles className="h-20 w-20 sm:h-24 sm:w-24 text-purple-500 drop-shadow-lg" />}
-              </motion.div>
+          {/* ========================================================= */}
+          {/* SISI KIRI: HIERARKI BARU (Satu Baris Aman)                */}
+          {/* ========================================================= */}
+          <div className="flex flex-col h-full w-full items-center md:items-start text-center md:text-left">
+            
+            {/* 1. ATLAS & BALON DIALOG (Atlas dipindah ke Kanan) */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.3 }} 
+              // 🔮 RUANG MESIN: Background dihapus, diganti border bawah (border-b) dan bantalan bawah (pb)
+              className="flex flex-row items-center gap-3 sm:gap-4 mb-6 sm:mb-8 w-full border-b-[3px] border-amber-200/60 pb-5 sm:pb-6"
+            >
+              {/* Balon Dialog (Sekarang di Kiri) */}
+              <div className="flex-1 relative bg-white p-3 sm:p-4 rounded-xl border-2 border-amber-300 shadow-sm text-left">
+                {/* 🔮 PERBAIKAN: Panah dipindah ke Kanan (-right-2) dan diputar border-nya agar menunjuk ke kanan */}
+                <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-3 h-3 bg-white rotate-45 border-t-2 border-r-2 border-amber-300" />
+                <p className="font-[Nunito] font-bold text-xs sm:text-sm text-amber-950 leading-snug">
+                  "{reaction.text}"
+                </p>
+              </div>
+
+              {/* Gambar Atlas (Sekarang di Kanan) */}
+              <div className="w-16 sm:w-20 shrink-0 relative flex justify-center pb-1">
+                <img src={reaction.pose} alt="Atlas Pose" className="w-full relative z-20 drop-shadow-md" />
+              </div>
+
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="w-full flex flex-col h-full">
-              <h1 className="text-amber-950 mb-3 font-[Fredoka] text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide drop-shadow-sm">
-                {headingInfo.emoji} {headingInfo.title}
-              </h1>
-              <div>
-                <div className="inline-block bg-gradient-to-r from-amber-100 to-amber-200 px-4 sm:px-6 py-2 rounded-full mb-4 border-2 border-amber-400/50 shadow-sm">
-                  <p className="text-amber-900 font-bold font-[Fredoka] tracking-wider text-sm sm:text-base">✨ {headingInfo.rank} ✨</p>
-                </div>
+            {/* 2. HEADING EXPEDITION */}
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+              className="text-amber-950 font-[Fredoka] text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide text-center drop-shadow-sm mb-5 w-full whitespace-nowrap text-ellipsis overflow-hidden"
+            >
+              Expedition {unitNumber} Completed!
+            </motion.h1>
+
+            {/* 3. ICON BUNDAR DI BAWAH HEADING (DENGAN SAYAP KEBESARAN) */}
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5, type: 'spring', stiffness: 200 }} className="w-full flex justify-center mb-5">
+              
+              {/* Wadah Flex untuk menata Sayap - Ikon - Sayap sejajar */}
+              <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
+                
+                {/* 🪽 Sayap Kiri (Flip = true) */}
+                <motion.div 
+                  style={{ originX: 1, originY: 0.5 }} // Engsel putaran di pangkal kanan
+                  animate={{ rotate: [0, -10, 0] }}    // Mengepak ke atas
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                >
+                  <WingDecoration className="w-16 h-10 sm:w-20 sm:h-12 md:w-24 md:h-14 lg:w-24 lg:h-16 drop-shadow-md" flip={true} />
+                </motion.div>
+
+                {/* 👑 Ikon Bundar Utama */}
+                <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="flex items-center justify-center tracking-wide w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-white to-yellow-200/80 rounded-full shadow-[0_5px_15px_rgba(217,119,6,0.3)] border-4 border-amber-400 relative z-10">
+                  {percentage === 100 ? <Crown className="h-10 w-10 sm:h-12 sm:w-12 text-yellow-500 drop-shadow-md" /> 
+                  : percentage >= 80 ? <Star className="h-10 w-10 sm:h-12 sm:w-12 text-blue-500 drop-shadow-md" /> 
+                  : percentage >= 60 ? <Award className="h-10 w-10 sm:h-12 sm:w-12 text-green-500 drop-shadow-md" /> 
+                  : <Sparkles className="h-10 w-10 sm:h-12 sm:w-12 text-purple-500 drop-shadow-md" />}
+                </motion.div>
+
+                {/* 🪽 Sayap Kanan (Flip = false) */}
+                <motion.div 
+                  style={{ originX: 0, originY: 0.5 }} // Engsel putaran di pangkal kiri
+                  animate={{ rotate: [0, 10, 0] }}     // Mengepak ke atas
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.2 }}
+                >
+                  <WingDecoration className="w-16 h-10 sm:w-20 sm:h-12 md:w-24 md:h-14 lg:w-24 lg:h-16 drop-shadow-md" flip={false} />
+                </motion.div>
+
               </div>
-              <p className="text-xl sm:text-2xl text-amber-950 mb-1 font-[Nunito] font-extrabold">You completed Expedition {unitNumber}!</p>
-              <p className="text-amber-800 mb-8 font-[Nunito] font-bold text-base sm:text-lg">{headingInfo.subtitle}</p>
+            </motion.div>
 
-              <div className="w-full space-y-3 mt-auto">
-                {wrongAnswers.length > 0 && (
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    {/* 🔊 BERI SUARA: buttonReview() dipasang di sini */}
-                    <Button onClick={() => { soundEffects.buttonReview(); setShowReview(true); }} variant="outline" className="w-full bg-white border-2 border-amber-300 text-amber-900 hover:bg-amber-50 py-5 sm:py-6 rounded-xl cursor-pointer font-[Fredoka] font-bold text-sm sm:text-base shadow-sm transition-all">
-                      <BookOpen className="h-5 w-5 mr-2 text-amber-700" />
-                      Review Missed Answers ({wrongAnswers.length})
-                    </Button>
-                  </motion.div>
-                )}
+            {/* 4. TITLE OUTSTANDING EXCELLENCE */}
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} 
+              className="text-amber-950 font-[Fredoka] text-xl sm:text-2xl lg:text-3xl font-bold text-center tracking-wide drop-shadow-sm leading-tight w-full whitespace-nowrap text-ellipsis overflow-hidden"
+            >
+              {headingInfo.emoji} {headingInfo.title}
+            </motion.h2>
 
+            {/* 5. SUBTITLE ALMOST PERFECT */}
+            <motion.p 
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }} 
+              className="text-amber-800 mt-2 mb-8 font-[Nunito] font-bold text-sm sm:text-base md:text-md lg:text-lg text-center w-full whitespace-nowrap text-ellipsis overflow-hidden"
+            >
+              {headingInfo.subtitle}
+            </motion.p>
+
+            {/* 6. TOMBOL NAVIGASI */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="w-full space-y-3 mt-auto pb-4">
+              {wrongAnswers.length > 0 && (
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
-                    onClick={() => { 
-                      soundEffects.buttonSuccess(); 
-                      // 🔮 MENGIRIMKAN STATUS isLastUnit KE APP.TSX
-                      onContinue(isLastUnit); 
-                    }} 
-                    className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-6 sm:py-8 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-base sm:text-xl"
-                  >
-                    {isLastUnit ? '🎊 Complete the Atlas!' : 'Continue the Journey ➡️'}
+                  <Button onClick={() => { soundEffects.buttonReview(); setShowReview(true); }} variant="outline" className="w-full bg-white border-2 border-amber-300 text-amber-900 hover:bg-amber-50 py-5 sm:py-6 rounded-xl cursor-pointer font-[Fredoka] font-bold text-sm sm:text-base shadow-sm transition-all">
+                    <BookOpen className="h-5 w-5 mr-2 text-amber-700" />
+                    Review Missed Answers ({wrongAnswers.length})
                   </Button>
                 </motion.div>
-              </div>
+              )}
+
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button 
+                  onClick={() => { soundEffects.buttonSuccess(); onContinue(isLastUnit); }} 
+                  className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-700 hover:to-purple-800 text-white px-5 py-6 sm:py-7 rounded-xl shadow-lg shadow-indigo-900/50 w-full cursor-pointer font-[Fredoka] font-bold tracking-wide border-2 border-indigo-400/50 transition-all text-base sm:text-lg"
+                >
+                  {isLastUnit ? '🎊 Complete the Atlas!' : 'Continue the Journey ➡️'}
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
 
-          {/* SISI KANAN: STATISTIK & KOIN EMAS */}
-          <div className="flex flex-col justify-center h-full gap-5 sm:gap-6">
+          {/* ========================================================= */}
+          {/* SISI KANAN: STATISTIK & KOIN EMAS                         */}
+          {/* ========================================================= */}
+          <div className="flex flex-col justify-center h-full gap-5 sm:gap-6 lg:pl-4">
             
-            {/* 🗺️ JOURNEY STATS - 3 PODS HORIZONTAL */}
+            {/* 🗺️ JOURNEY STATS - 4 PODS (3 Kotak + 1 Bar Ramping) */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="w-full">
-              <div className="bg-lime-100/50 rounded-2xl p-5 border-2 border-lime-200 shadow-sm relative z-10">
+              <div className="bg-lime-100/50 rounded-2xl p-4 sm:p-5 border-2 border-lime-200 shadow-sm relative z-10">
                 
                 <div className="flex flex-row items-center justify-between border-b-2 border-lime-200/60 pb-3 mb-4">
                   <p className="text-amber-900 font-[Fredoka] font-bold text-lg sm:text-xl tracking-wide">🗺️ Journey Stats</p>
@@ -292,17 +401,17 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                   </motion.div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
-                  
+                {/* 3 Pods Utama */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-2 sm:mb-3">
                   {/* 1. STARS POD */}
-                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-2 text-center leading-none">Stars</span>
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Stars</span>
                     <div className="flex gap-0.5">
                       {[1, 2, 3].map(starIndex => {
                         const isVisible = starIndex <= revealedStarsCount;
                         const isEarned = starIndex <= earnedStars;
                         return (
-                          <div key={starIndex} className="w-5 h-5 flex items-center justify-center">
+                          <div key={starIndex} className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                             <AnimatePresence>
                               {isVisible && (
                                 <motion.div
@@ -311,7 +420,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                                   transition={{ type: "spring", stiffness: 350, damping: 14 }}
                                 >
                                   <Star 
-                                    className={`w-5 h-5 transition-all duration-300 ${
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
                                       isEarned 
                                         ? 'text-yellow-400 fill-yellow-400 drop-shadow-sm' 
                                         : 'text-gray-300 fill-gray-100 opacity-50'
@@ -327,32 +436,49 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                   </div>
 
                   {/* 2. QUIZ SCORE POD */}
-                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Quiz</span>
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-0.5 text-center leading-none">Quiz</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${quizScore === 100 ? 'text-yellow-600' : quizScore >= 80 ? 'text-blue-600' : 'text-red-600'}`}>
                       {quizScore}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">({score}/{totalQuestions} correct)</span>
+                    <span className="text-[9px] font-bold text-amber-900/50 leading-none mt-0.5">({score}/{totalQuestions} correct)</span>
                   </div>
 
                   {/* 3. VOICE SCORE POD */}
-                  <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
-                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Voice</span>
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                    <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-0.5 text-center leading-none">Voice</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${voiceScore >= 80 ? 'text-green-600' : voiceScore >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
                       {voiceScore}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-900/50 leading-none mt-1">/ 100 score</span>
+                    <span className="text-[9px] font-bold text-amber-900/50 leading-none mt-0.5">/ 100 score</span>
                   </div>
-
                 </div>
+
+                {/* 4. TOTAL QUEST SCORE POD (Bar Ramping 1 Baris) */}
+                <div className="bg-gradient-to-r from-white to-amber-50 py-2.5 px-4 rounded-xl border-2 border-amber-300 shadow-sm flex flex-row items-center justify-between">
+                  <div className="flex flex-row items-baseline gap-1.5 flex-wrap">
+                    <span className="text-amber-900 font-[Fredoka] font-bold text-sm tracking-wide leading-none">Quest Score</span>
+                    <span className="text-[10px] font-bold font-[Nunito] text-amber-700/70 leading-none">(Quiz + Voice)</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 shrink-0">
+                    <span className="font-bold font-[Fredoka] text-xl sm:text-2xl text-amber-600 drop-shadow-sm leading-none">
+                      {finalScore}
+                    </span>
+                    <span className="font-bold font-[Nunito] text-xs text-amber-800/50 leading-none">
+                      / 200
+                    </span>
+                  </div>
+                </div>
+
               </div>
             </motion.div>
 
-            {/* 🎁 TREASURES UNLOCKED */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="w-full mt-1">
-              <p className="text-amber-900 mb-3 font-[Fredoka] font-bold text-base bg-amber-100/80 inline-block px-4 py-2 rounded-xl border border-amber-300 w-full text-center">🎁 Treasures Unlocked</p>
+            {/* 🎁 TREASURES UNLOCKED (Desain Badge Horizontal Kompak) */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="w-full mt-1">
+              <p className="text-amber-900 mb-2 font-[Fredoka] font-bold text-sm bg-amber-100/80 inline-block px-3 py-1.5 rounded-xl border border-amber-300 w-full text-center">🎁 Treasures Unlocked</p>
               
-              <div className="grid grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-1 pb-1">
+              {/* 🔮 SISI KIRI AMAN: pr-1 pb-1 diganti menjadi p-3 (padding merata di semua sisi) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto p-2">
                 {earnedTreasures.map((badge, index) => {
                   const isVisible = index < revealedTreasuresCount;
                   const isTier3 = badge.tier === 3;
@@ -362,40 +488,41 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                     <AnimatePresence key={index}>
                       {isVisible && (
                         <motion.div 
-                          initial={{ opacity: 0, scale: 0.7, y: 10 }} 
-                          animate={{ opacity: 1, scale: 1, y: 0 }} 
-                          whileHover={{ scale: 1.04, y: -3 }} 
+                          initial={{ opacity: 0, scale: 0.8, x: -10 }} 
+                          animate={{ opacity: 1, scale: 1, x: 0 }} 
+                          whileHover={{ scale: 1.02 }} 
                           transition={{ type: "spring", stiffness: 260, damping: 15 }} 
-                          className={`relative bg-gradient-to-br ${badge.bgColor} rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[110px] overflow-hidden ${
-                            isTier3 ? 'border-[3px] border-yellow-300 shadow-[0_0_20px_rgba(250,204,21,0.6)] z-10' :
-                            isTier2 ? 'border-2 border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.3)]' :
-                            'border-2 border-white shadow-sm'
+                          className={`relative bg-gradient-to-br ${badge.bgColor} rounded-xl p-2 sm:p-2.5 flex flex-row items-center gap-2 sm:gap-2.5 overflow-hidden ${
+                            isTier3 ? 'border-[2px] border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] z-10' :
+                            isTier2 ? 'border-2 border-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.2)]' :
+                            'border border-white shadow-sm'
                           }`}
                         >
-                          {/* Efek Bersinar Ekstra untuk Tier 3 */}
                           {isTier3 && <div className="absolute inset-0 bg-white/30 animate-pulse pointer-events-none" />}
 
+                          {/* Ikon Lencana di Kiri */}
                           <motion.div 
-                            animate={{ scale: [1, 1.06, 1] }} 
+                            animate={{ scale: [1, 1.08, 1] }} 
                             transition={{ repeat: Infinity, duration: 2.5, delay: index * 0.2 }} 
-                            className={`p-2 rounded-full shrink-0 relative z-10 ${
+                            className={`p-1.5 sm:p-2 rounded-full shrink-0 relative z-10 ${
                               isTier3 ? 'bg-gradient-to-br from-yellow-100 to-amber-300 shadow-md' : 
                               isTier2 ? 'bg-white/95 shadow-sm' : 
                               'bg-white/60 border border-white shadow-inner'
                             }`}
                           >
-                            <badge.icon className={`h-6 w-6 ${badge.color} ${isTier3 ? 'drop-shadow-sm' : ''}`} />
+                            <badge.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${badge.color} ${isTier3 ? 'drop-shadow-sm' : ''}`} />
                           </motion.div>
                           
-                          <div className="flex flex-col items-center justify-center overflow-hidden w-full relative z-10">
-                            <p className={`text-xs sm:text-sm font-bold font-[Fredoka] tracking-wide leading-tight break-words max-w-full ${
+                          {/* Teks Lencana di Kanan (Mampat & Truncate) */}
+                          <div className="flex flex-col items-start justify-center w-full relative z-10">
+                            <p className={`text-[11px] sm:text-xs font-bold font-[Fredoka] tracking-wide leading-tight truncate w-full ${
                               isTier3 ? 'text-amber-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' :
                               isTier2 ? 'text-amber-950' : 'text-amber-950'
                             }`}>
                               {badge.label}
                             </p>
-                            <p className={`text-[9px] sm:text-[10px] font-bold font-[Nunito] leading-tight mt-1 max-w-full ${
-                              isTier3 ? 'text-amber-800' : 'text-amber-900/50'
+                            <p className={`text-[9px] sm:text-[10px] font-bold font-[Nunito] leading-tight mt-0.5 truncate w-full ${
+                              isTier3 ? 'text-amber-800' : 'text-amber-900/60'
                             }`}>
                               {badge.requirement}
                             </p>
@@ -447,7 +574,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                 ))}
               </div>
               <div className="px-5 sm:px-6 py-4 border-t-2 border-amber-200 bg-[#fffcf2] shrink-0 z-10">
-                {/* 🔊 BERI SUARA: buttonNavigation() dipasang di sini */}
                 <Button onClick={() => { soundEffects.buttonNavigation(); setShowReview(false); }} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 py-5 sm:py-6 rounded-xl font-[Fredoka] font-bold text-base shadow-md active:scale-95 transition-transform">
                   Understood! 🚀
                 </Button>
