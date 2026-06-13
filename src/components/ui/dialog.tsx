@@ -42,7 +42,6 @@ const DialogOverlay = React.forwardRef<
       ref={ref}
       data-slot="dialog-overlay"
       className={cn(
-        // OPTIMASI: Menghapus backdrop-blur-sm dan menggantinya dengan warna solid gelap yang sangat ringan dirender (bg-black/70)
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/70 duration-150",
         className,
       )}
@@ -51,20 +50,23 @@ const DialogOverlay = React.forwardRef<
   );
 });
 
+// 🔮 SIHIR BARU: Menambahkan antarmuka (interface) untuk menerima sakelar hideClose
+interface DialogContentProps extends React.ComponentProps<typeof DialogPrimitive.Content> {
+  hideClose?: boolean;
+}
+
 function DialogContent({
   className,
   children,
+  hideClose = false, // 🔮 Bawaannya adalah false (tombol tetap muncul)
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: DialogContentProps) {
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          // OPTIMASI: 
-          // 1. Menghapus zoom-in-95 dan zoom-out-95 (Ini penyebab utama lag pada panel besar)
-          // 2. Durasi dipercepat menjadi duration-150 agar lebih snappy
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl border-4 border-amber-900/20 p-6 shadow-2xl duration-150",
           className,
         )}
@@ -72,11 +74,13 @@ function DialogContent({
       >
         {children}
 
-        {/* TOMBOL CLOSE */}
-        <DialogPrimitive.Close className="absolute top-2 right-2 sm:top-4 sm:right-4 z-50 flex items-center justify-center rounded-full bg-[#faf6f1] p-2 text-amber-900 border-2 border-amber-700/30 shadow-md transition-all duration-200 hover:scale-110 hover:rotate-90 hover:bg-red-500 hover:text-white hover:border-red-700 hover:shadow-xl focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0">
-          <XIcon className="h-5 w-5 stroke-[3px]" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        {/* 🔮 LOGIKA SAKELAR: Tombol ini hanya dirender jika hideClose adalah false */}
+        {!hideClose && (
+          <DialogPrimitive.Close className="absolute top-2 right-2 sm:top-4 sm:right-4 z-50 flex items-center justify-center rounded-full bg-[#faf6f1] p-2 text-amber-900 border-2 border-amber-700/30 shadow-md transition-all duration-200 hover:scale-110 hover:rotate-90 hover:bg-red-500 hover:text-white hover:border-red-700 hover:shadow-xl focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0">
+            <XIcon className="h-5 w-5 stroke-[3px]" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
         
       </DialogPrimitive.Content>
     </DialogPortal>

@@ -760,12 +760,19 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
       </Dialog>
 
       <Dialog open={treasureVaultOpen} onOpenChange={setTreasureVaultOpen}>
-        <DialogContent className="max-w-5xl bg-transparent border-none shadow-none p-0" aria-describedby="treasure-vault-description">
+        {/* 🔮 SUNTIKAN 1: Tambahkan hideClose di sini agar tombol bawaan menghilang */}
+        <DialogContent hideClose className="max-w-5xl bg-transparent border-none shadow-none p-0" aria-describedby="treasure-vault-description">
           <DialogHeader className="sr-only">
             <DialogTitle>Treasure Vault Collection</DialogTitle>
             <DialogDescription id="treasure-vault-description">View all your discovered and hidden treasures here.</DialogDescription>
           </DialogHeader>
-          <BadgeCollection unitScores={unitScores} totalUnits={units.length} />
+          
+          {/* 🔮 SUNTIKAN 2: Tambahkan onClose agar tombol silang baru bisa berfungsi */}
+          <BadgeCollection 
+            unitScores={unitScores} 
+            totalUnits={units.length} 
+            onClose={() => setTreasureVaultOpen(false)} 
+          />
         </DialogContent>
       </Dialog>
 
