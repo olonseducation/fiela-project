@@ -36,16 +36,19 @@ export function MiniGamePage({ vocabulary, gameType, onComplete, onGoHome }: Min
   
   useEffect(() => {
     const word = vocabulary[currentQuestion];
-    const otherWords = getSmartDistractors(word, vocabulary, 2);
+    
+    // 🔮 MENGGUNAKAN MESIN PINTAR: Mengambil 2 pengecoh yang sejenis (Buah vs Buah, Baju vs Baju)
+    // Mesin ini sekarang punya amunisi yang sangat melimpah dari pembaruan kita sebelumnya!
+    const semanticDistractors = getSmartDistractors(word, vocabulary, 2);
     
     if (gameType === 'matching') {
-      const allWords = [word, ...otherWords].sort(() => Math.random() - 0.5);
+      const allWords = [word, ...semanticDistractors].sort(() => Math.random() - 0.5);
       setShuffledOptions(allWords);
     } else if (gameType === 'fillBlank') {
-      const options = [word.word, ...otherWords.map(w => w.word)].sort(() => Math.random() - 0.5);
+      const options = [word.word, ...semanticDistractors.map(w => w.word)].sort(() => Math.random() - 0.5);
       setShuffledOptions(options);
     } else if (gameType === 'quiz') {
-      const options = [word.definition, ...otherWords.map(w => w.definition)].sort(() => Math.random() - 0.5);
+      const options = [word.definition, ...semanticDistractors.map(w => w.definition)].sort(() => Math.random() - 0.5);
       setShuffledOptions(options);
     }
   }, [currentQuestion, vocabulary, gameType]);
