@@ -32,52 +32,52 @@ const ATLAS_TREASURES: BadgeInfo[] = [
   // ==========================================
   // 🌿 EKSPEDISI 1: THE GREEN FOREST
   // ==========================================
-  { id: 'u1_q1', tier: 1, icon: Leaf, label: 'Leaf Reader', requirement: 'Quiz 70+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100' },
-  { id: 'u1_q2', tier: 2, icon: TreePine, label: 'Forest Scholar', requirement: 'Quiz 85+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200' },
-  { id: 'u1_q3', tier: 3, icon: Crown, label: 'Crown of the Woods', requirement: 'Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
-  { id: 'u1_v1', tier: 1, icon: Wind, label: 'Woodland Whisper', requirement: 'Voice 60+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100' },
-  { id: 'u1_v2', tier: 2, icon: Bird, label: 'Jungle Caller', requirement: 'Voice 80+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200' },
-  { id: 'u1_v3', tier: 3, icon: Volume2, label: 'Lion\'s Roar', requirement: 'Voice 95+', color: 'text-amber-600', bgColor: 'from-orange-100 to-amber-300' },
+  { id: 'u1_q1', tier: 1, icon: Leaf, label: 'Leaf Reader', requirement: '🌿 E1 • Quiz 70+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100' },
+  { id: 'u1_q2', tier: 2, icon: TreePine, label: 'Forest Scholar', requirement: '🌿 E1 • Quiz 85+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200' },
+  { id: 'u1_q3', tier: 3, icon: Crown, label: 'Crown of the Woods', requirement: '🌿 E1 • Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
+  { id: 'u1_v1', tier: 1, icon: Wind, label: 'Woodland Whisper', requirement: '🌿 E1 • Voice 60+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100' },
+  { id: 'u1_v2', tier: 2, icon: Bird, label: 'Jungle Caller', requirement: '🌿 E1 • Voice 80+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200' },
+  { id: 'u1_v3', tier: 3, icon: Volume2, label: 'Lion\'s Roar', requirement: '🌿 E1 • Voice 95+', color: 'text-amber-600', bgColor: 'from-orange-100 to-amber-300' },
 
   // ==========================================
   // 🏜️ EKSPEDISI 2: THE SANDY DESERT
   // ==========================================
-  { id: 'u2_q1', tier: 1, icon: Sun, label: 'Sand Seeker', requirement: 'Quiz 70+', color: 'text-amber-700', bgColor: 'from-orange-50 to-amber-100' },
-  { id: 'u2_q2', tier: 2, icon: Compass, label: 'Oasis Thinker', requirement: 'Quiz 85+', color: 'text-teal-700', bgColor: 'from-teal-100 to-cyan-200' },
-  { id: 'u2_q3', tier: 3, icon: Tent, label: 'Pyramid Master', requirement: 'Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
-  { id: 'u2_v1', tier: 1, icon: AudioLines, label: 'Desert Echo', requirement: 'Voice 60+', color: 'text-orange-600', bgColor: 'from-orange-50 to-amber-100' },
-  { id: 'u2_v2', tier: 2, icon: Footprints, label: 'Dune Speaker', requirement: 'Voice 80+', color: 'text-amber-700', bgColor: 'from-orange-100 to-amber-200' },
-  { id: 'u2_v3', tier: 3, icon: Eye, label: 'Sphinx\'s Voice', requirement: 'Voice 95+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
+  { id: 'u2_q1', tier: 1, icon: Sun, label: 'Sand Seeker', requirement: '🏜️ E2 • Quiz 70+', color: 'text-amber-700', bgColor: 'from-orange-50 to-amber-100' },
+  { id: 'u2_q2', tier: 2, icon: Compass, label: 'Oasis Thinker', requirement: '🏜️ E2 • Quiz 85+', color: 'text-teal-700', bgColor: 'from-teal-100 to-cyan-200' },
+  { id: 'u2_q3', tier: 3, icon: Tent, label: 'Pyramid Master', requirement: '🏜️ E2 • Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
+  { id: 'u2_v1', tier: 1, icon: AudioLines, label: 'Desert Echo', requirement: '🏜️ E2 • Voice 60+', color: 'text-orange-600', bgColor: 'from-orange-50 to-amber-100' },
+  { id: 'u2_v2', tier: 2, icon: Footprints, label: 'Dune Speaker', requirement: '🏜️ E2 • Voice 80+', color: 'text-amber-700', bgColor: 'from-orange-100 to-amber-200' },
+  { id: 'u2_v3', tier: 3, icon: Eye, label: 'Sphinx\'s Voice', requirement: '🏜️ E2 • Voice 95+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200' },
 
   // ==========================================
   // 🌊 EKSPEDISI 3: THE DEEP OCEAN
   // ==========================================
-  { id: 'u3_q1', tier: 1, icon: Waves, label: 'Tide Learner', requirement: 'Quiz 70+', color: 'text-blue-600', bgColor: 'from-blue-50 to-cyan-100' },
-  { id: 'u3_q2', tier: 2, icon: Fish, label: 'Coral Scholar', requirement: 'Quiz 85+', color: 'text-rose-600', bgColor: 'from-rose-100 to-pink-200' },
-  { id: 'u3_q3', tier: 3, icon: Gem, label: 'Pearl of Wisdom', requirement: 'Quiz 100', color: 'text-slate-600', bgColor: 'from-slate-100 to-gray-200' },
-  { id: 'u3_v1', tier: 1, icon: Shell, label: 'Seashell Murmur', requirement: 'Voice 60+', color: 'text-teal-600', bgColor: 'from-teal-50 to-cyan-100' },
-  { id: 'u3_v2', tier: 2, icon: Anchor, label: 'Wave Caller', requirement: 'Voice 80+', color: 'text-blue-600', bgColor: 'from-blue-100 to-indigo-200' },
-  { id: 'u3_v3', tier: 3, icon: Droplets, label: 'Dolphin\'s Pitch', requirement: 'Voice 95+', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-200' },
+  { id: 'u3_q1', tier: 1, icon: Waves, label: 'Tide Learner', requirement: '🌊 E3 • Quiz 70+', color: 'text-blue-600', bgColor: 'from-blue-50 to-cyan-100' },
+  { id: 'u3_q2', tier: 2, icon: Fish, label: 'Coral Scholar', requirement: '🌊 E3 • Quiz 85+', color: 'text-rose-600', bgColor: 'from-rose-100 to-pink-200' },
+  { id: 'u3_q3', tier: 3, icon: Gem, label: 'Pearl of Wisdom', requirement: '🌊 E3 • Quiz 100', color: 'text-slate-600', bgColor: 'from-slate-100 to-gray-200' },
+  { id: 'u3_v1', tier: 1, icon: Shell, label: 'Seashell Murmur', requirement: '🌊 E3 • Voice 60+', color: 'text-teal-600', bgColor: 'from-teal-50 to-cyan-100' },
+  { id: 'u3_v2', tier: 2, icon: Anchor, label: 'Wave Caller', requirement: '🌊 E3 • Voice 80+', color: 'text-blue-600', bgColor: 'from-blue-100 to-indigo-200' },
+  { id: 'u3_v3', tier: 3, icon: Droplets, label: 'Dolphin\'s Pitch', requirement: '🌊 E3 • Voice 95+', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-200' },
 
   // ==========================================
   // ⛰️ EKSPEDISI 4: THE HIGH MOUNTAINS
   // ==========================================
-  { id: 'u4_q1', tier: 1, icon: Mountain, label: 'Cliff Solver', requirement: 'Quiz 70+', color: 'text-slate-600', bgColor: 'from-slate-100 to-slate-300' },
-  { id: 'u4_q2', tier: 2, icon: MountainSnow, label: 'Peak Thinker', requirement: 'Quiz 85+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-violet-200' },
-  { id: 'u4_q3', tier: 3, icon: Flag, label: 'Summit Genius', requirement: 'Quiz 100', color: 'text-sky-700', bgColor: 'from-sky-100 to-blue-200' },
-  { id: 'u4_v1', tier: 1, icon: Cloud, label: 'Wind Whisperer', requirement: 'Voice 60+', color: 'text-sky-600', bgColor: 'from-sky-50 to-blue-100' },
-  { id: 'u4_v2', tier: 2, icon: Feather, label: 'Eagle\'s Call', requirement: 'Voice 80+', color: 'text-slate-700', bgColor: 'from-slate-200 to-gray-300' },
-  { id: 'u4_v3', tier: 3, icon: CloudLightning, label: 'Thunder\'s Roar', requirement: 'Voice 95+', color: 'text-indigo-700', bgColor: 'from-indigo-200 to-violet-300' },
+  { id: 'u4_q1', tier: 1, icon: Mountain, label: 'Cliff Solver', requirement: '⛰️ E4 • Quiz 70+', color: 'text-slate-600', bgColor: 'from-slate-100 to-slate-300' },
+  { id: 'u4_q2', tier: 2, icon: MountainSnow, label: 'Peak Thinker', requirement: '⛰️ E4 • Quiz 85+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-violet-200' },
+  { id: 'u4_q3', tier: 3, icon: Flag, label: 'Summit Genius', requirement: '⛰️ E4 • Quiz 100', color: 'text-sky-700', bgColor: 'from-sky-100 to-blue-200' },
+  { id: 'u4_v1', tier: 1, icon: Cloud, label: 'Wind Whisperer', requirement: '⛰️ E4 • Voice 60+', color: 'text-sky-600', bgColor: 'from-sky-50 to-blue-100' },
+  { id: 'u4_v2', tier: 2, icon: Feather, label: 'Eagle\'s Call', requirement: '⛰️ E4 • Voice 80+', color: 'text-slate-700', bgColor: 'from-slate-200 to-gray-300' },
+  { id: 'u4_v3', tier: 3, icon: CloudLightning, label: 'Thunder\'s Roar', requirement: '⛰️ E4 • Voice 95+', color: 'text-indigo-700', bgColor: 'from-indigo-200 to-violet-300' },
 
   // ==========================================
   // 🏰 EKSPEDISI 5: THE GRAND CASTLE
   // ==========================================
-  { id: 'u5_q1', tier: 1, icon: Map, label: 'Map Keeper', requirement: 'Quiz 70+', color: 'text-amber-800', bgColor: 'from-amber-100 to-orange-200' },
-  { id: 'u5_q2', tier: 2, icon: Shield, label: 'Royal Scholar', requirement: 'Quiz 85+', color: 'text-purple-700', bgColor: 'from-purple-100 to-indigo-200' },
-  { id: 'u5_q3', tier: 3, icon: Sparkles, label: 'FIELA Legend', requirement: 'Quiz 100', color: 'text-fuchsia-700', bgColor: 'from-fuchsia-100 to-purple-300' },
-  { id: 'u5_v1', tier: 1, icon: Bell, label: 'Silver Herald', requirement: 'Voice 60+', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300' },
-  { id: 'u5_v2', tier: 2, icon: Megaphone, label: 'Golden Orator', requirement: 'Voice 80+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300' },
-  { id: 'u5_v3', tier: 3, icon: Trophy, label: 'Diamond Sovereign', requirement: 'Voice 95+', color: 'text-cyan-400', bgColor: 'from-cyan-100 to-blue-100' },
+  { id: 'u5_q1', tier: 1, icon: Map, label: 'Map Keeper', requirement: '🏰 E5 • Quiz 70+', color: 'text-amber-800', bgColor: 'from-amber-100 to-orange-200' },
+  { id: 'u5_q2', tier: 2, icon: Shield, label: 'Royal Scholar', requirement: '🏰 E5 • Quiz 85+', color: 'text-purple-700', bgColor: 'from-purple-100 to-indigo-200' },
+  { id: 'u5_q3', tier: 3, icon: Sparkles, label: 'FIELA Legend', requirement: '🏰 E5 • Quiz 100', color: 'text-fuchsia-700', bgColor: 'from-fuchsia-100 to-purple-300' },
+  { id: 'u5_v1', tier: 1, icon: Bell, label: 'Silver Herald', requirement: '🏰 E5 • Voice 60+', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300' },
+  { id: 'u5_v2', tier: 2, icon: Megaphone, label: 'Golden Orator', requirement: '🏰 E5 • Voice 80+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300' },
+  { id: 'u5_v3', tier: 3, icon: Trophy, label: 'Diamond Sovereign', requirement: '🏰 E5 • Voice 95+', color: 'text-cyan-400', bgColor: 'from-cyan-100 to-blue-100' },
 ];
 
 export function BadgeCollection({ unitScores, totalUnits, onClose }: BadgeCollectionProps) {
