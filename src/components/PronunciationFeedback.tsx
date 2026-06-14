@@ -18,141 +18,155 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
   
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const [recognition, setRecognition] = useState<any>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
 
-  // 🔮 BRANKAS BARU: Mencatat berapa kali anak telah gagal di kata ini
+  // 🔮 BRANKAS GAGAL
   const [failedAttempts, setFailedAttempts] = useState(0);
 
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalTranscriptRef = useRef<string>('');
   const confidenceRef = useRef<number>(1);
+  
+  // 🚀 PERBAIKAN ANDROID: Menggunakan Ref, bukan State
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    // 🔮 RESET TOTAL: Setiap kali kata target berganti, hitungan gagal harus kembali ke 0
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      setIsSupported(false);
+    }
+  }, []);
+
+  useEffect(() => {
     setFailedAttempts(0);
     setTranscript('');
     setFeedback(null);
-
-    let recognitionInstance: any = null;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      try {
-        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-        recognitionInstance = new SpeechRecognition();
-        recognitionInstance.continuous = false;
-        recognitionInstance.interimResults = true;
-        recognitionInstance.lang = 'en-US';
-        recognitionInstance.maxAlternatives = 5; 
-
-        recognitionInstance.onresult = (event: any) => {
-          let interimText = '';
-          let finalText = '';
-          let finalConf = 1;
-          let isMatchFound = false;
-
-          const normalizedTarget = targetWord.toLowerCase().trim();
-
-          for (let i = 0; i < event.results.length; i++) {
-            const result = event.results[i];
-            
-            if (result.isFinal) {
-              for (let j = 0; j < result.length; j++) {
-                const altText = result[j].transcript.toLowerCase().trim();
-                const altConf = result[j].confidence;
-
-                if (matchesWord(altText, normalizedTarget)) {
-                  finalText = altText; 
-                  finalConf = altConf; 
-                  isMatchFound = true;
-                  break; 
-                }
-              }
-
-              if (!isMatchFound) {
-                finalText = result[0].transcript.toLowerCase().trim();
-                finalConf = result[0].confidence;
-              }
-            } else {
-              interimText += result[0].transcript;
-            }
-          }
-          
-          if (interimText) {
-            setTranscript(interimText + '...');
-          } else if (finalText) {
-            finalTranscriptRef.current = finalText;
-            confidenceRef.current = finalConf > 0 ? finalConf : 0.8; 
-            setTranscript(finalText);
-          }
-        };
-
-        recognitionInstance.onend = () => {
-          setIsListening(false);
-          setIsRecording(false);
-          triggerCooldown();
-
-          if (autoStopTimerRef.current) {
-            clearTimeout(autoStopTimerRef.current);
-            autoStopTimerRef.current = null;
-          }
-          
-          const finalText = finalTranscriptRef.current;
-          const finalConfidence = confidenceRef.current; 
-          
-          if (finalText) {
-            checkPronunciation(finalText, finalConfidence);
-            finalTranscriptRef.current = '';
-            confidenceRef.current = 1; 
-          } else {
-            setFeedback('incorrect');
-            setTranscript('Oops! I didn\'t hear you.');
-            soundEffects.incorrect();
-            
-            // 🔮 CATAT KEGAGALAN: Suara tidak terdengar juga dihitung gagal
-            setFailedAttempts(prev => prev + 1);
-            onFail(); 
-
-            setTimeout(() => { 
-              setFeedback(null); 
-              setTranscript(''); 
-            }, 2500);
-          }
-        };
-
-        recognitionInstance.onerror = (event: any) => {
-          setIsListening(false);
-          setIsRecording(false);
-          triggerCooldown();
-          setError(event.error === 'not-allowed' ? 'Izin mikrofon ditolak.' : 'Terjadi kesalahan suara.');
-          
-          // 🔮 CATAT KEGAGALAN: Error sistem/mikrofon langsung memicu hitungan gagal
-          setFailedAttempts(prev => prev + 1);
-          onFail(); 
-        };
-
-        recognitionInstance.onstart = () => {
-          setError(null);
-          setIsRecording(true);
-          soundEffects.buttonPlay(); 
-        };
-
-        setRecognition(recognitionInstance);
-        setIsReady(true);
-      } catch (err) {
-        setIsSupported(false);
-      }
-    } else {
-      setIsSupported(false);
-    }
     
     return () => {
-      if (recognitionInstance) {
-        try { recognitionInstance.abort(); } catch (e) {} 
-      }
+      stopAndDestroyRecognition();
     };
   }, [targetWord]);
+
+  // 🚀 FUNGSI SAPU BERSIH MIKROFON
+  const stopAndDestroyRecognition = () => {
+    if (autoStopTimerRef.current) {
+      clearTimeout(autoStopTimerRef.current);
+      autoStopTimerRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onstart = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.abort(); 
+      } catch (e) {
+        console.log("Cleanup handled.");
+      }
+      recognitionRef.current = null;
+    }
+  };
+
+  // 🚀 MESIN BARU SETIAP KLIK
+  const createNewRecognitionInstance = () => {
+    stopAndDestroyRecognition();
+
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const instance = new SpeechRecognition();
+    
+    instance.continuous = false;
+    instance.interimResults = true;
+    instance.lang = 'en-US';
+    instance.maxAlternatives = 5;
+
+    instance.onstart = () => {
+      setError(null);
+      setIsRecording(true);
+      soundEffects.buttonPlay(); 
+    };
+
+    instance.onresult = (event: any) => {
+      let interimText = '';
+      let finalText = '';
+      let finalConf = 1;
+      let isMatchFound = false;
+
+      const normalizedTarget = targetWord.toLowerCase().trim();
+
+      for (let i = 0; i < event.results.length; i++) {
+        const result = event.results[i];
+        
+        if (result.isFinal) {
+          for (let j = 0; j < result.length; j++) {
+            const altText = result[j].transcript.toLowerCase().trim();
+            const altConf = result[j].confidence;
+
+            // 🔮 KEMBALI MENGGUNAKAN HOMOPHONE MAP MILIK KAPTEN 100%
+            if (matchesWord(altText, normalizedTarget)) {
+              finalText = altText; 
+              finalConf = altConf; 
+              isMatchFound = true;
+              break; 
+            }
+          }
+
+          if (!isMatchFound) {
+            finalText = result[0].transcript.toLowerCase().trim();
+            finalConf = result[0].confidence;
+          }
+        } else {
+          interimText += result[0].transcript;
+        }
+      }
+      
+      if (interimText) {
+        setTranscript(interimText + '...');
+      } else if (finalText) {
+        finalTranscriptRef.current = finalText;
+        confidenceRef.current = finalConf > 0 ? finalConf : 0.8; 
+        setTranscript(finalText);
+      }
+    };
+
+    instance.onend = () => {
+      setIsListening(false);
+      setIsRecording(false);
+      triggerCooldown();
+      
+      const finalText = finalTranscriptRef.current;
+      const finalConfidence = confidenceRef.current; 
+      
+      if (finalText) {
+        checkPronunciation(finalText, finalConfidence);
+        finalTranscriptRef.current = '';
+        confidenceRef.current = 1; 
+      } else {
+        setFeedback('incorrect');
+        setTranscript('Oops! I didn\'t hear you.');
+        soundEffects.incorrect();
+        
+        setFailedAttempts(prev => prev + 1);
+        onFail(); 
+
+        setTimeout(() => { 
+          setFeedback(null); 
+          setTranscript(''); 
+        }, 2500);
+      }
+    };
+
+    instance.onerror = (event: any) => {
+      setIsListening(false);
+      setIsRecording(false);
+      triggerCooldown();
+      setError(event.error === 'not-allowed' ? 'Izin mikrofon ditolak.' : 'Terjadi kesalahan suara.');
+      setFailedAttempts(prev => prev + 1);
+      onFail(); 
+    };
+
+    recognitionRef.current = instance;
+    return instance;
+  };
 
   const triggerCooldown = () => {
     setIsCooldown(true);
@@ -162,7 +176,8 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
   const checkPronunciation = (spokenText: string, confidenceScore: number) => {
     const normalizedTarget = targetWord.toLowerCase().trim();
     
-    if (matchesWord(spokenText.toLowerCase().trim(), normalizedTarget)) {
+    // 🔮 MENGGUNAKAN ALAT KAPTEN
+    if (matchesWord(spokenText, normalizedTarget)) {
       setTranscript(targetWord);
       setFeedback('correct');
       soundEffects.correctPronunciation();
@@ -176,7 +191,6 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
       setFeedback('incorrect');
       soundEffects.incorrect();
       
-      // 🔮 CATAT KEGAGALAN: Pelafalan salah menaikkan angka log kesalahan
       setFailedAttempts(prev => prev + 1);
       onFail(); 
       
@@ -185,7 +199,7 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
   };
 
   const startListening = async () => {
-    if (!recognition || isCooldown) return;
+    if (isCooldown) return;
     try {
       setTranscript('');
       setFeedback(null);
@@ -195,8 +209,20 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
       setIsListening(true);
       setIsRecording(false);
       
-      recognition.start();
-      autoStopTimerRef.current = setTimeout(() => { if (recognition) recognition.stop(); }, 5000);
+      const freshRecognition = createNewRecognitionInstance();
+      
+      setTimeout(() => {
+        try {
+          freshRecognition.start();
+          autoStopTimerRef.current = setTimeout(() => { 
+            if (recognitionRef.current) recognitionRef.current.stop(); 
+          }, 5000);
+        } catch(e) {
+          setIsListening(false);
+          setIsRecording(false);
+        }
+      }, 50);
+
     } catch (err) { 
       setIsListening(false);
       setIsRecording(false);
@@ -205,22 +231,19 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
   };
 
   const stopListeningManually = () => {
-    if (recognition) {
-      try { recognition.stop(); } catch(e) {}
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch(e) {}
     }
   };
 
-  // 🔮 FUNGSI TOMBOL SKIP: Memberikan berkat kelulusan otomatis dari Atlas
   const handleSkipChallenge = () => {
     soundEffects.buttonNavigation();
-    // Berikan nilai jaring pengaman 0.7 (Skor Akhir Katrol = 91)
-    // 🔮 UBAH: Kirim nilai 0 agar mereka hanya mendapat nilai KKTP (70)
     onSuccess(0); 
   };
 
   if (!isSupported) return <p className="text-center text-amber-900 font-[Nunito]">Browser tidak didukung.</p>;
 
-  const isButtonDisabled = !isReady || isCooldown;
+  const isButtonDisabled = isCooldown; 
   const buttonBackground = isCooldown 
     ? 'bg-gray-400 cursor-not-allowed' 
     : isListening 
@@ -231,7 +254,7 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
     <div className="flex flex-col items-center gap-4 w-full">
       <div className="flex flex-row items-center justify-center gap-4 relative">
         
-        {/* TOMBOL UTAMA REKAM AUDIO */}
+        {/* TOMBOL MIKROFON */}
         <div className="relative">
           {isRecording && (
             <motion.div
@@ -256,7 +279,7 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
           </motion.div>
         </div>
 
-        {/* 🔮 SIHIR TOMBOL SKIP: Hanya berlabuh di layar jika gagal >= 3 kali */}
+        {/* TOMBOL SKIP */}
         <AnimatePresence>
           {failedAttempts >= 3 && (
             <motion.div
@@ -276,6 +299,7 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
         </AnimatePresence>
       </div>
 
+      {/* FEEDBACK VISUAL */}
       <div className="h-24 flex flex-col items-center justify-start gap-2 w-full pt-1">
         {!isListening && !transcript && !feedback && !error && (
           <motion.p 
