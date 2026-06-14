@@ -478,7 +478,7 @@ export function RewardPage({
                 {newlyUnlockedTreasures.length === 0 ? (
                   <div className="col-span-full py-4 text-center">
                     {/* 🔮 Teks pesan kosong diubah ke warna terang agar tidak ikut tenggelam */}
-                    <p className="text-amber-200/60 font-[Nunito] font-bold text-sm italic">
+                    <p className="text-amber-800/60 font-[Nunito] font-bold text-sm italic">
                       No new treasures found this time.
                     </p>
                   </div>
