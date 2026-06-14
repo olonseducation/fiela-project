@@ -27,7 +27,7 @@ export interface UnitScore {
   score: number;
   total: number;
   percentage: number;
-  pronunciationScore?: number; // TAMBAHAN: Menyimpan skor pelafalan permanen
+  pronunciationScore?: number; 
 }
 
 export default function App() {
@@ -38,10 +38,8 @@ export default function App() {
   const [passwordUnlockedUnits, setPasswordUnlockedUnits] = useState<Set<number>>(new Set());
   const [showCompletion, setShowCompletion] = useState(false);
   const [unitScores, setUnitScores] = useState<Record<number, UnitScore>>({});
-  // 🔮 Tambahkan state ini untuk melacak status laci
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // TAMBAHAN: Menambahkan pronunciationScore ke memori sementara gameResults
   const [gameResults, setGameResults] = useState<{ wrongAnswers: WrongAnswer[], score: number, total: number, pronunciationScore: number }>({
     wrongAnswers: [],
     score: 0,
@@ -53,24 +51,16 @@ export default function App() {
   useEffect(() => {
     try {
       const welcomeSeen = localStorage.getItem(STORAGE_KEY_WELCOME_SEEN);
-      if (welcomeSeen === 'true') {
-        setShowWelcome(false);
-      }
+      if (welcomeSeen === 'true') setShowWelcome(false);
 
       const savedCompleted = localStorage.getItem(STORAGE_KEY_COMPLETED);
-      if (savedCompleted) {
-        setCompletedUnits(new Set(JSON.parse(savedCompleted)));
-      }
+      if (savedCompleted) setCompletedUnits(new Set(JSON.parse(savedCompleted)));
 
       const savedPasswordUnlocked = localStorage.getItem(STORAGE_KEY_PASSWORD_UNLOCKED);
-      if (savedPasswordUnlocked) {
-        setPasswordUnlockedUnits(new Set(JSON.parse(savedPasswordUnlocked)));
-      }
+      if (savedPasswordUnlocked) setPasswordUnlockedUnits(new Set(JSON.parse(savedPasswordUnlocked)));
 
       const savedUnitScores = localStorage.getItem(STORAGE_KEY_UNIT_SCORES);
-      if (savedUnitScores) {
-        setUnitScores(JSON.parse(savedUnitScores));
-      }
+      if (savedUnitScores) setUnitScores(JSON.parse(savedUnitScores));
 
       const savedUnit = localStorage.getItem(STORAGE_KEY_CURRENT_UNIT);
       const savedPage = localStorage.getItem(STORAGE_KEY_CURRENT_PAGE);
@@ -83,7 +73,6 @@ export default function App() {
     }
   }, []);
 
-  // Save completed units to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_COMPLETED, JSON.stringify(Array.from(completedUnits)));
@@ -92,7 +81,6 @@ export default function App() {
     }
   }, [completedUnits]);
 
-  // Save password unlocked units to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_PASSWORD_UNLOCKED, JSON.stringify(Array.from(passwordUnlockedUnits)));
@@ -101,60 +89,74 @@ export default function App() {
     }
   }, [passwordUnlockedUnits]);
 
-  // Save unit scores to localStorage whenever it changes AND SYNC TO FIREBASE
+  // ☁️ FIREBASE SYNC: MENYIMPAN DATA DENGAN DETAIL EKSTRA
   useEffect(() => {
     try {
-      // 1. Simpan data di lokal HP anak terlebih dahulu
       localStorage.setItem(STORAGE_KEY_UNIT_SCORES, JSON.stringify(unitScores));
       
-      // 2. AMBIL NAMA DARI DIALOG WELCOME PAGE
       const namaPelaut = localStorage.getItem('fiela_player_name') || 'Pelaut_Anonim';
       
-      // 3. Buatkan kode unik pendek jika belum ada (agar nama yang sama tidak saling menimpa data)
       let shortId = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
       if (!shortId) {
-        shortId = Math.random().toString(36).substr(2, 5); // Hanya ambil 5 huruf/angka acak
+        shortId = Math.random().toString(36).substr(2, 5); 
         localStorage.setItem(STORAGE_KEY_DEVICE_ID, shortId);
       }
 
-      // Gabungkan nama dan kode unik (Contoh hasil: Widi_x7y9a)
-      const safeName = namaPelaut.trim().replace(/[^a-zA-Z0-9]/g, '_'); // Hilangkan spasi/simbol aneh
+      const safeName = namaPelaut.trim().replace(/[^a-zA-Z0-9]/g, '_'); 
       const documentId = `${safeName}_${shortId}`;
 
-      // 4. Kirim salinan data ke awan (Firestore)
+      // Hitung kekayaan saat ini untuk dikirim ke Firebase
+      let calculatedTotalCoins = 0;
+      let calculatedTotalStars = 0;
+      
+      Object.values(unitScores).forEach((score) => {
+        const q = Math.round(score.percentage || 0);
+        const v = Math.round(score.pronunciationScore || 0);
+        
+        // Kalkulasi Koin
+        let coins = q + v;
+        if (q >= 70) coins += 5;
+        if (q >= 85) coins += 10;
+        if (q === 100) coins += 20;
+        if (v >= 60) coins += 5;
+        if (v >= 80) coins += 10;
+        if (v >= 95) coins += 20;
+        calculatedTotalCoins += coins;
+
+        // Kalkulasi Bintang
+        if (q >= 70 && v >= 60) calculatedTotalStars += 1;
+        if (q >= 85 && v >= 80) calculatedTotalStars += 1; // +1 = 2 stars
+        if (q === 100 && v >= 95) calculatedTotalStars += 1; // +1 = 3 stars
+      });
+
       if (Object.keys(unitScores).length > 0) {
         const sailorRef = doc(db, "pelaut_fiela", documentId);
-        
         setDoc(sailorRef, {
-          nama_pelaut: namaPelaut, // Nama asli tersimpan jelas di dalam data
+          nama_pelaut: namaPelaut, 
           id_perangkat: documentId,
           waktu_terakhir_main: new Date().toISOString(),
           koleksi_skor: unitScores,
-          pulau_selesai: Array.from(completedUnits)
+          pulau_selesai: Array.from(completedUnits),
+          // 🔮 DETAIL TAMBAHAN ESENSIAL
+          total_koin: calculatedTotalCoins,
+          total_bintang: calculatedTotalStars,
+          total_pulau_selesai: completedUnits.size
         }, { merge: true }) 
         .then(() => console.log(`Data Kapten ${namaPelaut} berhasil berlayar ke awan! ☁️`))
         .catch(err => console.error("Badai! Gagal mengirim ke awan:", err));
       }
-
     } catch (error) {
       console.error('Error saving unit scores:', error);
     }
-  }, [unitScores, completedUnits]); // Pantau juga completedUnits
+  }, [unitScores, completedUnits]); 
 
-  // Save current progress to localStorage
   useEffect(() => {
     try {
-      if (currentUnit !== null) {
-        localStorage.setItem(STORAGE_KEY_CURRENT_UNIT, currentUnit.toString());
-      } else {
-        localStorage.removeItem(STORAGE_KEY_CURRENT_UNIT);
-      }
+      if (currentUnit !== null) localStorage.setItem(STORAGE_KEY_CURRENT_UNIT, currentUnit.toString());
+      else localStorage.removeItem(STORAGE_KEY_CURRENT_UNIT);
       
-      if (currentPage !== null) {
-        localStorage.setItem(STORAGE_KEY_CURRENT_PAGE, currentPage);
-      } else {
-        localStorage.removeItem(STORAGE_KEY_CURRENT_PAGE);
-      }
+      if (currentPage !== null) localStorage.setItem(STORAGE_KEY_CURRENT_PAGE, currentPage);
+      else localStorage.removeItem(STORAGE_KEY_CURRENT_PAGE);
     } catch (error) {
       console.error('Error saving progress:', error);
     }
@@ -167,8 +169,6 @@ export default function App() {
 
   const handleReviewUnit = (unitId: number, page: PageType) => {
     setCurrentUnit(unitId);
-
-    // If navigating to reward page, load the saved score (termasuk pronunciation)
     if (page === 'reward' && unitScores[unitId]) {
       setGameResults({
         wrongAnswers: [],
@@ -177,7 +177,6 @@ export default function App() {
         pronunciationScore: unitScores[unitId].pronunciationScore || 0
       });
     }
-
     setCurrentPage(page);
   };
 
@@ -187,21 +186,14 @@ export default function App() {
     setPasswordUnlockedUnits(newPasswordUnlocked);
   };
 
-  const handleStartUnit = () => {
-    setCurrentPage('story');
-  };
+  const handleStartUnit = () => setCurrentPage('story');
+  const handleStoryComplete = () => setCurrentPage('review');
 
-  const handleStoryComplete = () => {
-    setCurrentPage('review');
-  };
-
-  // UBAH: Sekarang menerima skor pelafalan dari ReviewPage dan menyimpannya!
   const handleReviewComplete = (pronunciationScore: number = 0) => {
     setGameResults(prev => ({ ...prev, pronunciationScore }));
     setCurrentPage('game');
   };
 
-  // UBAH: Menggunakan "prev" agar pronunciationScore yang disimpan sebelumnya tidak hilang
   const handleGameComplete = (wrongAnswers: WrongAnswer[]) => {
     const unit = currentUnit ? units.find(u => u.id === currentUnit) : null;
     if (unit) {
@@ -221,33 +213,35 @@ export default function App() {
       newCompleted.add(currentUnit);
       setCompletedUnits(newCompleted);
 
-      // Hitung persentase kuis baru
       const percentage = gameResults.total > 0 ? (gameResults.score / gameResults.total) * 100 : 0;
       
+      // 🔮 LOGIKA REVISIT: MENYIMPAN REKOR TERBAIK SECARA INDEPENDEN
       setUnitScores(prevScores => {
         const oldScoreData = prevScores[currentUnit];
-        const newTotalValue = percentage + (gameResults.pronunciationScore || 0);
-        const oldTotalValue = oldScoreData ? (oldScoreData.percentage || 0) + (oldScoreData.pronunciationScore || 0) : -1;
+        const oldQuiz = oldScoreData?.percentage || 0;
+        const oldVoice = oldScoreData?.pronunciationScore || 0;
+        
+        const currentQuiz = percentage;
+        const currentVoice = gameResults.pronunciationScore || 0;
 
-        if (newTotalValue > oldTotalValue) {
+        // Kita update memori HANYA jika kuis atau suara memecahkan rekor lamanya
+        if (!oldScoreData || currentQuiz > oldQuiz || currentVoice > oldVoice) {
           return {
             ...prevScores,
             [currentUnit]: {
               unitId: currentUnit,
-              score: gameResults.score,
-              total: gameResults.total,
-              percentage: percentage,
-              pronunciationScore: gameResults.pronunciationScore
+              // Jaga rekor 'score' (jawaban benar) agar sesuai dengan percentage tertinggi
+              score: currentQuiz >= oldQuiz ? gameResults.score : oldScoreData.score, 
+              total: currentQuiz >= oldQuiz ? gameResults.total : oldScoreData.total,
+              percentage: Math.max(currentQuiz, oldQuiz), // Ambil yang paling tinggi!
+              pronunciationScore: Math.max(currentVoice, oldVoice) // Ambil yang paling tinggi!
             }
           };
         }
         return prevScores;
       });
 
-      // 🔮 PERUBAHAN KRUSIAL: Hanya buka Completion Page jika tombol "Complete the Atlas" yang ditekan
-      if (triggerCompletion === true) {
-        setShowCompletion(true);
-      }
+      if (triggerCompletion === true) setShowCompletion(true);
 
       setCurrentUnit(null);
       setCurrentPage(null);
@@ -265,11 +259,28 @@ export default function App() {
     setCurrentPage(null);
   };
 
-  const handleBackToWelcome = () => {
-    setShowWelcome(true);
-  };
+  const handleBackToWelcome = () => setShowWelcome(true);
 
   const unit = currentUnit ? units.find(u => u.id === currentUnit) : null;
+
+  // 🔮 MESIN WAKTU LENCANA: Merakit array lencana lama untuk disuntikkan ke RewardPage
+  const getPreviousUnlockedBadges = () => {
+    if (!currentUnit || !unitScores[currentUnit]) return [];
+    
+    const prevQuiz = Math.round(unitScores[currentUnit].percentage || 0);
+    const prevVoice = Math.round(unitScores[currentUnit].pronunciationScore || 0);
+    const oldBadges = [];
+
+    if (prevQuiz >= 70) oldBadges.push(`u${currentUnit}_q1`);
+    if (prevQuiz >= 85) oldBadges.push(`u${currentUnit}_q2`);
+    if (prevQuiz === 100) oldBadges.push(`u${currentUnit}_q3`);
+
+    if (prevVoice >= 60) oldBadges.push(`u${currentUnit}_v1`);
+    if (prevVoice >= 80) oldBadges.push(`u${currentUnit}_v2`);
+    if (prevVoice >= 95) oldBadges.push(`u${currentUnit}_v3`);
+
+    return oldBadges;
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -283,8 +294,7 @@ export default function App() {
         <path d="M1540 700 Q 1100 500, 720 800 T -100 600" fill="transparent" stroke="#451a03" strokeWidth="4" strokeDasharray="12 16" />
       </svg>
 
-      {!showWelcome && !showCompletion && <MenuDrawer pageKey={currentPage || 'home'} onDrawerStateChange={setIsMenuOpen} // 🔮 TANGKAP SINYALNYA DI SINI
-  />}
+      {!showWelcome && !showCompletion && <MenuDrawer pageKey={currentPage || 'home'} onDrawerStateChange={setIsMenuOpen} />}
       
       <AnimatePresence mode="wait">
       
@@ -298,7 +308,6 @@ export default function App() {
             totalMaxVoiceScore={units.length * 100}
             wordsMastered={Object.values(unitScores).reduce((sum, u) => sum + (u.score || 0), 0)}
             totalWords={Object.values(unitScores).reduce((sum, u) => sum + (u.total || 0), 0)}
-            // 🔮 BARIS BARU: Mengirimkan seluruh catatan nilai agar bisa dihitung Treasures-nya
             unitScores={unitScores}
           />
         </motion.div>
@@ -376,8 +385,12 @@ export default function App() {
               wrongAnswers={gameResults.wrongAnswers}
               score={gameResults.score}
               totalQuestions={gameResults.total}
-              pronunciationScore={gameResults.pronunciationScore} // KINI MENGALIR DENGAN SEMPURNA!
+              pronunciationScore={gameResults.pronunciationScore}
               onGoHome={handleGoHome}
+              // 🔮 INJEKSI MEMORI KE REWARD PAGE
+              previousPercentage={unitScores[unit.id]?.percentage || 0}
+              previousPronunciationScore={unitScores[unit.id]?.pronunciationScore || 0}
+              previousUnlockedBadges={getPreviousUnlockedBadges()}
             />
           )}
         </motion.div>

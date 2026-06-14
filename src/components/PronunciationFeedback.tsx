@@ -44,7 +44,7 @@ export function PronunciationFeedback({ targetWord, onSuccess, onFail }: Pronunc
         recognitionInstance.continuous = false;
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = 'en-US';
-        recognitionInstance.maxAlternatives = 3; 
+        recognitionInstance.maxAlternatives = 5; 
 
         recognitionInstance.onresult = (event: any) => {
           let interimText = '';

@@ -1,42 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Trophy, Star, Sparkles, BookOpen, X, Home, Crown, Target, Medal, Flame, Brain, Zap, Gem, CheckCircle, Award, Mic } from 'lucide-react';
+import { Star, BookOpen, X, Home, Award, CheckCircle, 
+          // 🌿 U1: Forest
+          Leaf, TreePine, Crown, Wind, Bird, Volume2, 
+          // 🏜️ U2: Desert
+          Sun, Compass, Tent, AudioLines, Footprints, Eye, 
+          // 🌊 U3: Ocean
+          Waves, Fish, Gem, Shell, Anchor, Droplets, 
+          // ⛰️ U4: Mountains
+          Mountain, MountainSnow, Flag, Cloud, Feather, CloudLightning, 
+          // 🏰 U5: Castle
+          Map, Shield, Sparkles, Bell, Megaphone, Trophy
+        } from 'lucide-react';
 import type { WrongAnswer } from './MiniGamePage';
 import { soundEffects } from '../utils/soundEffects';
 
-// Captain Atlas's Score Appraisal System
 import atlasMenang from '../imports/atlas-menang.webp';
 import atlasBertepukTangan from '../imports/atlas-bertepuk-tangan.webp';
 import atlasBerhasil from '../imports/atlas-berhasil.webp';
 import atlasTabah from '../imports/atlas-tabah.webp';
 
-// Fungsi penentu reaksi Captain Atlas berdasarkan total Quest (Quiz + Voice)
 const getAtlasReaction = (totalScore: number) => {
-  if (totalScore >= 190) {
-    return { 
-      pose: atlasMenang, 
-      text: "Absolutely magnificent! You are a true legend of the seas!" 
-    };
-  } else if (totalScore >= 170) {
-    return { 
-      pose: atlasBerhasil, 
-      text: "Brilliant sailing! A fine bounty for a fine captain!" 
-    };
-  } else if (totalScore >= 140) {
-    return { 
-      pose: atlasBertepukTangan, 
-      text: "Good effort, matey! Let's aim even higher next time!" 
-    };
-  } else {
-    return { 
-      pose: atlasTabah, 
-      text: "Rough waters today, but a true captain always tries again!" 
-    };
-  }
+  if (totalScore >= 190) return { pose: atlasMenang, text: "Absolutely magnificent! You are a true legend of the seas!" };
+  if (totalScore >= 170) return { pose: atlasBerhasil, text: "Brilliant sailing! A fine bounty for a fine captain!" };
+  if (totalScore >= 140) return { pose: atlasBertepukTangan, text: "Good effort, matey! Let's aim even higher next time!" };
+  return { pose: atlasTabah, text: "Rough waters today, but a true captain always tries again!" };
 };
 
-// 🪙 KOMPONEN KOIN EMAS FIELA ASLI
 const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <circle cx="12" cy="12" r="10" fill="#FBBF24" stroke="#B45309" strokeWidth="2"/>
@@ -45,16 +36,11 @@ const CoinIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
-// 🪽 KOMPONEN SAYAP KEBESARAN FIELA
 const WingDecoration = ({ className = "", flip = false }: { className?: string, flip?: boolean }) => (
   <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} ${flip ? 'scale-x-[-1]' : ''}`}>
-    {/* Bulu Bawah */}
     <path d="M20 40 Q 50 48 65 45 Q 40 55 20 40" fill="#FBBF24" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" />
-    {/* Bulu Atas */}
     <path d="M15 30 Q 60 10 98 5 Q 60 25 15 30" fill="#FBBF24" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" />
-    {/* Bulu Tengah (Lebih Panjang & Terang) */}
     <path d="M10 35 Q 50 30 95 20 Q 60 45 10 35" fill="#FDE68A" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
-    {/* Bulu Tengah (Lebih Panjang & Terang) */}
     <path d="M15 40 Q 15 55 40 55 Q 20 50 15 40" fill="#FDE68A" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
@@ -68,20 +54,25 @@ interface RewardPageProps {
   totalQuestions?: number;
   pronunciationScore?: number;
   onGoHome: () => void;
+  // 🔮 PROPS BARU: MEMORI REKOR SEBELUMNYA UNTUK SISTEM REVISIT
+  previousPercentage?: number; 
+  previousPronunciationScore?: number;
+  previousUnlockedBadges?: string[]; // Array berisi ID lencana yang sudah didapat sebelumnya
 }
 
-export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = [], score = 0, totalQuestions = 0, pronunciationScore = 0, onGoHome }: RewardPageProps) {
+export function RewardPage({ 
+  unitNumber, onContinue, isLastUnit, wrongAnswers = [], score = 0, totalQuestions = 0, pronunciationScore = 0, onGoHome,
+  previousPercentage = 0, previousPronunciationScore = 0, previousUnlockedBadges = [] 
+}: RewardPageProps) {
+  
   const [showReview, setShowReview] = useState(false);
   const [windowDimensions, setWindowDimensions] = useState({ width: 1000, height: 800 });
   const hasPlayedInitAudio = useRef(false);
 
+  // 🧭 KALKULASI SKOR SESI INI
   const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
-  
-  // 🧭 SINKRONISASI MATEMATIKA KURIKULUM & EKONOMI
   const quizScore = Math.round(percentage);
   const voiceScore = Math.round(pronunciationScore);
-
-  // 🔮 MENGHITUNG FINAL SCORE & REAKSI ATLAS
   const finalScore = quizScore + voiceScore;
   const reaction = getAtlasReaction(finalScore);
 
@@ -91,17 +82,93 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   if (quizScore >= 85 && voiceScore >= 80) earnedStars = 2;
   if (quizScore === 100 && voiceScore >= 95) earnedStars = 3;
 
-  // 2. Hitung Atlas Coins
-  let calculatedCoins = quizScore + voiceScore;
-  if (quizScore > 0 || voiceScore > 0) calculatedCoins += 20;
-  if (quizScore === 100) calculatedCoins += 50;
-  else if (quizScore >= 85) calculatedCoins += 25;
-  else if (quizScore >= 70) calculatedCoins += 15;
-  if (voiceScore >= 95) calculatedCoins += 50;
-  else if (voiceScore >= 80) calculatedCoins += 25;
-  else if (voiceScore >= 60) calculatedCoins += 15;
+  // 🗺️ FUNGSI LENCANA REGIONAL (SISTEM SEKALI SAPU - KUMULATIF)
+  function getAllEarnedTreasures() {
+    const unlocked = [];
 
-  const totalCoinsEarned = calculatedCoins;
+    // 🎯 LENCANA KUIS (Hanya menggunakan IF agar menumpuk)
+    if (unitNumber === 1) { 
+      if (percentage >= 70) unlocked.push({ id: 'u1_q1', icon: Leaf, label: 'Leaf Reader', requirement: 'Quiz 70+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100', tier: 1 });
+      if (percentage >= 85) unlocked.push({ id: 'u1_q2', icon: TreePine, label: 'Forest Scholar', requirement: 'Quiz 85+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200', tier: 2 });
+      if (percentage === 100) unlocked.push({ id: 'u1_q3', icon: Crown, label: 'Crown of the Woods', requirement: 'Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200', tier: 3 });
+    } 
+    else if (unitNumber === 2) { 
+      if (percentage >= 70) unlocked.push({ id: 'u2_q1', icon: Sun, label: 'Sand Seeker', requirement: 'Quiz 70+', color: 'text-amber-700', bgColor: 'from-orange-50 to-amber-100', tier: 1 });
+      if (percentage >= 85) unlocked.push({ id: 'u2_q2', icon: Compass, label: 'Oasis Thinker', requirement: 'Quiz 85+', color: 'text-teal-700', bgColor: 'from-teal-100 to-cyan-200', tier: 2 });
+      if (percentage === 100) unlocked.push({ id: 'u2_q3', icon: Tent, label: 'Pyramid Master', requirement: 'Quiz 100', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200', tier: 3 });
+    }
+    else if (unitNumber === 3) { 
+      if (percentage >= 70) unlocked.push({ id: 'u3_q1', icon: Waves, label: 'Tide Learner', requirement: 'Quiz 70+', color: 'text-blue-600', bgColor: 'from-blue-50 to-cyan-100', tier: 1 });
+      if (percentage >= 85) unlocked.push({ id: 'u3_q2', icon: Fish, label: 'Coral Scholar', requirement: 'Quiz 85+', color: 'text-rose-600', bgColor: 'from-rose-100 to-pink-200', tier: 2 });
+      if (percentage === 100) unlocked.push({ id: 'u3_q3', icon: Gem, label: 'Pearl of Wisdom', requirement: 'Quiz 100', color: 'text-slate-600', bgColor: 'from-slate-100 to-gray-200', tier: 3 });
+    }
+    else if (unitNumber === 4) { 
+      if (percentage >= 70) unlocked.push({ id: 'u4_q1', icon: Mountain, label: 'Cliff Solver', requirement: 'Quiz 70+', color: 'text-slate-600', bgColor: 'from-slate-100 to-slate-300', tier: 1 });
+      if (percentage >= 85) unlocked.push({ id: 'u4_q2', icon: MountainSnow, label: 'Peak Thinker', requirement: 'Quiz 85+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-violet-200', tier: 2 });
+      if (percentage === 100) unlocked.push({ id: 'u4_q3', icon: Flag, label: 'Summit Genius', requirement: 'Quiz 100', color: 'text-sky-700', bgColor: 'from-sky-100 to-blue-200', tier: 3 });
+    }
+    else if (unitNumber === 5) { 
+      if (percentage >= 70) unlocked.push({ id: 'u5_q1', icon: Map, label: 'Map Keeper', requirement: 'Quiz 70+', color: 'text-amber-800', bgColor: 'from-amber-100 to-orange-200', tier: 1 });
+      if (percentage >= 85) unlocked.push({ id: 'u5_q2', icon: Shield, label: 'Royal Scholar', requirement: 'Quiz 85+', color: 'text-purple-700', bgColor: 'from-purple-100 to-indigo-200', tier: 2 });
+      if (percentage === 100) unlocked.push({ id: 'u5_q3', icon: Sparkles, label: 'FIELA Legend', requirement: 'Quiz 100', color: 'text-fuchsia-700', bgColor: 'from-fuchsia-100 to-purple-300', tier: 3 });
+    }
+
+    // 🎙️ LENCANA SUARA (Hanya menggunakan IF agar menumpuk)
+    if (unitNumber === 1) { 
+      if (pronunciationScore >= 60) unlocked.push({ id: 'u1_v1', icon: Wind, label: 'Woodland Whisper', requirement: 'Voice 60+', color: 'text-green-600', bgColor: 'from-green-50 to-lime-100', tier: 1 });
+      if (pronunciationScore >= 80) unlocked.push({ id: 'u1_v2', icon: Bird, label: 'Jungle Caller', requirement: 'Voice 80+', color: 'text-emerald-700', bgColor: 'from-emerald-100 to-green-200', tier: 2 });
+      if (pronunciationScore >= 95) unlocked.push({ id: 'u1_v3', icon: Volume2, label: 'Lion\'s Roar', requirement: 'Voice 95+', color: 'text-amber-600', bgColor: 'from-orange-100 to-amber-300', tier: 3 });
+    }
+    else if (unitNumber === 2) { 
+      if (pronunciationScore >= 60) unlocked.push({ id: 'u2_v1', icon: AudioLines, label: 'Desert Echo', requirement: 'Voice 60+', color: 'text-orange-600', bgColor: 'from-orange-50 to-amber-100', tier: 1 });
+      if (pronunciationScore >= 80) unlocked.push({ id: 'u2_v2', icon: Footprints, label: 'Dune Speaker', requirement: 'Voice 80+', color: 'text-amber-700', bgColor: 'from-orange-100 to-amber-200', tier: 2 });
+      if (pronunciationScore >= 95) unlocked.push({ id: 'u2_v3', icon: Eye, label: 'Sphinx\'s Voice', requirement: 'Voice 95+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-amber-200', tier: 3 });
+    }
+    else if (unitNumber === 3) { 
+      if (pronunciationScore >= 60) unlocked.push({ id: 'u3_v1', icon: Shell, label: 'Seashell Murmur', requirement: 'Voice 60+', color: 'text-teal-600', bgColor: 'from-teal-50 to-cyan-100', tier: 1 });
+      if (pronunciationScore >= 80) unlocked.push({ id: 'u3_v2', icon: Anchor, label: 'Wave Caller', requirement: 'Voice 80+', color: 'text-blue-600', bgColor: 'from-blue-100 to-indigo-200', tier: 2 });
+      if (pronunciationScore >= 95) unlocked.push({ id: 'u3_v3', icon: Droplets, label: 'Dolphin\'s Pitch', requirement: 'Voice 95+', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-200', tier: 3 });
+    }
+    else if (unitNumber === 4) { 
+      if (pronunciationScore >= 60) unlocked.push({ id: 'u4_v1', icon: Cloud, label: 'Wind Whisperer', requirement: 'Voice 60+', color: 'text-sky-600', bgColor: 'from-sky-50 to-blue-100', tier: 1 });
+      if (pronunciationScore >= 80) unlocked.push({ id: 'u4_v2', icon: Feather, label: 'Eagle\'s Call', requirement: 'Voice 80+', color: 'text-slate-700', bgColor: 'from-slate-200 to-gray-300', tier: 2 });
+      if (pronunciationScore >= 95) unlocked.push({ id: 'u4_v3', icon: CloudLightning, label: 'Thunder\'s Roar', requirement: 'Voice 95+', color: 'text-indigo-700', bgColor: 'from-indigo-200 to-violet-300', tier: 3 });
+    }
+    else if (unitNumber === 5) { 
+      if (pronunciationScore >= 60) unlocked.push({ id: 'u5_v1', icon: Bell, label: 'Silver Herald', requirement: 'Voice 60+', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300', tier: 1 });
+      if (pronunciationScore >= 80) unlocked.push({ id: 'u5_v2', icon: Megaphone, label: 'Golden Orator', requirement: 'Voice 80+', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300', tier: 2 });
+      if (pronunciationScore >= 95) unlocked.push({ id: 'u5_v3', icon: Trophy, label: 'Diamond Sovereign', requirement: 'Voice 95+', color: 'text-cyan-400', bgColor: 'from-cyan-100 to-blue-100', tier: 3 });
+    }
+
+    return unlocked;
+  }
+
+  // 🔮 MESIN REVISIT (MENGHITUNG DELTA KOIN BERSIH)
+  const prevQuiz = Math.round(previousPercentage);
+  const prevVoice = Math.round(previousPronunciationScore);
+  const prevTotalScore = prevQuiz + prevVoice;
+
+  // Langkah 1: Delta Skor Murni
+  let coinDelta = finalScore - prevTotalScore;
+  if (coinDelta < 0) coinDelta = 0; // Tidak boleh minus
+
+  // Langkah 2: Filter Lencana Baru & Konversi
+  const allEarnedTreasuresThisSession = getAllEarnedTreasures();
+  let badgeCoins = 0;
+  
+  const newlyUnlockedTreasures = allEarnedTreasuresThisSession.filter(badge => {
+    const isAlreadyOwned = previousUnlockedBadges.includes(badge.id);
+    if (!isAlreadyOwned) {
+      if (badge.tier === 3) badgeCoins += 20; 
+      if (badge.tier === 2) badgeCoins += 10; 
+      if (badge.tier === 1) badgeCoins += 5; 
+      return true; // Hanya masukkan ke UI jika benar-benar baru
+    }
+    return false; // Abaikan jika sudah pernah didapat
+  });
+
+  // Langkah 3: Total Koin Animasi
+  const totalCoinsEarned = coinDelta + badgeCoins;
 
   // 🪙 STATE ANIMASI
   const [isPageReady, setIsPageReady] = useState(false); 
@@ -113,14 +180,11 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
     setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     const handleResize = () => setWindowDimensions({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
       soundEffects.stopCoinTally(); 
     };
   }, []);
-
-  const earnedTreasures = getNewlyUnlockedTreasures();
 
   // 🌟 ORKESTRASI ANIMASI SEKUENSAL
   useEffect(() => {
@@ -144,10 +208,10 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         clearInterval(starInterval);
         
         setTimeout(() => {
-          if (earnedTreasures.length > 0) {
+          if (newlyUnlockedTreasures.length > 0) {
             let currentTreasureIndex = 0;
             const treasureInterval = setInterval(() => {
-              if (currentTreasureIndex < earnedTreasures.length) {
+              if (currentTreasureIndex < newlyUnlockedTreasures.length) {
                 setRevealedTreasuresCount(currentTreasureIndex + 1);
                 soundEffects.playTreasurePop();
                 currentTreasureIndex++;
@@ -167,6 +231,11 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
   }, [isPageReady]);
 
   const triggerCoinRolling = () => {
+    if (totalCoinsEarned === 0) {
+      setDisplayedCoins(0);
+      return;
+    }
+
     soundEffects.startCoinTally(); 
     let startTimestamp: number | null = null;
     const duration = 1800;
@@ -189,36 +258,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
     window.requestAnimationFrame(step);
   };
 
-  function getNewlyUnlockedTreasures() {
-    const unlocked = [];
-    if (unitNumber === 1) unlocked.push({ icon: BookOpen, label: 'First Steps', requirement: 'Complete 1 Expedition', color: 'text-emerald-600', bgColor: 'from-emerald-100 to-green-100', tier: 1 });
-    if (unitNumber === 3) unlocked.push({ icon: Target, label: 'Avid Explorer', requirement: 'Complete 3 Expeditions', color: 'text-cyan-600', bgColor: 'from-cyan-100 to-blue-100', tier: 2 });
-    if (unitNumber === 5) unlocked.push({ icon: Trophy, label: 'Atlas Conqueror', requirement: 'Complete 5 Expeditions', color: 'text-amber-600', bgColor: 'from-amber-100 via-orange-100 to-yellow-100', tier: 3 });
-
-    if (percentage >= 70 && unitNumber === 1) unlocked.push({ icon: Flame, label: 'Spark of Knowledge', requirement: 'Score 70%+', color: 'text-rose-600', bgColor: 'from-rose-100 to-red-100', tier: 1 });
-    if (percentage >= 80 && unitNumber === 2) unlocked.push({ icon: Medal, label: 'Silver Scholar', requirement: 'Score 80%+', color: 'text-slate-600', bgColor: 'from-slate-100 via-gray-100 to-slate-200', tier: 2 });
-    if (percentage >= 90 && unitNumber === 3) unlocked.push({ icon: Star, label: 'Brilliant Star', requirement: 'Score 90%+', color: 'text-indigo-600', bgColor: 'from-indigo-100 to-blue-100', tier: 2 });
-    if (percentage === 100 && unitNumber === 1) unlocked.push({ icon: Crown, label: 'Perfect Champion', requirement: 'Score 100%', color: 'text-yellow-600', bgColor: 'from-yellow-100 via-yellow-200 to-amber-200', tier: 2 });
-    if (percentage === 100 && unitNumber === 3) unlocked.push({ icon: Gem, label: 'Master Scholar', requirement: 'Score 100%', color: 'text-fuchsia-600', bgColor: 'from-fuchsia-100 via-pink-100 to-purple-100', tier: 3 });
-    if (percentage >= 90 && unitNumber === 5) unlocked.push({ icon: Brain, label: 'Sharp Mind', requirement: 'Score 90%+', color: 'text-blue-700', bgColor: 'from-blue-100 to-indigo-200', tier: 3 });
-    if (percentage === 100 && unitNumber === 5) unlocked.push({ icon: Zap, label: 'Flawless Legend', requirement: 'Score 100%', color: 'text-amber-700', bgColor: 'from-yellow-200 to-amber-300', tier: 3 });
-
-    if (pronunciationScore >= 95) {
-      unlocked.push({ icon: Gem, label: 'Diamond Whisperer', requirement: '95%+ Speech', color: 'text-cyan-500', bgColor: 'from-cyan-100 to-blue-200', tier: 3 });
-    } else if (pronunciationScore >= 80) {
-      unlocked.push({ icon: Mic, label: 'Golden Orator', requirement: '80%+ Speech', color: 'text-yellow-600', bgColor: 'from-yellow-100 to-yellow-300', tier: 2 });
-    } else if (pronunciationScore >= 60) {
-      unlocked.push({ icon: Mic, label: 'Silver Voice', requirement: '60%+ Speech', color: 'text-slate-500', bgColor: 'from-slate-100 to-slate-300', tier: 1 });
-    } else if (pronunciationScore > 0) {
-      unlocked.push({ icon: Mic, label: 'Brave Speaker', requirement: 'Complete speaking', color: 'text-orange-700', bgColor: 'from-orange-100 to-amber-200', tier: 1 });
-    }
-
-    if (unlocked.length === 0) {
-      unlocked.push({ icon: CheckCircle, label: 'Expedition Cleared', requirement: 'The journey continues!', color: 'text-teal-600', bgColor: 'from-teal-100 to-emerald-100', tier: 1 });
-    }
-    return unlocked;
-  }
-
   const getHeadingInfo = () => {
     if (percentage === 100) return { title: 'Legendary Mastery!', emoji: '👑', subtitle: 'Flawless! You achieved absolute perfection!' };
     if (percentage >= 90) return { title: 'Outstanding Excellence!', emoji: '🏆', subtitle: "Almost perfect! You're a true expert!" };
@@ -234,7 +273,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
       <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`, backgroundSize: '150px 150px' }} />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-yellow-500/20 blur-[100px] rounded-full pointer-events-none" />
 
-      {/* Button Kembali ke Home */}
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.2 }} className="absolute top-4 left-4 z-50 fixed">
         <motion.button onClick={() => { soundEffects.buttonHome(); onGoHome(); }} initial="normal" animate="normal" whileHover="diHover" whileTap="diKlik"
           variants={{
@@ -253,7 +291,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         </motion.button>
       </motion.div>
 
-      {/* Main Container Papan Hasil */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8, y: 30 }} 
         animate={{ opacity: 1, scale: 1, y: 0 }} 
@@ -264,41 +301,27 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
       >
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-3xl" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }} />
         
-        {/* GARIS PEMISAH VERTIKAL ELEGAN DI TENGAH */}
         <div className="hidden lg:block absolute left-1/2 top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-amber-200 to-transparent -translate-x-1/2 z-0 opacity-70" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative z-10">
           
-          {/* ========================================================= */}
-          {/* SISI KIRI: HIERARKI BARU (Satu Baris Aman)                */}
-          {/* ========================================================= */}
           <div className="flex flex-col h-full w-full items-center md:items-start text-center md:text-left">
-            
-            {/* 1. ATLAS & BALON DIALOG (Atlas dipindah ke Kanan) */}
             <motion.div 
-              initial={{ opacity: 0, y: -20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ delay: 0.3 }} 
-              // 🔮 RUANG MESIN: Background dihapus, diganti border bawah (border-b) dan bantalan bawah (pb)
+              initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} 
               className="flex flex-row items-center gap-3 sm:gap-4 mb-6 sm:mb-8 w-full border-b-[3px] border-amber-200/60 pb-5 sm:pb-6"
             >
-              {/* Balon Dialog (Sekarang di Kiri) */}
               <div className="flex-1 relative bg-white p-3 sm:p-4 rounded-xl border-2 border-amber-300 shadow-sm text-left">
-                {/* 🔮 PERBAIKAN: Panah dipindah ke Kanan (-right-2) dan diputar border-nya agar menunjuk ke kanan */}
                 <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-3 h-3 bg-white rotate-45 border-t-2 border-r-2 border-amber-300" />
                 <p className="font-[Nunito] font-bold text-xs sm:text-sm text-amber-950 leading-snug">
                   "{reaction.text}"
                 </p>
               </div>
 
-              {/* Gambar Atlas (Sekarang di Kanan) */}
               <div className="w-16 sm:w-20 shrink-0 relative flex justify-center pb-1">
                 <img src={reaction.pose} alt="Atlas Pose" className="w-full relative z-20 drop-shadow-md" />
               </div>
-
             </motion.div>
 
-            {/* 2. HEADING EXPEDITION */}
             <motion.h1 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
               className="text-amber-950 font-[Fredoka] text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide text-center drop-shadow-sm mb-5 w-full whitespace-nowrap text-ellipsis overflow-hidden"
@@ -306,42 +329,23 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
               Expedition {unitNumber} Completed!
             </motion.h1>
 
-            {/* 3. ICON BUNDAR DI BAWAH HEADING (DENGAN SAYAP KEBESARAN) */}
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5, type: 'spring', stiffness: 200 }} className="w-full flex justify-center mb-5">
-              
-              {/* Wadah Flex untuk menata Sayap - Ikon - Sayap sejajar */}
               <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
-                
-                {/* 🪽 Sayap Kiri (Flip = true) */}
-                <motion.div 
-                  style={{ originX: 1, originY: 0.5 }} // Engsel putaran di pangkal kanan
-                  animate={{ rotate: [0, -10, 0] }}    // Mengepak ke atas
-                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                >
+                <motion.div style={{ originX: 1, originY: 0.5 }} animate={{ rotate: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>
                   <WingDecoration className="w-16 h-10 sm:w-20 sm:h-12 md:w-24 md:h-14 lg:w-24 lg:h-16 drop-shadow-md" flip={true} />
                 </motion.div>
-
-                {/* 👑 Ikon Bundar Utama */}
                 <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="flex items-center justify-center tracking-wide w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-white to-yellow-200/80 rounded-full shadow-[0_5px_15px_rgba(217,119,6,0.3)] border-4 border-amber-400 relative z-10">
                   {percentage === 100 ? <Crown className="h-10 w-10 sm:h-12 sm:w-12 text-yellow-500 drop-shadow-md" /> 
                   : percentage >= 80 ? <Star className="h-10 w-10 sm:h-12 sm:w-12 text-blue-500 drop-shadow-md" /> 
                   : percentage >= 60 ? <Award className="h-10 w-10 sm:h-12 sm:w-12 text-green-500 drop-shadow-md" /> 
                   : <Sparkles className="h-10 w-10 sm:h-12 sm:w-12 text-purple-500 drop-shadow-md" />}
                 </motion.div>
-
-                {/* 🪽 Sayap Kanan (Flip = false) */}
-                <motion.div 
-                  style={{ originX: 0, originY: 0.5 }} // Engsel putaran di pangkal kiri
-                  animate={{ rotate: [0, 10, 0] }}     // Mengepak ke atas
-                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.2 }}
-                >
+                <motion.div style={{ originX: 0, originY: 0.5 }} animate={{ rotate: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.2 }}>
                   <WingDecoration className="w-16 h-10 sm:w-20 sm:h-12 md:w-24 md:h-14 lg:w-24 lg:h-16 drop-shadow-md" flip={false} />
                 </motion.div>
-
               </div>
             </motion.div>
 
-            {/* 4. TITLE OUTSTANDING EXCELLENCE */}
             <motion.h2 
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} 
               className="text-amber-950 font-[Fredoka] text-xl sm:text-2xl lg:text-3xl font-bold text-center tracking-wide drop-shadow-sm leading-tight w-full whitespace-nowrap text-ellipsis overflow-hidden"
@@ -349,7 +353,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
               {headingInfo.emoji} {headingInfo.title}
             </motion.h2>
 
-            {/* 5. SUBTITLE ALMOST PERFECT */}
             <motion.p 
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }} 
               className="text-amber-800 mt-2 mb-8 font-[Nunito] font-bold text-sm sm:text-base md:text-md lg:text-lg text-center w-full whitespace-nowrap text-ellipsis overflow-hidden"
@@ -357,7 +360,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
               {headingInfo.subtitle}
             </motion.p>
 
-            {/* 6. TOMBOL NAVIGASI */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="w-full space-y-3 mt-auto pb-4">
               {wrongAnswers.length > 0 && (
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -379,16 +381,11 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
             </motion.div>
           </div>
 
-          {/* ========================================================= */}
-          {/* SISI KANAN: STATISTIK & KOIN EMAS                         */}
-          {/* ========================================================= */}
           <div className="flex flex-col justify-center h-full gap-5 sm:gap-6 lg:pl-4">
             
-            {/* 🗺️ JOURNEY STATS - 4 PODS (3 Kotak + 1 Bar Ramping) */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="w-full">
-              <div className="bg-lime-100/50 rounded-2xl p-4 sm:p-5 border-2 border-lime-200 shadow-sm relative z-10">
-                
-                <div className="flex flex-row items-center justify-between border-b-2 border-lime-200/60 pb-3 mb-4">
+              <div className="bg-lime-200/50 rounded-2xl p-4 sm:p-5 border-2 border-lime-300 shadow-sm relative z-10">
+                <div className="flex flex-row items-center justify-between border-b-2 border-lime-400/60 pb-3 mb-4">
                   <p className="text-amber-900 font-[Fredoka] font-bold text-lg sm:text-xl tracking-wide">🗺️ Journey Stats</p>
                   
                   <motion.div 
@@ -401,10 +398,8 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                   </motion.div>
                 </div>
 
-                {/* 3 Pods Utama */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  {/* 1. STARS POD */}
-                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-md flex flex-col items-center justify-center">
                     <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-1 text-center leading-none">Stars</span>
                     <div className="flex gap-0.5">
                       {[1, 2, 3].map(starIndex => {
@@ -421,9 +416,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                                 >
                                   <Star 
                                     className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
-                                      isEarned 
-                                        ? 'text-yellow-400 fill-yellow-400 drop-shadow-sm' 
-                                        : 'text-gray-300 fill-gray-100 opacity-50'
+                                      isEarned ? 'text-yellow-400 fill-yellow-400 drop-shadow-sm' : 'text-gray-300 fill-gray-100 opacity-50'
                                     }`} 
                                   />
                                 </motion.div>
@@ -435,8 +428,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                     </div>
                   </div>
 
-                  {/* 2. QUIZ SCORE POD */}
-                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-md flex flex-col items-center justify-center">
                     <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-0.5 text-center leading-none">Quiz</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${quizScore === 100 ? 'text-yellow-600' : quizScore >= 80 ? 'text-blue-600' : 'text-red-600'}`}>
                       {quizScore}
@@ -444,8 +436,7 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                     <span className="text-[9px] font-bold text-amber-900/50 leading-none mt-0.5">({score}/{totalQuestions} correct)</span>
                   </div>
 
-                  {/* 3. VOICE SCORE POD */}
-                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center justify-center">
+                  <div className="bg-white py-2 px-1 rounded-xl border border-amber-200 shadow-md flex flex-col items-center justify-center">
                     <span className="text-amber-800 font-[Nunito] font-bold text-xs mb-0.5 text-center leading-none">Voice</span>
                     <span className={`font-bold font-[Fredoka] text-base sm:text-lg ${voiceScore >= 80 ? 'text-green-600' : voiceScore >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
                       {voiceScore}
@@ -454,7 +445,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                   </div>
                 </div>
 
-                {/* 4. TOTAL QUEST SCORE POD (Bar Ramping 1 Baris) */}
                 <div className="bg-gradient-to-r from-white to-amber-50 py-2.5 px-4 rounded-xl border-2 border-amber-300 shadow-sm flex flex-row items-center justify-between">
                   <div className="flex flex-row items-baseline gap-1.5 flex-wrap">
                     <span className="text-amber-900 font-[Fredoka] font-bold text-sm tracking-wide leading-none">Quest Score</span>
@@ -469,69 +459,88 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
                     </span>
                   </div>
                 </div>
-
               </div>
             </motion.div>
 
-            {/* 🎁 TREASURES UNLOCKED (Desain Badge Horizontal Kompak) */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="w-full mt-1">
-              <p className="text-amber-900 mb-2 font-[Fredoka] font-bold text-sm bg-amber-100/80 inline-block px-3 py-1.5 rounded-xl border border-amber-300 w-full text-center">🎁 Treasures Unlocked</p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.7 }} 
+              /* 🔮 WADAH BARU: Diberi warna gelap transparan, bingkai tegas, dan bayangan dalam agar lencana pop-out */
+              className="w-full mt-1 bg-amber-950/30 border border-amber-900/30 rounded-2xl p-4 shadow-inner overflow-visible relative"
+            >
+              {/* 🔮 JUDUL PANEL: Disesuaikan warnanya agar kontras dan serasi dengan wadah gelap */}
+              <p className="text-amber-100 mb-2 font-[Fredoka] font-bold text-sm bg-amber-900/60 inline-block px-3 py-1.5 rounded-xl border border-amber-700/50 w-full text-center tracking-wide shadow-sm">
+                🎁 Treasures Unlocked
+              </p>
               
-              {/* 🔮 SISI KIRI AMAN: pr-1 pb-1 diganti menjadi p-3 (padding merata di semua sisi) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto p-2">
-                {earnedTreasures.map((badge, index) => {
-                  const isVisible = index < revealedTreasuresCount;
-                  const isTier3 = badge.tier === 3;
-                  const isTier2 = badge.tier === 2;
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 overflow-visible p-2 pt-4 relative z-30">
+                {newlyUnlockedTreasures.length === 0 ? (
+                  <div className="col-span-full py-4 text-center">
+                    {/* 🔮 Teks pesan kosong diubah ke warna terang agar tidak ikut tenggelam */}
+                    <p className="text-amber-200/60 font-[Nunito] font-bold text-sm italic">
+                      No new treasures found this time.
+                    </p>
+                  </div>
+                ) : (
+                  newlyUnlockedTreasures.map((badge, index) => {
+                    const isVisible = index < revealedTreasuresCount;
+                    const isTier3 = badge.tier === 3;
+                    const isTier2 = badge.tier === 2;
+                    const coinValue = isTier3 ? 20 : isTier2 ? 10 : 5;
 
-                  return (
-                    <AnimatePresence key={index}>
-                      {isVisible && (
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.8, x: -10 }} 
-                          animate={{ opacity: 1, scale: 1, x: 0 }} 
-                          whileHover={{ scale: 1.02 }} 
-                          transition={{ type: "spring", stiffness: 260, damping: 15 }} 
-                          className={`relative bg-gradient-to-br ${badge.bgColor} rounded-xl p-2 sm:p-2.5 flex flex-row items-center gap-2 sm:gap-2.5 overflow-hidden ${
-                            isTier3 ? 'border-[2px] border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] z-10' :
-                            isTier2 ? 'border-2 border-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.2)]' :
-                            'border border-white shadow-sm'
-                          }`}
-                        >
-                          {isTier3 && <div className="absolute inset-0 bg-white/30 animate-pulse pointer-events-none" />}
-
-                          {/* Ikon Lencana di Kiri */}
+                    return (
+                      <AnimatePresence key={index}>
+                        {isVisible && (
                           <motion.div 
-                            animate={{ scale: [1, 1.08, 1] }} 
-                            transition={{ repeat: Infinity, duration: 2.5, delay: index * 0.2 }} 
-                            className={`p-1.5 sm:p-2 rounded-full shrink-0 relative z-10 ${
-                              isTier3 ? 'bg-gradient-to-br from-yellow-100 to-amber-300 shadow-md' : 
-                              isTier2 ? 'bg-white/95 shadow-sm' : 
-                              'bg-white/60 border border-white shadow-inner'
+                            initial={{ opacity: 0, scale: 0.8, x: -10 }} animate={{ opacity: 1, scale: 1, x: 0 }} 
+                            whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 260, damping: 15 }} 
+                            tabIndex={0}
+                            className={`group relative bg-gradient-to-br ${badge.bgColor} rounded-xl p-2 sm:p-2.5 flex flex-row items-center gap-2 sm:gap-2.5 overflow-visible cursor-pointer focus:outline-none hover:z-50 focus:z-50 ${
+                              isTier3 ? 'border-[2px] border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.5)] z-10' :
+                              isTier2 ? 'border-2 border-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.2)] relative' : 
+                              'border border-white shadow-sm relative'
                             }`}
                           >
-                            <badge.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${badge.color} ${isTier3 ? 'drop-shadow-sm' : ''}`} />
+                            {/* TOOLTIP MELAYANG */}
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-active:opacity-100 transition-all duration-300 pointer-events-none z-50 flex flex-col items-center">
+                              <div className="bg-amber-950/90 text-amber-300 font-[Fredoka] font-bold text-xs px-3 py-1.5 rounded-lg shadow-xl border border-amber-500/50 flex items-center gap-1.5 whitespace-nowrap">
+                                <span className="text-sm leading-none">+</span>
+                                <span className="text-sm leading-none">{coinValue}</span>
+                                <span className="font-[Nunito] text-[10px] uppercase tracking-wider text-amber-200/80">Coins</span>
+                              </div>
+                              <div className="w-2 h-2 bg-amber-950/90 rotate-45 -mt-1 border-b border-r border-amber-500/50"></div>
+                            </div>
+
+                            {isTier3 && <div className="absolute inset-0 bg-white/30 animate-pulse pointer-events-none rounded-xl" />}
+
+                            <motion.div animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 2.5, delay: index * 0.2 }} 
+                              className={`p-1.5 sm:p-2 rounded-full shrink-0 relative z-10 ${
+                                isTier3 ? 'bg-gradient-to-br from-yellow-100 to-amber-300 shadow-md' : 
+                                isTier2 ? 'bg-white/95 shadow-sm' : 'bg-white/60 border border-white shadow-inner'
+                              }`}
+                            >
+                              <badge.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${badge.color} ${isTier3 ? 'drop-shadow-sm' : ''}`} />
+                            </motion.div>
+                            
+                            <div className="flex flex-col items-start justify-center w-full relative z-10 pointer-events-none">
+                              <p className={`text-[11px] sm:text-xs font-bold font-[Fredoka] tracking-wide leading-tight truncate w-full ${
+                                isTier3 ? 'text-amber-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' : 'text-amber-950'
+                              }`}>
+                                {badge.label}
+                              </p>
+                              <p className={`text-[9px] sm:text-[10px] font-bold font-[Nunito] leading-tight mt-0.5 truncate w-full ${
+                                isTier3 ? 'text-amber-800' : 'text-amber-900/60'
+                              }`}>
+                                {badge.requirement}
+                              </p>
+                            </div>
                           </motion.div>
-                          
-                          {/* Teks Lencana di Kanan (Mampat & Truncate) */}
-                          <div className="flex flex-col items-start justify-center w-full relative z-10">
-                            <p className={`text-[11px] sm:text-xs font-bold font-[Fredoka] tracking-wide leading-tight truncate w-full ${
-                              isTier3 ? 'text-amber-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]' :
-                              isTier2 ? 'text-amber-950' : 'text-amber-950'
-                            }`}>
-                              {badge.label}
-                            </p>
-                            <p className={`text-[9px] sm:text-[10px] font-bold font-[Nunito] leading-tight mt-0.5 truncate w-full ${
-                              isTier3 ? 'text-amber-800' : 'text-amber-900/60'
-                            }`}>
-                              {badge.requirement}
-                            </p>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  );
-                })}
+                        )}
+                      </AnimatePresence>
+                    );
+                  })
+                )}
               </div>
             </motion.div>
 
@@ -539,7 +548,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         </div>
       </motion.div>
 
-      {/* POPUP REVIEW CHALLENGE */}
       <AnimatePresence>
         {showReview && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-indigo-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowReview(false)}>
@@ -583,7 +591,6 @@ export function RewardPage({ unitNumber, onContinue, isLastUnit, wrongAnswers = 
         )}
       </AnimatePresence>
 
-      {/* CONFETTI BACKGROUND */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {[...Array(percentage >= 60 ? 25 : 12)].map((_, i) => {
           const colors = ['bg-yellow-300', 'bg-amber-200', 'bg-white', 'bg-indigo-300'];

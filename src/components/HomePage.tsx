@@ -194,7 +194,7 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
   }, [atlasDialogues]);
 
   // =====================================================================
-  // SISTEM EKONOMI ATLAS COINS & BINTANG KKTP
+  // 🧭 SISTEM EKONOMI ATLAS COINS & BINTANG KKTP (VERSI SEKALI SAPU)
   // =====================================================================
   
   const getUnitStars = (unitScore: any) => {
@@ -214,23 +214,26 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
     const quiz = Math.round(unitScore.percentage || 0);
     const voice = Math.round(unitScore.pronunciationScore || 0);
     
+    // 1. Koin Murni (Modal Dasar)
     let coins = quiz + voice; 
 
-    if (quiz > 0 || voice > 0) coins += 20; 
+    // 2. Koin Lencana Kuis (Kumulatif Sekali Sapu)
+    if (quiz >= 70) coins += 5;   // Tier 1
+    if (quiz >= 85) coins += 10;  // Tier 2
+    if (quiz === 100) coins += 20; // Tier 3
 
-    if (quiz === 100) coins += 50;
-    else if (quiz >= 85) coins += 25;
-    else if (quiz >= 70) coins += 15;
-
-    if (voice >= 95) coins += 50;
-    else if (voice >= 80) coins += 25;
-    else if (voice >= 60) coins += 15;
+    // 3. Koin Lencana Suara (Kumulatif Sekali Sapu)
+    if (voice >= 60) coins += 5;  // Tier 1
+    if (voice >= 80) coins += 10; // Tier 2
+    if (voice >= 95) coins += 20; // Tier 3
 
     return coins;
   };
 
-  const totalCoins = Object.values(unitScores).reduce((sum, score) => sum + getUnitCoins(score), 0);
+  // 🔮 LETAKKAN INI DI LUAR LOOP (Atau di bagian atas komponen)
+  const EXPEDITION_COSTS = [0, 180, 380, 600, 850];
 
+  const totalCoins = Object.values(unitScores).reduce((sum, score) => sum + getUnitCoins(score), 0);
   // =====================================================================
 
   const handleUnitClick = (unitId: number, isCompleted: boolean) => {
@@ -376,11 +379,12 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 const boatStyles = ['rotate-[330deg]', '-scale-x-100 -rotate-[340deg]', 'rotate-[343deg]', '-scale-x-100 -rotate-[340deg]', 'rotate-[340deg]'];
                 const boatPositions = ['left-[20%] md:left-[35%] -top-12 md:-top-8', 'left-[65%] md:left-[60%] -top-2 md:top-16', 'left-[12%] md:left-[42%] -top-2 md:top-10', 'left-[60%] md:left-[50%] -top-5 md:top-16', 'left-[12%] md:left-[35%] -top-2 md:-top-8'];
 
+                // 🔮 LALU GANTI POTONGAN KODE KAPTEN MENJADI INI:
                 const isPasswordUnlocked = passwordUnlockedUnits.has(unit.id);
-                
-                const requiredCoins = index * 180; 
+                              
+                const requiredCoins = EXPEDITION_COSTS[index] || 0; // Mengambil harga dari Peta Harga
                 const isLocked = totalCoins < requiredCoins && !isPasswordUnlocked;
-                const islandStars = getUnitStars(unitScores[unit.id]); 
+                const islandStars = getUnitStars(unitScores[unit.id]);
 
                 let marginClass = "relative mb-8 md:mb-12 z-10";
                 if (index === 1 || index === 2 || index === 3) marginClass = "relative -translate-y-4 md:-translate-y-12 translate-x-4 md:translate-x-6 mb-4 md:mb-6 z-10";
@@ -472,7 +476,10 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 
                 const isCompleted = completedUnits.has(unit.id);
                 const isPasswordUnlocked = passwordUnlockedUnits.has(unit.id);
-                const requiredCoins = index * 180;
+                
+                // 🔮 UBAH BARIS INI: Ambil harga dari Array berdasarkan index pulau
+                const requiredCoins = EXPEDITION_COSTS[index] || 0; 
+                
                 const isLocked = totalCoins < requiredCoins && !isPasswordUnlocked;
                 const islandStars = getUnitStars(unitScores[unit.id]);
 
@@ -707,7 +714,10 @@ export function HomePage({ units, completedUnits, passwordUnlockedUnits, unitSco
                 <div className="flex items-center gap-3 bg-amber-100 p-4 rounded-xl border-2 border-amber-300 shadow-sm">
                   <CoinIcon className="w-10 h-10 shrink-0 drop-shadow-md" />
                   <span className="text-amber-900 text-base sm:text-lg font-bold leading-snug">
-                    This expedition requires <strong className="font-[Coiny] text-xl sm:text-2xl text-amber-700 tracking-wide mx-1">{selectedLockedUnit ? (selectedLockedUnit - 1) * 180 : 0}</strong> Atlas Coins to unlock!
+                    This expedition requires <strong className="font-[Coiny] text-xl sm:text-2xl text-amber-700 tracking-wide mx-1">
+                      {/* 🔮 UBAH BARIS INI: Ambil dari Array */}
+                      {selectedLockedUnit ? EXPEDITION_COSTS[selectedLockedUnit - 1] : 0}
+                    </strong> Atlas Coins to unlock!
                   </span>
                 </div>
                 <span className="text-center text-amber-800/80 text-sm font-bold uppercase tracking-widest">Or use a secret code</span>
